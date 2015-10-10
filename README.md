@@ -5,4 +5,4 @@ PHP用フレームワークlevis（レヴィス）の特徴は以下のとおり
 - オブジェクト指向ではないです。
 - フロントコントローラです。
 - PHP4とPHP5に対応しています。
-- MySQLとPostgreSQLとSQLiteに対応しています。（PDO、mysql関数、pg関数、sqlite関数のいずれか。）
+- MySQLとPostgreSQLとSQLiteに対応しています。
