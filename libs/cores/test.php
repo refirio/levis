@@ -1,0 +1,346 @@
+<?php
+
+/*********************************************************************
+
+ Functions for Test
+
+*********************************************************************/
+
+function test_index()
+{
+	if (!file_exists(MAIN_PATH . TEST_PATH)) {
+		error(MAIN_PATH . TEST_PATH . ' is not found.');
+	}
+
+	$results = array();
+	if (isset($_GET['test'])) {
+		if (!regexp_match('^[0-9\:\;]+$', $_GET['test'])) {
+			redirect('/?mode=test_index');
+		}
+
+		$tests = explode(';', $_GET['test']);
+
+		foreach ($tests as $test) {
+			if ($test == '') {
+				continue;
+			}
+
+			list($index, $result) = explode(':', $test);
+
+			$results[$index] = $result;
+		}
+	}
+
+	$view['ok'] = 0;
+	$view['ng'] = 0;
+	$view['targets'] = array();
+
+	$i = 0;
+	if ($dh = opendir(MAIN_PATH . TEST_PATH)) {
+		while (($entry = readdir($dh)) !== false) {
+			if (!is_file(MAIN_PATH . TEST_PATH . $entry)) {
+				continue;
+			}
+
+			if ($regexp = regexp_match('^([_a-zA-Z0-9\-]+)\.php$', $entry)) {
+				$name = $regexp[1];
+			} else {
+				continue;
+			}
+
+			$i++;
+
+			$result = null;
+			if (isset($results[$i])) {
+				$result = $results[$i];
+				if ($result) {
+					$result = 'OK';
+
+					$view['ok']++;
+				} else {
+					$result = 'NG';
+
+					$view['ng']++;
+				}
+			}
+
+			$view['targets'][] = array(
+				'name'   => $name,
+				'file'   => $entry,
+				'result' => $result
+			);
+		}
+		closedir($dh);
+	} else {
+		error('opendir error.' . (DEBUG_LEVEL ? ' [' . MAIN_PATH . TEST_PATH . ']' : ''));
+	}
+
+	echo "<!DOCTYPE html>\n";
+	echo "<html>\n";
+	echo "<head>\n";
+	echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+	echo "<title>Test</title>\n";
+
+	style();
+
+	echo "</head>\n";
+	echo "<body>\n";
+	echo "<h1>Test</h1>\n";
+	echo "<p>Test Index.</p>\n";
+	echo "<ul>\n";
+	echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=test_exec&amp;test=\"\">All Test.</a></li>\n";
+	echo "</ul>\n";
+	echo "<ol>\n";
+
+	foreach ($view['targets'] as $target) {
+		echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=test_exec&amp;target=" . t($target['name'], true) . "\">" . t($target['file'], true) . "</a>" . ($target['result'] ? h(' (' . $target['result'] . ')', true) : '') . "</li>\n";
+	}
+
+	echo "</ol>\n";
+
+	if ($view['ok'] || $view['ng']) {
+		if ($view['ng']) {
+			echo "<p>" . $view['ng'] . " Test is NG!</p>\n";
+		} else {
+			echo "<p>All Test is OK!</p>\n";
+		}
+	}
+
+	echo "</body>\n";
+	echo "</html>\n";
+
+	exit;
+}
+
+function test_exec()
+{
+	global $view;
+
+	if (!file_exists(MAIN_PATH . TEST_PATH)) {
+		error(MAIN_PATH . TEST_PATH . ' is not found.');
+	}
+
+	$index  = 0;
+	$result = 0;
+	if (isset($_GET['test'])) {
+		if ($_GET['test'] != '' && !regexp_match('^[0-9\:\;]+$', $_GET['test'])) {
+			redirect('/?mode=test_index');
+		}
+
+		$tests = explode(';', $_GET['test']);
+		$test  = $tests[count($tests) - 1];
+
+		if ($test != '') {
+			list($index, $result) = explode(':', $test);
+		}
+
+		$i    = 0;
+		$flag = false;
+		if ($dh = opendir(MAIN_PATH . TEST_PATH)) {
+			while (($entry = readdir($dh)) !== false) {
+				if (!is_file(MAIN_PATH . TEST_PATH . $entry)) {
+					continue;
+				}
+
+				if ($regexp = regexp_match('^([_a-zA-Z0-9\-]+)\.php$', $entry)) {
+					$_GET['target'] = $regexp[1];
+				} else {
+					continue;
+				}
+
+				if ($index == $i++) {
+					$index = $i;
+					$flag  = true;
+
+					break;
+				}
+			}
+			closedir($dh);
+		} else {
+			error('opendir error.' . (DEBUG_LEVEL ? ' [' . MAIN_PATH . TEST_PATH . ']' : ''));
+		}
+
+		if ($flag == false) {
+			redirect('/?mode=test_index&test=' . $_GET['test']);
+		}
+	}
+
+	if (!regexp_match('^[_a-zA-Z0-9\-]+$', $_GET['target'])) {
+		error($_GET['target'] . ' is not found.');
+	}
+
+	$view['ok'] = 0;
+	$view['ng'] = 0;
+
+	echo "<!DOCTYPE html>\n";
+	echo "<html>\n";
+	echo "<head>\n";
+	echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+	echo "<title>Test</title>\n";
+
+	style();
+
+	echo "</head>\n";
+	echo "<body>\n";
+	echo "<h1>Test</h1>\n";
+	echo "<pre>";
+
+	list($micro, $second) = explode(' ', microtime());
+	$time_start = $micro + $second;
+
+	import(TEST_PATH . $_GET['target'] . '.php');
+
+	list($micro, $second) = explode(' ', microtime());
+	$time_end = $micro + $second;
+
+	$view['time'] = ceil(($time_end - $time_start) * 10000) / 10000;
+
+	echo "\n";
+	echo "OK: " . $view['ok'] . "\n";
+	echo "NG: " . $view['ng'] . "\n";
+	echo "Time: " . $view['time'] . " sec.\n";
+
+	echo "</pre>\n";
+	echo "<p><a href=\"" . t(MAIN_FILE, true) . "/?mode=test_index\">Back to Index</a></p>\n";
+
+	if (isset($_GET['test'])) {
+		$view['url'] = MAIN_FILE . "/?mode=test_exec&test=" . $_GET['test'] . ';' . $index . ":" . ($view['ng'] ? 0 : 1);
+
+		echo "<script>\n";
+		echo "setTimeout('window.location.href = \'" . $view['url'] . "\'', 1000);\n";
+		echo "</script>\n";
+		echo "<noscript>\n";
+		echo "<p><a href=\"" . t($url, true) . "\">next</a></p>\n";
+		echo "</noscript>\n";
+	}
+
+	echo "</body>\n";
+	echo "</html>\n";
+
+	exit;
+}
+
+function test_result($title, $result)
+{
+	global $view;
+
+	if ($result == true) {
+		$view['ok']++;
+	} else {
+		$view['ng']++;
+
+		echo 'NG: ' . $title . "\n";
+	}
+
+	return;
+}
+
+function test_equals($title, $actual, $expected)
+{
+	$result = false;
+
+	if ($actual == $expected) {
+		$result = true;
+	}
+
+	return test_result($title, $result);
+}
+
+function test_not_equals($title, $actual, $expected)
+{
+	$result = false;
+
+	if ($actual != $expected) {
+		$result = true;
+	}
+
+	return test_result($title, $result);
+}
+
+function test_greaterthan($title, $actual, $expected)
+{
+	$result = false;
+
+	if ($actual > $expected) {
+		$result = true;
+	}
+
+	return test_result($title, $result);
+}
+
+function test_greaterthanorequal($title, $actual, $expected)
+{
+	$result = false;
+
+	if ($actual >= $expected) {
+		$result = true;
+	}
+
+	return test_result($title, $result);
+}
+
+function test_lessthan($title, $actual, $expected)
+{
+	$result = false;
+
+	if ($actual < $expected) {
+		$result = true;
+	}
+
+	return test_result($title, $result);
+}
+
+function test_lessthanorequal($title, $actual, $expected)
+{
+	$result = false;
+
+	if ($actual <= $expected) {
+		$result = true;
+	}
+
+	return test_result($title, $result);
+}
+
+function test_contains($title, $actual, $expected)
+{
+	$result = false;
+
+	if (regexp_match($expected, $actual)) {
+		$result = true;
+	}
+
+	return test_result($title, $result);
+}
+
+function test_not_contains($title, $actual, $expected)
+{
+	$result = false;
+
+	if (!regexp_match($expected, $actual)) {
+		$result = true;
+	}
+
+	return test_result($title, $result);
+}
+
+function test_regexp($title, $actual, $expected)
+{
+	$result = false;
+
+	if (regexp_match($expected, $actual)) {
+		$result = true;
+	}
+
+	return test_result($title, $result);
+}
+
+function test_not_regexp($title, $actual, $expected)
+{
+	$result = false;
+
+	if (!regexp_match($expected, $actual)) {
+		$result = true;
+	}
+
+	return test_result($title, $result);
+}
