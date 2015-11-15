@@ -344,3 +344,47 @@ function test_not_regexp($title, $actual, $expected)
 
 	return test_result($title, $result);
 }
+
+function test_array_haskey($title, $actual, $expected)
+{
+	$result = false;
+
+	if (array_key_exists($expected, $actual)) {
+		$result = true;
+	}
+
+	return test_result($title, $result);
+}
+
+function test_array_not_haskey($title, $actual, $expected)
+{
+	$result = false;
+
+	if (!array_key_exists($expected, $actual)) {
+		$result = true;
+	}
+
+	return test_result($title, $result);
+}
+
+function test_array_subset($title, $actual, $expected, $strict = false)
+{
+	$result = false;
+
+	if (in_array($expected, $actual, $strict)) {
+		$result = true;
+	}
+
+	return test_result($title, $result);
+}
+
+function test_array_not_subset($title, $actual, $expected, $strict = false)
+{
+	$result = false;
+
+	if (!in_array($expected, $actual, $strict)) {
+		$result = true;
+	}
+
+	return test_result($title, $result);
+}
