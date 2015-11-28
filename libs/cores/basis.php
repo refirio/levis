@@ -741,6 +741,8 @@ function about()
 		echo "<dd><code>" . alt(DATABASE_CHARSET_OUTPUT_FROM, '-') . "</code></dd>\n";
 		echo "<dt>charset output to</dt>\n";
 		echo "<dd><code>" . alt(DATABASE_CHARSET_OUTPUT_TO, '-') . "</code></dd>\n";
+		echo "<dt>migrate path</dt>\n";
+		echo "<dd><code>" . alt(DATABASE_MIGRATE_PATH, '-') . "</code></dd>\n";
 		echo "<dt>scaffold path</dt>\n";
 		echo "<dd><code>" . alt(DATABASE_SCAFFOLD_PATH, '-') . "</code></dd>\n";
 		echo "</dl>\n";
