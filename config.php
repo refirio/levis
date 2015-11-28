@@ -31,6 +31,7 @@ define('DATABASE_CHARSET_INPUT_FROM', 'UTF-8');	//for php function.
 define('DATABASE_CHARSET_INPUT_TO', 'UTF-8');	//for php function.
 define('DATABASE_CHARSET_OUTPUT_FROM', 'UTF-8');	//for php function.
 define('DATABASE_CHARSET_OUTPUT_TO', 'UTF-8');	//for php function.
+define('DATABASE_MIGRATE_PATH', 'migrate/');
 define('DATABASE_SCAFFOLD_PATH', 'scaffold/');
 
 /********* Session **************************************************/

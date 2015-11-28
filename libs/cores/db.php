@@ -1017,6 +1017,176 @@ function db_admin_sql()
 	return;
 }
 
+function db_migrate()
+{
+	global $db;
+
+	if (!file_exists(DATABASE_MIGRATE_PATH)) {
+		error(DATABASE_MIGRATE_PATH . ' is not found.');
+	}
+
+	if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+		db_query('
+			CREATE TABLE IF NOT EXISTS ' . DATABASE_PREFIX . 'levis_migrations(
+				id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+				version     VARCHAR(14)  NOT NULL UNIQUE,
+				description VARCHAR(255) NOT NULL,
+				status      VARCHAR(80)  NOT NULL,
+				installed   DATETIME,
+				PRIMARY KEY(id)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		');
+	} elseif (DATABASE_TYPE == 'pdo_pgsql' || DATABASE_TYPE == 'pgsql') {
+		db_query('
+			CREATE TABLE IF NOT EXISTS ' . DATABASE_PREFIX . 'levis_migrations(
+				id          SERIAL       NOT NULL,
+				version     VARCHAR(14)  NOT NULL UNIQUE,
+				description VARCHAR(255) NOT NULL,
+				status      VARCHAR(80)  NOT NULL,
+				installed   TIMESTAMP,
+				PRIMARY KEY(id)
+			);
+		');
+	} else {
+		db_query('
+			CREATE TABLE IF NOT EXISTS ' . DATABASE_PREFIX . 'levis_migrations(
+				id          INTEGER,
+				version     VARCHAR  NOT NULL UNIQUE,
+				description VARCHAR  NOT NULL,
+				status      VARCHAR  NOT NULL,
+				installed   DATETIME,
+				PRIMARY KEY(id)
+			);
+		');
+	}
+
+	$resource = db_query('SELECT * FROM ' . DATABASE_PREFIX . 'levis_migrations WHERE status = \'success\'');
+	$results  = db_result($resource);
+
+	$succeeded = array();
+	foreach ($results as $result) {
+		$succeeded[$result['version']] = true;
+	}
+
+	$targets = array();
+	if ($dh = opendir(DATABASE_MIGRATE_PATH)) {
+		while (($entry = readdir($dh)) !== false) {
+			if (!is_file(DATABASE_MIGRATE_PATH  . $entry)) {
+				continue;
+			}
+
+			if ($regexp = regexp_match('^([0-9\-]{14})-[_a-zA-Z0-9\-]+\.sql$', $entry)) {
+				$version = $regexp[1];
+			} else {
+				continue;
+			}
+
+			if (isset($succeeded[$version])) {
+				continue;
+			}
+
+			$targets[] = $entry;
+		}
+		closedir($dh);
+	} else {
+		error('opendir error.' . (DEBUG_LEVEL ? ' [' . $dir . ']' : ''));
+	}
+
+	sort($targets, SORT_STRING);
+
+	$resource = db_query('DELETE FROM ' . DATABASE_PREFIX . 'levis_migrations WHERE status = ' . db_escape('pending') . ';');
+	if (!$resource) {
+		error('database query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
+	}
+
+	$migrate  = '';
+	foreach ($targets as $target) {
+		if ($regexp = regexp_match('^([0-9\-]{14})-([_a-zA-Z0-9\-]+)\.sql$', $target)) {
+			$version     = $regexp[1];
+			$description = $regexp[2];
+		} else {
+			continue;
+		}
+
+		$resource = db_query('INSERT INTO ' . DATABASE_PREFIX . 'levis_migrations(version, description, status) VALUES(' . db_escape($version) . ', ' . db_escape($description) . ', ' . db_escape('pending') . ');');
+		if (!$resource) {
+			error('database query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
+		}
+
+		$error = false;
+		if ($fp = fopen(DATABASE_MIGRATE_PATH  . $target, 'r')) {
+			$sql  = '';
+			$flag = true;
+
+			db_transaction();
+
+			while ($line = fgets($fp)) {
+				$line = str_replace("\r\n", "\n", $line);
+				$line = str_replace("\r", "\n", $line);
+
+				if ((substr_count($line, '\'') - substr_count($line, '\\\'')) % 2 != 0) {
+					$flag = !$flag;
+				}
+
+				$sql .= $line;
+
+				if (preg_match('/;$/', trim($line)) && $flag) {
+					$resource = db_query($sql, false, false);
+					if (!$resource) {
+						db_rollback();
+
+						$error = true;
+
+						$migrate .= $target . " ... NG\n";
+
+						break;
+					}
+
+					$sql = '';
+				}
+			}
+			fclose($fp);
+
+			if ($error == true) {
+				break;
+			}
+
+			db_commit();
+		} else {
+			error('file can\'t read.');
+		}
+
+		if ($error == false) {
+			$resource = db_query('UPDATE ' . DATABASE_PREFIX . 'levis_migrations SET status = ' . db_escape('success') . ', installed = ' . db_escape(localdate('Y-m-d H:i:s')) . ' WHERE version = ' . db_escape($version) . ';');
+			if (!$resource) {
+				error('database query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
+			}
+
+			$migrate .= $target . " ... OK\n";
+		}
+	}
+
+	$migrate .= "\n";
+	$migrate .= "Complete\n";
+
+	echo "<!DOCTYPE html>\n";
+	echo "<html>\n";
+	echo "<head>\n";
+	echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+	echo "<title>DB Migrate</title>\n";
+
+	style();
+
+	echo "</head>\n";
+	echo "<body>\n";
+	echo "<h1>DB Migrate</h1>\n";
+	echo "<pre><code>" . t($migrate, true) . "</code></pre>\n";
+	echo "</body>\n";
+	echo "</html>\n";
+
+	exit;
+}
+
 function db_scaffold()
 {
 	global $db;
