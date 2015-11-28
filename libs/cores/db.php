@@ -1099,7 +1099,7 @@ function db_migrate()
 		error('database query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
 	}
 
-	$migrate  = '';
+	$migrate = '';
 	foreach ($targets as $target) {
 		if ($regexp = regexp_match('^([0-9\-]{14})-([_a-zA-Z0-9\-]+)\.sql$', $target)) {
 			$version     = $regexp[1];
@@ -1166,8 +1166,19 @@ function db_migrate()
 		}
 	}
 
-	$migrate .= "\n";
-	$migrate .= "Complete\n";
+	$resource = db_query('SELECT version FROM ' . DATABASE_PREFIX . 'levis_migrations WHERE status = \'success\' ORDER BY version DESC LIMIT 1');
+	$results  = db_result($resource);
+
+	$version = $results[0]['version'];
+
+	if ($migrate) {
+		$migrate .= "\n";
+	}
+	$migrate .= "Database: " . DATABASE_NAME . "\n";
+	$migrate .= "Version: " . $version . "\n";
+
+	$resource   = db_query('SELECT * FROM ' . DATABASE_PREFIX . 'levis_migrations ORDER BY version');
+	$migrations = db_result($resource);
 
 	echo "<!DOCTYPE html>\n";
 	echo "<html>\n";
@@ -1179,8 +1190,27 @@ function db_migrate()
 
 	echo "</head>\n";
 	echo "<body>\n";
+
 	echo "<h1>DB Migrate</h1>\n";
 	echo "<pre><code>" . t($migrate, true) . "</code></pre>\n";
+	echo "<table summary=\"migrations\">\n";
+	echo "<tr>\n";
+	echo "<th>version</th>\n";
+	echo "<th>description</th>\n";
+	echo "<th>status</th>\n";
+	echo "<th>installed</th>\n";
+	echo "</tr>\n";
+
+	foreach ($migrations as $migration) {
+		echo "<tr>\n";
+		echo "<td><span style=\"font-family:monospace;\">" . h($migration['version'], true) . "</span></td>\n";
+		echo "<td><span style=\"font-family:monospace;\">" . h($migration['description'], true) . "</span></td>\n";
+		echo "<td><span style=\"font-family:monospace;\">" . h($migration['status'], true) . "</span></td>\n";
+		echo "<td><span style=\"font-family:monospace;\">" . h($migration['installed'], true) . "</span></td>\n";
+		echo "</tr>\n";
+	}
+
+	echo "</table>\n";
 	echo "</body>\n";
 	echo "</html>\n";
 

@@ -676,6 +676,9 @@ function about()
 	if (DATABASE_TYPE) {
 		echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin\">database</a></li>\n";
 	}
+	if (file_exists(DATABASE_MIGRATE_PATH)) {
+		echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_migrate\">migrate</a></li>\n";
+	}
 	if (file_exists(DATABASE_SCAFFOLD_PATH)) {
 		echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_scaffold\">scaffold</a></li>\n";
 	}
