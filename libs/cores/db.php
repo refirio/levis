@@ -559,8 +559,7 @@ function db_admin_import()
 				$sql .= $line;
 
 				if (preg_match('/;$/', trim($line)) && $flag) {
-					$resource = db_query($sql, false);
-
+					$resource = db_query($sql);
 					if (!$resource) {
 						db_rollback();
 
@@ -638,8 +637,7 @@ function db_admin_export()
 	global $db;
 
 	$resource = db_query(db_sql('table_list'));
-
-	$results = db_result($resource);
+	$results  = db_result($resource);
 
 	$view['tables'] = array();
 	foreach ($results as $result) {
@@ -655,8 +653,7 @@ function db_admin_export()
 		foreach ($view['tables'] as $table) {
 			if (empty($_POST['table']) || $_POST['table'] == $table) {
 				$resource = db_query(db_sql('table_create', $table));
-
-				$results = db_result($resource);
+				$results  = db_result($resource);
 
 				if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
 					$text .= "DROP TABLE IF EXISTS " . $table . ";\n";
@@ -673,8 +670,7 @@ function db_admin_export()
 				}
 
 				$resource = db_query('SELECT * FROM ' . $table . ';');
-
-				$results = db_result($resource);
+				$results  = db_result($resource);
 
 				foreach ($results as $result) {
 					$inserts = array();
@@ -799,8 +795,21 @@ function db_admin_sql()
 
 		$head .= '<tr>';
 		$head .= '<th>name</th>';
+
+		if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+			$head .= '<th>engine</th>';
+			$head .= '<th>rows</th>';
+			$head .= '<th>collation</th>';
+			$head .= '<th>comment</th>';
+		}
+
 		$head .= '<th>create</th>';
 		$head .= '<th>columns</th>';
+
+		if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+			$head .= '<th>alter</th>';
+		}
+
 		$head .= '<th>drop</th>';
 		$head .= '<th>insert</th>';
 		$head .= '<th>delete</th>';
@@ -847,8 +856,21 @@ function db_admin_sql()
 
 			$body .= '<tr>';
 			$body .= '<td><span style="font-family:monospace;">' . $table . '</span></td>';
+
+			if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+				$body .= '<td><span style="font-family:monospace;">' . $result['Engine'] . '</span></td>';
+				$body .= '<td><span style="font-family:monospace;">' . $result['Rows'] . '</span></td>';
+				$body .= '<td><span style="font-family:monospace;">' . $result['Collation'] . '</span></td>';
+				$body .= '<td><span style="font-family:monospace;">' . $result['Comment'] . '</span></td>';
+			}
+
 			$body .= '<td><a href="javascript:insertSQL(\'' . str_replace('\'', '\\\'', $create_sql) . '\');">' . $create . '</a></td>';
 			$body .= '<td><a href="javascript:insertSQL(\'' . str_replace('\'', '\\\'', $define_sql) . '\');">' . $define . '</a></td>';
+
+			if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+				$body .= '<td><a href="javascript:insertSQL(\'ALTER TABLE ' . $table . ' COMMENT \\\'\\\';\');">ALTER TABLE</a></td>';
+			}
+
 			$body .= '<td><a href="javascript:insertSQL(\'DROP TABLE ' . $table . ';\');">DROP TABLE</a></td>';
 			$body .= '<td><a href="javascript:insertSQL(\'INSERT INTO ' . $table . '(' . implode(',', $insert_keys) . ') VALUES(' . implode(',', $insert_values) . ');\');">INSERT</a></td>';
 			$body .= '<td><a href="javascript:insertSQL(\'DELETE FROM ' . $table . ';\');">DELETE</a></td>';
@@ -864,6 +886,8 @@ function db_admin_sql()
 		$flag = false;
 
 		if ($regexp = regexp_match('^SELECT \* FROM ([_a-zA-Z0-9\-]+)', $sql)) {
+			$table = $regexp[1];
+		} elseif ($regexp = regexp_match('^' . db_sql('table_define', '([_a-zA-Z0-9\-]+)'), $sql)) {
 			$table = $regexp[1];
 		} else {
 			$table = null;
@@ -912,6 +936,20 @@ function db_admin_sql()
 
 					if ($flag == false) {
 						$head .= '<th>' . h($key, true) . '</th>';
+					}
+				}
+			}
+
+			if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+				if (regexp_match('^' . db_sql('table_define', '([_a-zA-Z0-9\-]+)'), $sql)) {
+					$add_value    = '<a href="javascript:insertSQL(\'ALTER TABLE ' . $table . ' ADD field INT(1) NOT NULL COMMENT \\\'\\\' AFTER ' . $result['Field'] . ';\');">ADD</a>';
+					$change_value = '<a href="javascript:insertSQL(\'ALTER TABLE ' . $table . ' CHANGE ' . $result['Field'] . ' ' . $result['Field'] . ' INT(1) NOT NULL COMMENT \\\'\\\';\');">CHANGE</a>';
+					$drop_value   = '<a href="javascript:insertSQL(\'ALTER TABLE ' . $table . ' DROP ' . $result['Field'] . ';\');">DROP</a>';
+
+					$body .= '<td><span style="font-family:monospace;">' . $add_value . ' ' . $change_value . ' ' . $drop_value . '</span></td>';
+
+					if ($flag == false) {
+						$head .= '<th>alter</th>';
 					}
 				}
 			}
@@ -1440,7 +1478,7 @@ function db_sql($type, $table = null)
 	if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
 		if ($type == 'table_list') {
 			$sql = '
-				SHOW TABLES;
+				SHOW TABLE STATUS;
 			';
 		} elseif ($type == 'table_create') {
 			$sql = '
@@ -1448,7 +1486,7 @@ function db_sql($type, $table = null)
 			';
 		} elseif ($type == 'table_define') {
 			$sql = '
-				SHOW COLUMNS FROM ' . $table . ';
+				SHOW FULL COLUMNS FROM ' . $table . ';
 			';
 		}
 	} elseif (DATABASE_TYPE == 'pdo_pgsql' || DATABASE_TYPE == 'pgsql') {
