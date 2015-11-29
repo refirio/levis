@@ -1225,6 +1225,7 @@ function db_scaffold()
 		error(DATABASE_SCAFFOLD_PATH . ' is not found.');
 	}
 
+	//initialize
 	$app = 'app/';
 
 	$models      = $app . 'models/';
@@ -1236,6 +1237,9 @@ function db_scaffold()
 
 	$primary_key = 'id';
 
+	$test = 'test/';
+
+	//table
 	$resource = db_query(db_sql('table_list'));
 	$results  = db_result($resource);
 
@@ -1246,16 +1250,30 @@ function db_scaffold()
 	$scaffold = '';
 
 	foreach ($results as $result) {
+		if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+			$table_comment = $result['Comment'];
+		} else {
+			$table_comment = null;
+		}
+
 		$table = array_shift($result);
 
+		if ($table == DATABASE_PREFIX . 'levis_migrations') {
+			continue;
+		}
+
+		//initialize
 		$primary_flag = false;
 
-		$model_file              = $models . $table . '.php';
-		$view_default_file       = $views . $table . '/' . MAIN_DEFAULT_WORK . '.php';
-		$view_post_file          = $views . $table . '/post.php';
-		$controller_default_file = $controllers . $table . '/' . MAIN_DEFAULT_WORK . '.php';
-		$controller_post_file    = $controllers . $table . '/post.php';
-		$controller_delete_file  = $controllers . $table . '/delete.php';
+		$model_file             = $models . $table . '.php';
+		$view_index_file        = $views . $table . '/' . MAIN_DEFAULT_WORK . '.php';
+		$view_post_file         = $views . $table . '/post.php';
+		$controller_index_file  = $controllers . $table . '/' . MAIN_DEFAULT_WORK . '.php';
+		$controller_post_file   = $controllers . $table . '/post.php';
+		$controller_delete_file = $controllers . $table . '/delete.php';
+		$test_model_file        = $test . 'model_' . $table . '.php';
+		$test_view_file         = $test . 'view_' . $table . '.php';
+		$test_controller_file   = $test . 'controller_' . $table . '.php';
 
 		$define_sql = db_sql('table_define', $table);
 
@@ -1269,10 +1287,10 @@ function db_scaffold()
 		$view_header .= '<html>' . "\n";
 		$view_header .= '  <head>' . "\n";
 		$view_header .= '    <meta charset="<?php t(MAIN_CHARSET) ?>" />' . "\n";
-		$view_header .= '    <title>' . $table. '</title>' . "\n";
+		$view_header .= '    <title>' . ($table_comment ? $table_comment : $table) . '</title>' . "\n";
 		$view_header .= '  </head>' . "\n";
 		$view_header .= '  <body>' . "\n";
-		$view_header .= '    <h1>' . $table . '</h1>' . "\n";
+		$view_header .= '    <h1>' . ($table_comment ? $table_comment : $table) . '</h1>' . "\n";
 
 		$view_footer  = '  </body>' . "\n";
 		$view_footer .= '</html>' . "\n";
@@ -1286,6 +1304,9 @@ function db_scaffold()
 		$controller_insert   = '';
 		$controller_update   = '';
 
+		$test_data = '';
+
+		//indent
 		$max_length = 0;
 		foreach ($define_results as $define_result) {
 			$field = '';
@@ -1301,34 +1322,41 @@ function db_scaffold()
 		}
 
 		foreach ($define_results as $define_result) {
+			//define
 			$field = '';
 			$null  = false;
 			if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
-				$field = $define_result['Field'];
-				$type  = $define_result['Type'];
-				$null  = $define_result['Null'] == 'YES' ? true : false;
+				$field   = $define_result['Field'];
+				$type    = $define_result['Type'];
+				$null    = $define_result['Null'] == 'YES' ? true : false;
+				$comment = $define_result['Comment'];
 			} elseif (DATABASE_TYPE == 'pdo_pgsql' || DATABASE_TYPE == 'pgsql') {
-				$field = $define_result['column_name'];
-				$type  = $define_result['data_type'];
-				$null  = $define_result['is_nullable'] == 'YES' ? true : false;
+				$field   = $define_result['column_name'];
+				$type    = $define_result['data_type'];
+				$null    = $define_result['is_nullable'] == 'YES' ? true : false;
+				$comment = null;
 			} elseif (DATABASE_TYPE == 'pdo_sqlite' || DATABASE_TYPE == 'pdo_sqlite2' || DATABASE_TYPE == 'sqlite') {
-				$field = $define_result['name'];
-				$type  = $define_result['type'];
-				$null  = $define_result['notnull'] == 0 ? true : false;
+				$field   = $define_result['name'];
+				$type    = $define_result['type'];
+				$null    = $define_result['notnull'] == 0 ? true : false;
+				$comment = null;
 			}
 
 			if ($field == $primary_key) {
 				$primary_flag = true;
 			}
 
+			//model
 			if ($field == $primary_key || !$null) {
+				$model_validate .= '  //' . ($comment ? $comment : $field) . "\n";
 				$model_validate .= '  if (isset($queries[\'' . $field . '\'])) {' . "\n";
 				$model_validate .= '    if ($queries[\'' . $field . '\'] == \'\') {' . "\n";
-				$model_validate .= '      $messages[] = \'The ' . $field . ' is required.\';' . "\n";
+				$model_validate .= '      $messages[] = \'The ' . ($comment ? $comment : $field) . ' is required.\';' . "\n";
 				$model_validate .= '    }' . "\n";
 				$model_validate .= '  }' . "\n";
 				$model_validate .= "\n";
 			} else {
+				$model_validate .= '  //' . ($comment ? $comment : $field) . "\n";
 				$model_validate .= '  if (isset($queries[\'' . $field . '\'])) {' . "\n";
 				$model_validate .= '  }' . "\n";
 				$model_validate .= "\n";
@@ -1346,7 +1374,8 @@ function db_scaffold()
 				$model_default .= '    \'' . $field . '\' ' . $space . '=> 0,' . "\n";
 			}
 
-			$view_head .= '        <th>' . $field . '</th>' . "\n";
+			//view
+			$view_head .= '        <th>' . ($comment ? $comment : $field) . '</th>' . "\n";
 
 			if ($field == $primary_key) {
 				$view_data .= '        <td><a href="<?php t(MAIN_FILE) ?>/' . $table . '/post?' . $primary_key . '=<?php t($data[\'' . $primary_key . '\']) ?>"><?php h($data[\'' . $field . '\']) ?></a></td>' . "\n";
@@ -1363,7 +1392,7 @@ function db_scaffold()
 			}
 
 			if ($field == $primary_key) {
-				$view_form .= '          <dt>' . $field . ($null ? '' : '(required)') . '</dt>' . "\n";
+				$view_form .= '          <dt>' . ($comment ? $comment : $field) . ($null ? '' : '(required)') . '</dt>' . "\n";
 				$view_form .= '            <dd>' . "\n";
 				$view_form .= '              <?php if (empty($_GET[\'' . $primary_key . '\'])) : ?>' . "\n";
 				$view_form .= '              ' . $input . "\n";
@@ -1372,20 +1401,34 @@ function db_scaffold()
 				$view_form .= '              <?php endif ?>' . "\n";
 				$view_form .= '            </dd>' . "\n";
 			} else {
-				$view_form .= '          <dt>' . $field . ($null ? '' : '(required)') . '</dt>' . "\n";
+				$view_form .= '          <dt>' . ($comment ? $comment : $field) . ($null ? '' : '(required)') . '</dt>' . "\n";
 				$view_form .= '            <dd>' . $input . '</dd>' . "\n";
 			}
 
+			//controller
 			$controller_validate .= '    \'' . $field . '\' ' . $space . '=> $_POST[\'' . $field . '\'],' . "\n";
 			$controller_insert   .= '        \'' . $field . '\' ' . $space . '=> $_POST[\'' . $field . '\'],' . "\n";
 
 			if ($field != $primary_key) {
 				$controller_update .= '        \'' . $field . '\' ' . $space . '=> $_POST[\'' . $field . '\'],' . "\n";
 			}
+
+			//test
+			if ($field == $primary_key) {
+				$test_data .= '    \'' . $field . '\' ' . $space . '=> [N],' . "\n";
+			} elseif ($null) {
+				$test_data .= '    \'' . $field . '\' ' . $space . '=> null,' . "\n";
+			} elseif (regexp_match('(BLOB|TEXT|CHAR)', $type)) {
+				$test_data .= '    \'' . $field . '\' ' . $space . '=> \'TEST[N]\',' . "\n";
+			} else {
+				$test_data .= '    \'' . $field . '\' ' . $space . '=> [N],' . "\n";
+			}
 		}
 
+		//heading
 		$scaffold .= '[' . $table . ']' . "\n";
 
+		//model
 		$buffer  = '<?php' . "\n";
 		$buffer .= "\n";
 		$buffer .= 'function validate_' . $table . '($queries)' . "\n";
@@ -1405,11 +1448,12 @@ function db_scaffold()
 
 		$scaffold .= db_scaffold_output($model_file, $buffer);
 
+		//view
 		$buffer  = $view_header;
 		$buffer .= '    <ul>' . "\n";
 		$buffer .= '      <li><a href="<?php t(MAIN_FILE) ?>/' . $table . '/post">post</a></li>' . "\n";
 		$buffer .= '    </ul>' . "\n";
-		$buffer .= '    <table summary="' . $table . '">' . "\n";
+		$buffer .= '    <table summary="' . ($table_comment ? $table_comment : $table) . '">' . "\n";
 		$buffer .= '      <tr>' . "\n";
 		$buffer .= $view_head;
 		$buffer .= '      </tr>' . "\n";
@@ -1421,13 +1465,13 @@ function db_scaffold()
 		$buffer .= '    </table>' . "\n";
 		$buffer .= $view_footer;
 
-		$scaffold .= db_scaffold_output($view_default_file, $buffer);
+		$scaffold .= db_scaffold_output($view_index_file, $buffer);
 
 		$buffer  = $view_header;
 		$buffer .= '    <h2>post</h2>' . "\n";
 		$buffer .= '    <form action="<?php t(MAIN_FILE) ?>/' . $table . '/post' . ($primary_flag ? '<?php $view[\'data\'][\'' . $primary_key . '\'] ? t(\'?' . $primary_key . '=\' . $view[\'data\'][\'' . $primary_key . '\']) : \'\' ?>' : '') . '" method="post">' . "\n";
 		$buffer .= '      <fieldset>' . "\n";
-		$buffer .= '        <legend>' . $table . '</legend>' . "\n";
+		$buffer .= '        <legend>' . ($table_comment ? $table_comment : $table) . '</legend>' . "\n";
 		$buffer .= '        <dl>' . "\n";
 		$buffer .= $view_form;
 		$buffer .= '        </dl>' . "\n";
@@ -1440,7 +1484,7 @@ function db_scaffold()
 			$buffer .= '    <h2>delete</h2>' . "\n";
 			$buffer .= '    <form action="<?php t(MAIN_FILE) ?>/' . $table . '/delete?' . $primary_key . '=\' . t($view[\'data\'][\'' . $primary_key . '\']) ?>" method="post">' . "\n";
 			$buffer .= '      <fieldset>' . "\n";
-			$buffer .= '        <legend>' . $table . '</legend>' . "\n";
+			$buffer .= '        <legend>' . ($table_comment ? $table_comment : $table) . '</legend>' . "\n";
 			$buffer .= '        <input type="hidden" name="' . $primary_key . '" value="<?php t($view[\'data\'][\'' . $primary_key . '\']) ?>" /></dd>' . "\n";
 			$buffer .= '        <p><input type="submit" value="delete" /></p>' . "\n";
 			$buffer .= '      </fieldset>' . "\n";
@@ -1452,6 +1496,7 @@ function db_scaffold()
 
 		$scaffold .= db_scaffold_output($view_post_file, $buffer);
 
+		//controller
 		$buffer  = '<?php' . "\n";
 		$buffer .= "\n";
 		$buffer .= '$view[\'' . $table . '\'] = select_' . $table . '(array(' . "\n";
@@ -1463,7 +1508,7 @@ function db_scaffold()
 		$buffer .= '  )' . "\n";
 		$buffer .= '));' . "\n";
 
-		$scaffold .= db_scaffold_output($controller_default_file, $buffer);
+		$scaffold .= db_scaffold_output($controller_index_file, $buffer);
 
 		$buffer  = '<?php' . "\n";
 		$buffer .= "\n";
@@ -1555,11 +1600,178 @@ function db_scaffold()
 			$scaffold .= db_scaffold_output($controller_delete_file, $buffer);
 		}
 
+		//test data
+		$test_insert  = '';
+		$test_insert .= '$insert_' . $table . ' = array(' . "\n";
+		$test_insert .= '  1 => array(' . "\n";
+		$test_insert .= str_replace('[N]', 1, $test_data);
+		$test_insert .= '  ),' . "\n";
+		$test_insert .= '  2 => array(' . "\n";
+		$test_insert .= str_replace('[N]', 2, $test_data);
+		$test_insert .= '  ),' . "\n";
+		$test_insert .= '  3 => array(' . "\n";
+		$test_insert .= str_replace('[N]', 3, $test_data);
+		$test_insert .= '  )' . "\n";
+		$test_insert .= ');' . "\n";
+
+		$test_update = '';
+		$test_update .= '$update_' . $table . ' = array(' . "\n";
+		$test_update .= '  3 => array(' . "\n";
+		$test_update .= str_replace('[N]', 3, $test_data);
+		$test_update .= '  )' . "\n";
+		$test_update .= ');' . "\n";
+
+		//test model
+		$buffer  = '<?php' . "\n";
+		$buffer .= "\n";
+		$buffer .= $test_insert;
+		$buffer .= $test_update;
+		$buffer .= "\n";
+		$buffer .= 'model(\'' . $table . '.php\');' . "\n";
+		$buffer .= "\n";
+		$buffer .= 'db_transaction();' . "\n";
+		$buffer .= "\n";
+		$buffer .= '//insert' . "\n";
+		$buffer .= '{' . "\n";
+		$buffer .= '  foreach ($insert_' . $table . ' as $insert_data) {' . "\n";
+		$buffer .= '    $warnings = validate_' . $table . '($insert_data);' . "\n";
+		$buffer .= '    if (empty($warnings)) {' . "\n";
+		$buffer .= '      insert_' . $table . '(array(' . "\n";
+		$buffer .= '        \'values\' => $insert_data' . "\n";
+		$buffer .= '      ));' . "\n";
+		$buffer .= '    }' . "\n";
+		$buffer .= '  }' . "\n";
+		$buffer .= "\n";
+		$buffer .= '  $' . $table . ' = select_' . $table . '(array(' . "\n";
+		$buffer .= '    \'limit\' => 10' . "\n";
+		$buffer .= '  ));' . "\n";
+		$buffer .= "\n";
+		$buffer .= '  test_equals(\'count_' . $table . '\', count($' . $table . '), 3);' . "\n";
+		$buffer .= "\n";
+		$buffer .= '  for ($i = 1; $i <= 3; $i++) {' . "\n";
+		$buffer .= '    $inserted_data = array_shift($' . $table . ');' . "\n";
+		$buffer .= '    $test_data     = array(' . "\n";
+		$buffer .= '      $i => $inserted_data' . "\n";
+		$buffer .= '    );' . "\n";
+		$buffer .= '    test_array_subset(\'insert_' . $table . ' \' . $i, $test_data, $insert_' . $table . '[$i]);' . "\n";
+		$buffer .= '  }' . "\n";
+		$buffer .= '}' . "\n";
+		$buffer .= "\n";
+		$buffer .= '//update' . "\n";
+		$buffer .= '{' . "\n";
+		$buffer .= '  $warnings = validate_' . $table . '($update_' . $table . '[3]);' . "\n";
+		$buffer .= '  if (empty($warnings)) {' . "\n";
+		$buffer .= '    update_' . $table . '(array(' . "\n";
+		$buffer .= '      \'set\'   => $update_' . $table . '[3],' . "\n";
+		$buffer .= '      \'where\' => \'id = 3\'' . "\n";
+		$buffer .= '    ));' . "\n";
+		$buffer .= '  }' . "\n";
+		$buffer .= "\n";
+		$buffer .= '  $' . $table . ' = select_' . $table . '(array(' . "\n";
+		$buffer .= '    \'limit\' => 10' . "\n";
+		$buffer .= '  ));' . "\n";
+		$buffer .= "\n";
+		$buffer .= '  $updated_data = array_pop($' . $table . ');' . "\n";
+		$buffer .= '  $test_data    = array(' . "\n";
+		$buffer .= '    3 => $updated_data' . "\n";
+		$buffer .= '  );' . "\n";
+		$buffer .= '  test_array_subset(\'update_' . $table . '\', $test_data, $update_' . $table . '[3]);' . "\n";
+		$buffer .= '}' . "\n";
+		$buffer .= "\n";
+		$buffer .= '//delete' . "\n";
+		$buffer .= '{' . "\n";
+		$buffer .= '  delete_' . $table . '(array(' . "\n";
+		$buffer .= '    \'where\' => \'id = 3\'' . "\n";
+		$buffer .= '  ));' . "\n";
+		$buffer .= "\n";
+		$buffer .= '  $' . $table . ' = select_' . $table . '(array(' . "\n";
+		$buffer .= '    \'limit\' => 10' . "\n";
+		$buffer .= '  ));' . "\n";
+		$buffer .= "\n";
+		$buffer .= '  test_equals(\'delete_' . $table . '\', count($' . $table . '), 2);' . "\n";
+		$buffer .= '}' . "\n";
+		$buffer .= "\n";
+		$buffer .= 'db_rollback();' . "\n";
+
+		$scaffold .= db_scaffold_output($test_model_file, $buffer);
+
+		//test view
+		$buffer  = '<?php' . "\n";
+		$buffer .= "\n";
+		$buffer .= $test_insert;
+		$buffer .= "\n";
+		$buffer .= '//index' . "\n";
+		$buffer .= '{' . "\n";
+		$buffer .= '  $view[\'' . $table . '\'] = $insert_' . $table . ';' . "\n";
+		$buffer .= "\n";
+		$buffer .= '  $html = view(\'' . $table . '/index.php\', true);' . "\n";
+		$buffer .= "\n";
+		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[1][\'' . $primary_key . '\'] . \'<\/td>\');' . "\n";
+		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[2][\'' . $primary_key . '\'] . \'<\/td>\');' . "\n";
+		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[3][\'' . $primary_key . '\'] . \'<\/td>\');' . "\n";
+		$buffer .= '}' . "\n";
+		$buffer .= "\n";
+		$buffer .= '//post' . "\n";
+		$buffer .= '{' . "\n";
+		$buffer .= '  $view[\'data\'] = $insert_' . $table . '[1];' . "\n";
+		$buffer .= "\n";
+		$buffer .= '  $html = view(\'' . $table . '/post.php\', true);' . "\n";
+		$buffer .= "\n";
+		$buffer .= '  test_contains(\'' . $table . '/post\', $html, \'value="\' . $insert_' . $table . '[1][\'' . $primary_key . '\'] . \'"\');' . "\n";
+		$buffer .= '}' . "\n";
+
+		$scaffold .= db_scaffold_output($test_view_file, $buffer);
+
+		//test controller
+		$buffer  = '<?php' . "\n";
+		$buffer .= "\n";
+		$buffer .= $test_insert;
+		$buffer .= "\n";
+		$buffer .= 'model();' . "\n";
+		$buffer .= "\n";
+		$buffer .= 'db_transaction();' . "\n";
+		$buffer .= "\n";
+		$buffer .= '//insert' . "\n";
+		$buffer .= 'foreach ($insert_' . $table . ' as $insert_data) {' . "\n";
+		$buffer .= '  $warnings = validate_' . $table . '($insert_data);' . "\n";
+		$buffer .= '  if (empty($warnings)) {' . "\n";
+		$buffer .= '    insert_' . $table . '(array(' . "\n";
+		$buffer .= '      \'values\' => $insert_data' . "\n";
+		$buffer .= '    ));' . "\n";
+		$buffer .= '  }' . "\n";
+		$buffer .= '}' . "\n";
+		$buffer .= "\n";
+		$buffer .= '//index' . "\n";
+		$buffer .= '{' . "\n";
+		$buffer .= '  $params = array(\'' . $table . '\', \'index\');' . "\n";
+		$buffer .= '  controller(\'' . $table . '/index.php\');' . "\n";
+		$buffer .= '  $html = view(\'' . $table . '/index.php\', true);' . "\n";
+		$buffer .= "\n";
+		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[1][\'' . $primary_key . '\'] . \'<\/td>\');' . "\n";
+		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[2][\'' . $primary_key . '\'] . \'<\/td>\');' . "\n";
+		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[3][\'' . $primary_key . '\'] . \'<\/td>\');' . "\n";
+		$buffer .= '}' . "\n";
+		$buffer .= "\n";
+		$buffer .= '//post' . "\n";
+		$buffer .= '{' . "\n";
+		$buffer .= '  $params = array(\'' . $table . '\', \'post\');' . "\n";
+		$buffer .= '  $_GET[\'' . $primary_key . '\'] = 3;' . "\n";
+		$buffer .= '  controller(\'' . $table . '/post.php\');' . "\n";
+		$buffer .= '  $html = view(\'' . $table . '/post.php\', true);' . "\n";
+		$buffer .= "\n";
+		$buffer .= '  test_contains(\'' . $table . '/post\', $html, \'value="\' . $insert_' . $table . '[3][\'' . $primary_key . '\'] . \'"\');' . "\n";
+		$buffer .= '}' . "\n";
+		$buffer .= "\n";
+		$buffer .= 'db_rollback();' . "\n";
+
+		$scaffold .= db_scaffold_output($test_controller_file, $buffer);
+
 		$scaffold .= "\n";
 	}
 
-	$view_index_file       = $views . MAIN_DEFAULT_MODE . '/' . MAIN_DEFAULT_WORK . '.php';
-	$controller_index_file = $controllers . MAIN_DEFAULT_MODE . '/' . MAIN_DEFAULT_WORK . '.php';
+	//home
+	$view_home_file       = $views . MAIN_DEFAULT_MODE . '/' . MAIN_DEFAULT_WORK . '.php';
+	$controller_home_file = $controllers . MAIN_DEFAULT_MODE . '/' . MAIN_DEFAULT_WORK . '.php';
 
 	$scaffold .= '[index]' . "\n";
 
@@ -1574,24 +1786,31 @@ function db_scaffold()
 	$buffer .= '    <ul>' . "\n";
 
 	foreach ($results as $result) {
+		if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+			$table_comment = $result['Comment'];
+		} else {
+			$table_comment = null;
+		}
+
 		$table = array_shift($result);
 
-		$buffer .= '      <li><a href="<?php t(MAIN_FILE) ?>/' . $table . '">' . $table . '</a></li>' . "\n";
+		$buffer .= '      <li><a href="<?php t(MAIN_FILE) ?>/' . $table . '">' . ($table_comment ? $table_comment : $table) . '</a></li>' . "\n";
 	}
 
 	$buffer .= '    </ul>' . "\n";
 	$buffer .= '  </body>' . "\n";
 	$buffer .= '</html>' . "\n";
 
-	$scaffold .= db_scaffold_output($view_index_file, $buffer);
+	$scaffold .= db_scaffold_output($view_home_file, $buffer);
 
 	$buffer  = '<?php' . "\n";
 
-	$scaffold .= db_scaffold_output($controller_index_file, $buffer);
+	$scaffold .= db_scaffold_output($controller_home_file, $buffer);
 
+	//config
 	$buffer  = '<?php' . "\n";
 	$buffer .= "\n";
-	$buffer .= 'import(\'app/config.php\');' . "\n";
+	$buffer .= 'import(\'' . $config_file . '\');' . "\n";
 
 	$scaffold .= db_scaffold_output($before_file, $buffer);
 
@@ -1621,6 +1840,7 @@ function db_scaffold()
 	$scaffold .= "\n";
 	$scaffold .= "Complete\n";
 
+	//result
 	echo "<!DOCTYPE html>\n";
 	echo "<html>\n";
 	echo "<head>\n";
