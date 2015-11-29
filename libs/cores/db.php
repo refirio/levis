@@ -1706,9 +1706,9 @@ function db_scaffold()
 		$buffer .= "\n";
 		$buffer .= '  $html = view(\'' . $table . '/index.php\', true);' . "\n";
 		$buffer .= "\n";
-		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[1][\'' . $primary_key . '\'] . \'<\/td>\');' . "\n";
-		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[2][\'' . $primary_key . '\'] . \'<\/td>\');' . "\n";
-		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[3][\'' . $primary_key . '\'] . \'<\/td>\');' . "\n";
+		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[1][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
+		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[2][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
+		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[3][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
 		$buffer .= '}' . "\n";
 		$buffer .= "\n";
 		$buffer .= '//post' . "\n";
@@ -1747,9 +1747,9 @@ function db_scaffold()
 		$buffer .= '  controller(\'' . $table . '/index.php\');' . "\n";
 		$buffer .= '  $html = view(\'' . $table . '/index.php\', true);' . "\n";
 		$buffer .= "\n";
-		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[1][\'' . $primary_key . '\'] . \'<\/td>\');' . "\n";
-		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[2][\'' . $primary_key . '\'] . \'<\/td>\');' . "\n";
-		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[3][\'' . $primary_key . '\'] . \'<\/td>\');' . "\n";
+		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[1][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
+		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[2][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
+		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[3][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
 		$buffer .= '}' . "\n";
 		$buffer .= "\n";
 		$buffer .= '//post' . "\n";

@@ -210,7 +210,7 @@ function test_exec()
 		echo "setTimeout('window.location.href = \'" . $view['url'] . "\'', 1000);\n";
 		echo "</script>\n";
 		echo "<noscript>\n";
-		echo "<p><a href=\"" . t($url, true) . "\">next</a></p>\n";
+		echo "<p><a href=\"" . t($view['url'], true) . "\">next</a></p>\n";
 		echo "</noscript>\n";
 	}
 
@@ -305,7 +305,7 @@ function test_contains($title, $actual, $expected)
 {
 	$result = false;
 
-	if (regexp_match($expected, $actual)) {
+	if (regexp_match(preg_quote($expected, '/'), $actual)) {
 		$result = true;
 	}
 
@@ -316,7 +316,7 @@ function test_not_contains($title, $actual, $expected)
 {
 	$result = false;
 
-	if (!regexp_match($expected, $actual)) {
+	if (!regexp_match(preg_quote($expected, '/'), $actual)) {
 		$result = true;
 	}
 
