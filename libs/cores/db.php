@@ -887,10 +887,13 @@ function db_admin_sql()
 
 		if ($regexp = regexp_match('^SELECT \* FROM ([_a-zA-Z0-9\-]+)', $sql)) {
 			$table = $regexp[1];
+			$link  = true;
 		} elseif ($regexp = regexp_match('^' . db_sql('table_define', '([_a-zA-Z0-9\-]+)'), $sql)) {
 			$table = $regexp[1];
+			$link  = false;
 		} else {
 			$table = null;
+			$link  = false;
 		}
 
 		$results = db_result($resource);
@@ -926,7 +929,7 @@ function db_admin_sql()
 						$value_html = h($value, true);
 					}
 
-					if ($table === null) {
+					if ($link === false) {
 						$value = $value_html;
 					} else {
 						$value = '<a href="javascript:insertSQL(\'UPDATE ' . $table . ' SET ' . $key . ' = ' . $value_sql . ' WHERE ' . $first_key . ' = \\\'' . $first_value . '\\\';\');">' . truncate($value_html, 100) . '</a>';
