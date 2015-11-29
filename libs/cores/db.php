@@ -1028,6 +1028,7 @@ function db_migrate()
 		error(DATABASE_MIGRATE_PATH . ' is not found.');
 	}
 
+	//initialize
 	if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
 		db_query('
 			CREATE TABLE IF NOT EXISTS ' . DATABASE_PREFIX . 'levis_migrations(
@@ -1063,6 +1064,7 @@ function db_migrate()
 		');
 	}
 
+	//succeeded
 	$resource = db_query('SELECT * FROM ' . DATABASE_PREFIX . 'levis_migrations WHERE status = \'success\'');
 	$results  = db_result($resource);
 
@@ -1071,6 +1073,7 @@ function db_migrate()
 		$succeeded[$result['version']] = true;
 	}
 
+	//target
 	$targets = array();
 	if ($dh = opendir(DATABASE_MIGRATE_PATH)) {
 		while (($entry = readdir($dh)) !== false) {
@@ -1097,6 +1100,7 @@ function db_migrate()
 
 	sort($targets, SORT_STRING);
 
+	//migrate
 	$resource = db_query('DELETE FROM ' . DATABASE_PREFIX . 'levis_migrations WHERE status = ' . db_escape('pending') . ';');
 	if (!$resource) {
 		error('database query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
@@ -1180,9 +1184,11 @@ function db_migrate()
 	$migrate .= "Database: " . DATABASE_NAME . "\n";
 	$migrate .= "Version: " . $version . "\n";
 
+	//history
 	$resource   = db_query('SELECT * FROM ' . DATABASE_PREFIX . 'levis_migrations ORDER BY version');
 	$migrations = db_result($resource);
 
+	//result
 	echo "<!DOCTYPE html>\n";
 	echo "<html>\n";
 	echo "<head>\n";
