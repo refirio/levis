@@ -29,6 +29,8 @@ if (DEBUG_LEVEL && regexp_match(DEBUG_ADDR, $_SERVER['REMOTE_ADDR'])) {
 			info_levis();
 		case 'db_admin':
 			db_admin();
+		case 'db_migrate':
+			db_migrate();
 		case 'db_scaffold':
 			db_scaffold();
 		case 'test_index':
