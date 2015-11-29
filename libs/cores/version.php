@@ -6,5 +6,5 @@
 
 *********************************************************************/
 
-define('VERSION_NUMBER', '5.3.0');
-define('VERSION_UPDATE', '2015-11-15');
+define('VERSION_NUMBER', '6.0.0');
+define('VERSION_UPDATE', '2015-11-29');
