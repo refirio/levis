@@ -6,6 +6,8 @@
 
 *********************************************************************/
 
+import('libs/plugins/file.php');
+
 function mail_send($to, $subject, $message, $headers = array(), $files = array())
 {
 	$subject = mb_convert_kana(unify($subject), 'KV', MAIN_INTERNAL_ENCODING);
@@ -40,7 +42,7 @@ function mail_send($to, $subject, $message, $headers = array(), $files = array()
 
 			$body .= "\n";
 			$body .= "--$boundary\n";
-			$body .= "Content-Type: " . freo_mime($file) . "; name=\"$filename\"\n";
+			$body .= "Content-Type: " . file_mimetype($file) . "; name=\"$filename\"\n";
 			$body .= "Content-Disposition: attachment; filename=\"$filename\"\n";
 			$body .= "Content-Transfer-Encoding: base64\n";
 			$body .= "\n";
