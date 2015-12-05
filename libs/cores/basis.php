@@ -20,7 +20,7 @@ function import($file, $once = true, $ignore = false)
 
 	$flag = false;
 
-	foreach (array(MAIN_PATH . MAIN_APPLICATION_PATH, MAIN_PATH . MAIN_PATH . MAIN_LIBRARY_PATH) as $dir) {
+	foreach (array(MAIN_PATH . MAIN_APPLICATION_PATH, MAIN_PATH . MAIN_LIBRARY_PATH) as $dir) {
 		if (MAIN_PATH) {
 			$target = $dir . $file;
 		} else {
