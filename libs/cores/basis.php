@@ -18,6 +18,16 @@ function import($file, $once = true, $ignore = false)
 {
 	global $params, $db, $view;
 
+	if (!empty($GLOBALS['core']['target'])) {
+		foreach (array(MAIN_PATH . MAIN_APPLICATION_PATH, MAIN_PATH . MAIN_LIBRARY_PATH) as $dir) {
+			if (is_file($dir . $GLOBALS['core']['target'] . '/' . $file)) {
+				$file = $GLOBALS['core']['target'] . '/' . $file;
+
+				break;
+			}
+		}
+	}
+
 	$flag = false;
 
 	foreach (array(MAIN_PATH . MAIN_APPLICATION_PATH, MAIN_PATH . MAIN_LIBRARY_PATH) as $dir) {
