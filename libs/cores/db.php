@@ -1176,7 +1176,11 @@ function db_migrate()
 	$resource = db_query('SELECT version FROM ' . DATABASE_PREFIX . 'levis_migrations WHERE status = \'success\' ORDER BY version DESC LIMIT 1');
 	$results  = db_result($resource);
 
-	$version = $results[0]['version'];
+	if (empty($results)) {
+		$version = '-';
+	} else {
+		$version = $results[0]['version'];
+	}
 
 	if ($migrate) {
 		$migrate .= "\n";
