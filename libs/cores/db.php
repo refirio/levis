@@ -641,7 +641,7 @@ function db_admin_export()
 
 	$view['tables'] = array();
 	foreach ($results as $result) {
-		$view['tables'][] = array_pop($result);
+		$view['tables'][] = array_shift($result);
 	}
 
 	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
