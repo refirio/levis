@@ -641,7 +641,7 @@ function db_admin_export()
 
 	$view['tables'] = array();
 	foreach ($results as $result) {
-		$view['tables'][] = array_pop($result);
+		$view['tables'][] = array_shift($result);
 	}
 
 	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -1176,7 +1176,11 @@ function db_migrate()
 	$resource = db_query('SELECT version FROM ' . DATABASE_PREFIX . 'levis_migrations WHERE status = \'success\' ORDER BY version DESC LIMIT 1');
 	$results  = db_result($resource);
 
-	$version = $results[0]['version'];
+	if (empty($results)) {
+		$version = '-';
+	} else {
+		$version = $results[0]['version'];
+	}
 
 	if ($migrate) {
 		$migrate .= "\n";
@@ -1244,7 +1248,8 @@ function db_scaffold()
 	$before_file = $app . 'controllers/before.php';
 	$config_file = $app . 'config.php';
 
-	$primary_key = 'id';
+	$exclude_prefix = 'levis_';
+	$primary_key    = 'id';
 
 	$test = 'test/';
 
@@ -1267,7 +1272,7 @@ function db_scaffold()
 
 		$table = array_shift($result);
 
-		if ($table == DATABASE_PREFIX . 'levis_migrations') {
+		if (regexp_match('^' . DATABASE_PREFIX . $exclude_prefix, $table)) {
 			continue;
 		}
 
@@ -1803,6 +1808,10 @@ function db_scaffold()
 
 		$table = array_shift($result);
 
+		if (regexp_match('^' . DATABASE_PREFIX . $exclude_prefix, $table)) {
+			continue;
+		}
+
 		$buffer .= '      <li><a href="<?php t(MAIN_FILE) ?>/' . $table . '">' . ($table_comment ? $table_comment : $table) . '</a></li>' . "\n";
 	}
 
@@ -1831,11 +1840,19 @@ function db_scaffold()
 	foreach ($results as $result) {
 		$table = array_shift($result);
 
+		if (regexp_match('^' . DATABASE_PREFIX . $exclude_prefix, $table)) {
+			continue;
+		}
+
 		$max_length = strlen($table) > $max_length ? strlen($table) : $max_length;
 	}
 
 	foreach ($results as $result) {
 		$table = array_shift($result);
+
+		if (regexp_match('^' . DATABASE_PREFIX . $exclude_prefix, $table)) {
+			continue;
+		}
 
 		$space = str_repeat(' ', $max_length - strlen($table));;
 
