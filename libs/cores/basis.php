@@ -439,6 +439,21 @@ function localdate($format = null, $timestamp = null)
 	}
 }
 
+function clientip($proxy = false)
+{
+	if ($proxy) {
+		if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+			return $_SERVER['HTTP_CLIENT_IP'];
+		} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			$addresses = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+
+			return $addresses[0];
+		}
+	}
+
+	return $_SERVER['REMOTE_ADDR'];
+}
+
 function token($type, $name = 'default')
 {
 	if ($type == 'check') {

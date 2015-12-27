@@ -21,7 +21,7 @@ normalize();
 
 routing();
 
-if (DEBUG_LEVEL && regexp_match(DEBUG_ADDR, $_SERVER['REMOTE_ADDR'])) {
+if (DEBUG_LEVEL && regexp_match(DEBUG_ADDR, clientip())) {
 	switch ($_REQUEST['mode']) {
 		case 'info_php':
 			info_php();
