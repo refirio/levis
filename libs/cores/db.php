@@ -647,7 +647,7 @@ function db_admin_export()
 	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$text  = '-- Database: ' . DATABASE_NAME . ' (' . DATABASE_TYPE . ")\n";
 		$text .= '-- Datetime: ' . localdate('Y-m-d H:i:s') . "\n";
-		$text .= '-- Host: ' . gethostbyaddr($_SERVER['REMOTE_ADDR']) . "\n";
+		$text .= '-- Host: ' . gethostbyaddr(clientip()) . "\n";
 		$text .= "\n";
 
 		foreach ($view['tables'] as $table) {
