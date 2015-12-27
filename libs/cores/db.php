@@ -1032,13 +1032,13 @@ function db_migrate()
 	if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
 		db_query('
 			CREATE TABLE IF NOT EXISTS ' . DATABASE_PREFIX . 'levis_migrations(
-				id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
-				version     VARCHAR(14)  NOT NULL UNIQUE,
-				description VARCHAR(255) NOT NULL,
-				status      VARCHAR(80)  NOT NULL,
-				installed   DATETIME,
+				id          INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT \'id\',
+				version     VARCHAR(14)  NOT NULL UNIQUE         COMMENT \'version\',
+				description VARCHAR(255) NOT NULL                COMMENT \'description\',
+				status      VARCHAR(80)  NOT NULL                COMMENT \'status\',
+				installed   DATETIME                             COMMENT \'installed\',
 				PRIMARY KEY(id)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT \'migration\';
 		');
 	} elseif (DATABASE_TYPE == 'pdo_pgsql' || DATABASE_TYPE == 'pgsql') {
 		db_query('
