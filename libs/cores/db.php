@@ -1245,6 +1245,9 @@ function db_scaffold()
 	$views       = $app . 'views/';
 	$controllers = $app . 'controllers/';
 
+	$header_file = $views . 'header.php';
+	$footer_file = $views . 'footer.php';
+
 	$before_file = $app . 'controllers/before.php';
 	$config_file = $app . 'config.php';
 
@@ -1296,18 +1299,6 @@ function db_scaffold()
 
 		$model_validate = '';
 		$model_default  = '';
-
-		$view_header  = '<!DOCTYPE html>' . "\n";
-		$view_header .= '<html>' . "\n";
-		$view_header .= '  <head>' . "\n";
-		$view_header .= '    <meta charset="<?php t(MAIN_CHARSET) ?>" />' . "\n";
-		$view_header .= '    <title>' . ($table_comment ? $table_comment : $table) . '</title>' . "\n";
-		$view_header .= '  </head>' . "\n";
-		$view_header .= '  <body>' . "\n";
-		$view_header .= '    <h1>' . ($table_comment ? $table_comment : $table) . '</h1>' . "\n";
-
-		$view_footer  = '  </body>' . "\n";
-		$view_footer .= '</html>' . "\n";
 
 		$view_head = '';
 		$view_data = '';
@@ -1463,7 +1454,9 @@ function db_scaffold()
 		$scaffold .= db_scaffold_output($model_file, $buffer);
 
 		//view
-		$buffer  = $view_header;
+		$buffer  = '<?php import(\'app/views/header.php\') ?>' . "\n";
+		$buffer .= "\n";
+		$buffer .= '    <h2>' . ($table_comment ? $table_comment : $table) . '</h2>' . "\n";
 		$buffer .= '    <ul>' . "\n";
 		$buffer .= '      <li><a href="<?php t(MAIN_FILE) ?>/' . $table . '/post">post</a></li>' . "\n";
 		$buffer .= '    </ul>' . "\n";
@@ -1477,12 +1470,14 @@ function db_scaffold()
 		$buffer .= '      </tr>' . "\n";
 		$buffer .= '      <?php endforeach ?>' . "\n";
 		$buffer .= '    </table>' . "\n";
-		$buffer .= $view_footer;
+		$buffer .= "\n";
+		$buffer .= '<?php import(\'app/views/footer.php\') ?>' . "\n";
 
 		$scaffold .= db_scaffold_output($view_index_file, $buffer);
 
-		$buffer  = $view_header;
-		$buffer .= '    <h2>post</h2>' . "\n";
+		$buffer  = '<?php import(\'app/views/header.php\') ?>' . "\n";
+		$buffer .= "\n";
+		$buffer .= '    <h2>' . ($table_comment ? $table_comment : $table) . '</h2>' . "\n";
 		$buffer .= '    <form action="<?php t(MAIN_FILE) ?>/' . $table . '/post' . ($primary_flag ? '<?php $view[\'data\'][\'' . $primary_key . '\'] ? t(\'?' . $primary_key . '=\' . $view[\'data\'][\'' . $primary_key . '\']) : \'\' ?>' : '') . '" method="post">' . "\n";
 		$buffer .= '      <fieldset>' . "\n";
 		$buffer .= '        <legend>' . ($table_comment ? $table_comment : $table) . '</legend>' . "\n";
@@ -1506,7 +1501,8 @@ function db_scaffold()
 			$buffer .= '    <?php endif ?>' . "\n";
 		}
 
-		$buffer .= $view_footer;
+		$buffer .= "\n";
+		$buffer .= '<?php import(\'app/views/footer.php\') ?>' . "\n";
 
 		$scaffold .= db_scaffold_output($view_post_file, $buffer);
 
@@ -1789,14 +1785,8 @@ function db_scaffold()
 
 	$scaffold .= '[index]' . "\n";
 
-	$buffer  = '<!DOCTYPE html>' . "\n";
-	$buffer .= '<html>' . "\n";
-	$buffer .= '  <head>' . "\n";
-	$buffer .= '    <meta charset="<?php t(MAIN_CHARSET) ?>" />' . "\n";
-	$buffer .= '    <title>scaffold</title>' . "\n";
-	$buffer .= '  </head>' . "\n";
-	$buffer .= '  <body>' . "\n";
-	$buffer .= '    <h1>scaffold</h1>' . "\n";
+	$buffer  = '<?php import(\'app/views/header.php\') ?>' . "\n";
+	$buffer .= "\n";
 	$buffer .= '    <ul>' . "\n";
 
 	foreach ($results as $result) {
@@ -1816,14 +1806,33 @@ function db_scaffold()
 	}
 
 	$buffer .= '    </ul>' . "\n";
-	$buffer .= '  </body>' . "\n";
-	$buffer .= '</html>' . "\n";
+
+	$buffer .= "\n";
+	$buffer .= '<?php import(\'app/views/footer.php\') ?>' . "\n";
 
 	$scaffold .= db_scaffold_output($view_home_file, $buffer);
 
 	$buffer  = '<?php' . "\n";
 
 	$scaffold .= db_scaffold_output($controller_home_file, $buffer);
+
+	//header
+	$buffer  = '<!DOCTYPE html>' . "\n";
+	$buffer .= '<html>' . "\n";
+	$buffer .= '  <head>' . "\n";
+	$buffer .= '    <meta charset="<?php t(MAIN_CHARSET) ?>" />' . "\n";
+	$buffer .= '    <title>scaffold</title>' . "\n";
+	$buffer .= '  </head>' . "\n";
+	$buffer .= '  <body>' . "\n";
+	$buffer .= '    <h1>scaffold</h1>' . "\n";
+
+	$scaffold .= db_scaffold_output($header_file, $buffer);
+
+	//footer
+	$buffer  = '  </body>' . "\n";
+	$buffer .= '</html>' . "\n";
+
+	$scaffold .= db_scaffold_output($footer_file, $buffer);
 
 	//config
 	$buffer  = '<?php' . "\n";
