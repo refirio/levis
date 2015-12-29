@@ -57,6 +57,15 @@ function import($file, $once = true, $ignore = false)
 	return;
 }
 
+function bootstrap()
+{
+	if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/bootstrap.php')) {
+		import('app/bootstrap.php');
+	}
+
+	return;
+}
+
 function session()
 {
 	if (SESSION_AUTOSTART == false) {

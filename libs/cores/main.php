@@ -13,6 +13,8 @@ import('libs/cores/info.php');
 import('libs/cores/db.php');
 import('libs/cores/test.php');
 
+bootstrap();
+
 session();
 
 database();
