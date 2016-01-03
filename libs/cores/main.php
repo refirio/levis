@@ -42,6 +42,8 @@ if (DEBUG_LEVEL && regexp_match(DEBUG_ADDR, clientip())) {
 	}
 }
 
+service();
+
 model();
 
 controller();

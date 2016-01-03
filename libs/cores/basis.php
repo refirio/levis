@@ -184,6 +184,40 @@ function routing()
 	return;
 }
 
+function service($target = null)
+{
+	$dir = 'app/services/';
+
+	if (!file_exists(MAIN_PATH . MAIN_APPLICATION_PATH . $dir)) {
+		return;
+	}
+
+	if ($dh = opendir(MAIN_PATH . MAIN_APPLICATION_PATH . $dir)) {
+		while (($entry = readdir($dh)) !== false) {
+			if (!is_file(MAIN_PATH . MAIN_APPLICATION_PATH  . $dir . $entry)) {
+				continue;
+			}
+
+			if ($target && $target != $entry) {
+				continue;
+			}
+
+			if ($regexp = regexp_match('^([_a-zA-Z0-9\-]+)\.php$', $entry)) {
+				$name = $regexp[1];
+			} else {
+				continue;
+			}
+
+			import($dir . $entry);
+		}
+		closedir($dh);
+	} else {
+		error('opendir error.' . (DEBUG_LEVEL ? ' [' . $dir . ']' : ''));
+	}
+
+	return;
+}
+
 function model($target = null)
 {
 	$dir = 'app/models/';
