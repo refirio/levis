@@ -188,7 +188,7 @@ function test_exec()
 	list($micro, $second) = explode(' ', microtime());
 	$time_start = $micro + $second;
 
-	import(TEST_PATH . $_GET['target'] . '.php');
+	test_import(MAIN_PATH . TEST_PATH . $_GET['target'] . '.php');
 
 	list($micro, $second) = explode(' ', microtime());
 	$time_end = $micro + $second;
@@ -231,6 +231,13 @@ function test_result($title, $result)
 
 		echo 'NG: ' . $title . "\n";
 	}
+
+	return;
+}
+
+function test_import($file)
+{
+	require_once MAIN_PATH . TEST_PATH . $_GET['target'] . '.php';
 
 	return;
 }
