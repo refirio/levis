@@ -237,6 +237,8 @@ function test_result($title, $result)
 
 function test_import($file)
 {
+	global $params, $db, $view;
+
 	require_once MAIN_PATH . TEST_PATH . $_GET['target'] . '.php';
 
 	return;
