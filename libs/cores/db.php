@@ -1420,13 +1420,13 @@ function db_scaffold()
 
 			//test
 			if ($field == $primary_key) {
-				$test_data .= '    \'' . $field . '\' ' . $space . '=> [N],' . "\n";
+				$test_data .= '      \'' . $field . '\' ' . $space . '=> [N],' . "\n";
 			} elseif ($null) {
-				$test_data .= '    \'' . $field . '\' ' . $space . '=> null,' . "\n";
+				$test_data .= '      \'' . $field . '\' ' . $space . '=> null,' . "\n";
 			} elseif (regexp_match('(BLOB|TEXT|CHAR)', $type)) {
-				$test_data .= '    \'' . $field . '\' ' . $space . '=> \'TEST[N]\',' . "\n";
+				$test_data .= '      \'' . $field . '\' ' . $space . '=> \'TEST[N]\',' . "\n";
 			} else {
-				$test_data .= '    \'' . $field . '\' ' . $space . '=> [N],' . "\n";
+				$test_data .= '      \'' . $field . '\' ' . $space . '=> [N],' . "\n";
 			}
 		}
 
@@ -1612,30 +1612,27 @@ function db_scaffold()
 
 		//test data
 		$test_insert  = '';
-		$test_insert .= '$insert_' . $table . ' = array(' . "\n";
-		$test_insert .= '  1 => array(' . "\n";
+		$test_insert .= '  $insert_' . $table . ' = array(' . "\n";
+		$test_insert .= '    1 => array(' . "\n";
 		$test_insert .= str_replace('[N]', 1, $test_data);
-		$test_insert .= '  ),' . "\n";
-		$test_insert .= '  2 => array(' . "\n";
+		$test_insert .= '    ),' . "\n";
+		$test_insert .= '    2 => array(' . "\n";
 		$test_insert .= str_replace('[N]', 2, $test_data);
-		$test_insert .= '  ),' . "\n";
-		$test_insert .= '  3 => array(' . "\n";
+		$test_insert .= '    ),' . "\n";
+		$test_insert .= '    3 => array(' . "\n";
 		$test_insert .= str_replace('[N]', 3, $test_data);
-		$test_insert .= '  )' . "\n";
-		$test_insert .= ');' . "\n";
+		$test_insert .= '    )' . "\n";
+		$test_insert .= '  );' . "\n";
 
 		$test_update = '';
-		$test_update .= '$update_' . $table . ' = array(' . "\n";
-		$test_update .= '  3 => array(' . "\n";
+		$test_update .= '  $update_' . $table . ' = array(' . "\n";
+		$test_update .= '    3 => array(' . "\n";
 		$test_update .= str_replace('[N]', 3, $test_data);
-		$test_update .= '  )' . "\n";
-		$test_update .= ');' . "\n";
+		$test_update .= '    )' . "\n";
+		$test_update .= '  );' . "\n";
 
 		//test model
 		$buffer  = '<?php' . "\n";
-		$buffer .= "\n";
-		$buffer .= $test_insert;
-		$buffer .= $test_update;
 		$buffer .= "\n";
 		$buffer .= 'model(\'' . $table . '.php\');' . "\n";
 		$buffer .= "\n";
@@ -1643,15 +1640,22 @@ function db_scaffold()
 		$buffer .= "\n";
 		$buffer .= '//insert' . "\n";
 		$buffer .= '{' . "\n";
+		$buffer .= '  //data' . "\n";
+		$buffer .= $test_insert;
+		$buffer .= "\n";
+		$buffer .= '  //insert' . "\n";
 		$buffer .= '  foreach ($insert_' . $table . ' as $insert_data) {' . "\n";
 		$buffer .= '    $warnings = validate_' . $table . '($insert_data);' . "\n";
 		$buffer .= '    if (empty($warnings)) {' . "\n";
 		$buffer .= '      insert_' . $table . '(array(' . "\n";
 		$buffer .= '        \'values\' => $insert_data' . "\n";
 		$buffer .= '      ));' . "\n";
+		$buffer .= '    } else {' . "\n";
+		$buffer .= '      debug($warnings);' . "\n";
 		$buffer .= '    }' . "\n";
 		$buffer .= '  }' . "\n";
 		$buffer .= "\n";
+		$buffer .= '  //test' . "\n";
 		$buffer .= '  $' . $table . ' = select_' . $table . '(array(' . "\n";
 		$buffer .= '    \'limit\' => 10' . "\n";
 		$buffer .= '  ));' . "\n";
@@ -1669,14 +1673,21 @@ function db_scaffold()
 		$buffer .= "\n";
 		$buffer .= '//update' . "\n";
 		$buffer .= '{' . "\n";
+		$buffer .= '  //data' . "\n";
+		$buffer .= $test_update;
+		$buffer .= "\n";
+		$buffer .= '  //update' . "\n";
 		$buffer .= '  $warnings = validate_' . $table . '($update_' . $table . '[3]);' . "\n";
 		$buffer .= '  if (empty($warnings)) {' . "\n";
 		$buffer .= '    update_' . $table . '(array(' . "\n";
 		$buffer .= '      \'set\'   => $update_' . $table . '[3],' . "\n";
 		$buffer .= '      \'where\' => \'id = 3\'' . "\n";
 		$buffer .= '    ));' . "\n";
+		$buffer .= '  } else {' . "\n";
+		$buffer .= '    debug($warnings);' . "\n";
 		$buffer .= '  }' . "\n";
 		$buffer .= "\n";
+		$buffer .= '  //test' . "\n";
 		$buffer .= '  $' . $table . ' = select_' . $table . '(array(' . "\n";
 		$buffer .= '    \'limit\' => 10' . "\n";
 		$buffer .= '  ));' . "\n";
@@ -1690,10 +1701,12 @@ function db_scaffold()
 		$buffer .= "\n";
 		$buffer .= '//delete' . "\n";
 		$buffer .= '{' . "\n";
+		$buffer .= '  //delete' . "\n";
 		$buffer .= '  delete_' . $table . '(array(' . "\n";
 		$buffer .= '    \'where\' => \'id = 3\'' . "\n";
 		$buffer .= '  ));' . "\n";
 		$buffer .= "\n";
+		$buffer .= '  //test' . "\n";
 		$buffer .= '  $' . $table . ' = select_' . $table . '(array(' . "\n";
 		$buffer .= '    \'limit\' => 10' . "\n";
 		$buffer .= '  ));' . "\n";
@@ -1708,17 +1721,20 @@ function db_scaffold()
 		//test view
 		$buffer  = '<?php' . "\n";
 		$buffer .= "\n";
-		$buffer .= $test_insert;
-		$buffer .= "\n";
 		$buffer .= '//index' . "\n";
 		$buffer .= '{' . "\n";
+		$buffer .= '  //data' . "\n";
+		$buffer .= $test_insert;
+		$buffer .= "\n";
+		$buffer .= '  //assign' . "\n";
 		$buffer .= '  $view[\'' . $table . '\'] = $insert_' . $table . ';' . "\n";
 		$buffer .= "\n";
+		$buffer .= '  //test' . "\n";
 		$buffer .= '  $html = view(\'' . $table . '/index.php\', true);' . "\n";
 		$buffer .= "\n";
-		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[1][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
-		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[2][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
-		$buffer .= '  test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[3][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
+		$buffer .= '  test_contains(\'' . $table . '/index 1\', $html, \'<td>\' . $insert_' . $table . '[1][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
+		$buffer .= '  test_contains(\'' . $table . '/index 2\', $html, \'<td>\' . $insert_' . $table . '[2][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
+		$buffer .= '  test_contains(\'' . $table . '/index 3\', $html, \'<td>\' . $insert_' . $table . '[3][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
 		$buffer .= '}' . "\n";
 		$buffer .= "\n";
 		$buffer .= '//post' . "\n";
@@ -1735,24 +1751,28 @@ function db_scaffold()
 		//test controller
 		$buffer  = '<?php' . "\n";
 		$buffer .= "\n";
-		$buffer .= $test_insert;
-		$buffer .= "\n";
 		$buffer .= 'model();' . "\n";
 		$buffer .= "\n";
 		$buffer .= 'db_transaction();' . "\n";
 		$buffer .= "\n";
-		$buffer .= '//insert' . "\n";
-		$buffer .= 'foreach ($insert_' . $table . ' as $insert_data) {' . "\n";
-		$buffer .= '  $warnings = validate_' . $table . '($insert_data);' . "\n";
-		$buffer .= '  if (empty($warnings)) {' . "\n";
-		$buffer .= '    insert_' . $table . '(array(' . "\n";
-		$buffer .= '      \'values\' => $insert_data' . "\n";
-		$buffer .= '    ));' . "\n";
-		$buffer .= '  }' . "\n";
-		$buffer .= '}' . "\n";
-		$buffer .= "\n";
 		$buffer .= '//index' . "\n";
 		$buffer .= '{' . "\n";
+		$buffer .= '  //data' . "\n";
+		$buffer .= $test_insert;
+		$buffer .= "\n";
+		$buffer .= '  //insert' . "\n";
+		$buffer .= '  foreach ($insert_' . $table . ' as $insert_data) {' . "\n";
+		$buffer .= '    $warnings = validate_' . $table . '($insert_data);' . "\n";
+		$buffer .= '    if (empty($warnings)) {' . "\n";
+		$buffer .= '      insert_' . $table . '(array(' . "\n";
+		$buffer .= '        \'values\' => $insert_data' . "\n";
+		$buffer .= '      ));' . "\n";
+		$buffer .= '    } else {' . "\n";
+		$buffer .= '      debug($warnings);' . "\n";
+		$buffer .= '    }' . "\n";
+		$buffer .= '  }' . "\n";
+		$buffer .= "\n";
+		$buffer .= '  //test' . "\n";
 		$buffer .= '  $params = array(\'' . $table . '\', \'index\');' . "\n";
 		$buffer .= '  controller(\'' . $table . '/index.php\');' . "\n";
 		$buffer .= '  $html = view(\'' . $table . '/index.php\', true);' . "\n";
@@ -1764,6 +1784,7 @@ function db_scaffold()
 		$buffer .= "\n";
 		$buffer .= '//post' . "\n";
 		$buffer .= '{' . "\n";
+		$buffer .= '  //test' . "\n";
 		$buffer .= '  $params = array(\'' . $table . '\', \'post\');' . "\n";
 		$buffer .= '  $_GET[\'' . $primary_key . '\'] = 3;' . "\n";
 		$buffer .= '  controller(\'' . $table . '/post.php\');' . "\n";
