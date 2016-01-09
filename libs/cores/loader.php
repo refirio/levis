@@ -14,6 +14,8 @@ import('libs/cores/rand.php');
 import('libs/cores/regexp.php');
 import('libs/cores/db.php');
 
+bootstrap();
+
 session();
 
 database();
