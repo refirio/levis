@@ -497,6 +497,21 @@ function clientip($proxy = false)
 	return $_SERVER['REMOTE_ADDR'];
 }
 
+function ssl($proxy = false)
+{
+	if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+		return true;
+	} elseif ($proxy) {
+		if (!empty($_SERVER['HTTP_X_FORWARDED_PORT']) && $_SERVER['HTTP_X_FORWARDED_PORT'] == 443) {
+			return true;
+		} elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 function token($type, $name = 'default')
 {
 	if ($type == 'check') {
