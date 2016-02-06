@@ -8,14 +8,14 @@
 
 function info_php()
 {
-	phpinfo();
+    phpinfo();
 
-	exit;
+    exit;
 }
 
 function info_levis()
 {
-	about();
+    about();
 
-	exit;
+    exit;
 }
