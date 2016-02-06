@@ -29,9 +29,9 @@ function db_connect($info)
                     'charset_input_from'  => isset($confg['charset_input_from'])  ? $confg['charset_input_from']  : DATABASE_CHARSET_INPUT_FROM,
                     'charset_input_to'    => isset($confg['charset_input_to'])    ? $confg['charset_input_to']    : DATABASE_CHARSET_INPUT_TO,
                     'charset_output_from' => isset($confg['charset_output_from']) ? $confg['charset_output_from'] : DATABASE_CHARSET_OUTPUT_FROM,
-                    'charset_output_to'   => isset($confg['charset_output_to'])   ? $confg['charset_output_to']   : DATABASE_CHARSET_OUTPUT_TO
+                    'charset_output_to'   => isset($confg['charset_output_to'])   ? $confg['charset_output_to']   : DATABASE_CHARSET_OUTPUT_TO,
                 ),
-                'dbh' => null
+                'dbh' => null,
             );
         }
     } elseif ($info == 'default') {
@@ -53,9 +53,9 @@ function db_connect($info)
                     'charset_input_from'  => DATABASE_CHARSET_INPUT_FROM,
                     'charset_input_to'    => DATABASE_CHARSET_INPUT_TO,
                     'charset_output_from' => DATABASE_CHARSET_OUTPUT_FROM,
-                    'charset_output_to'   => DATABASE_CHARSET_OUTPUT_TO
+                    'charset_output_to'   => DATABASE_CHARSET_OUTPUT_TO,
                 ),
-                'dbh' => null
+                'dbh' => null,
             );
         }
     } else {
@@ -104,7 +104,7 @@ function db_query($query, $return = false, $error = true)
 
     if (is_array($query)) {
         $queries = db_placeholder(array(
-            'query' => $query
+            'query' => $query,
         ));
 
         $query = $queries['query'];

@@ -67,7 +67,7 @@ function test_index()
             $view['targets'][] = array(
                 'name'   => $name,
                 'file'   => $entry,
-                'result' => $result
+                'result' => $result,
             );
         }
         closedir($dh);

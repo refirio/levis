@@ -160,7 +160,7 @@ function routing()
         'work'  => isset($_POST['work'])  ? $_POST['work']  : (isset($_GET['work'])  ? $_GET['work']  : null),
         'type'  => isset($_POST['type'])  ? $_POST['type']  : (isset($_GET['type'])  ? $_GET['type']  : null),
         'token' => isset($_POST['token']) ? $_POST['token'] : (isset($_GET['token']) ? $_GET['token'] : null),
-        'test'  => isset($_POST['test'])  ? $_POST['test']  : (isset($_GET['test'])  ? $_GET['test']  : null)
+        'test'  => isset($_POST['test'])  ? $_POST['test']  : (isset($_GET['test'])  ? $_GET['test']  : null),
     );
 
     if (isset($params[0]) && empty($_REQUEST['mode'])) {
@@ -532,7 +532,7 @@ function token($type, $name = 'default')
 
             $_SESSION['core']['token'][$name] = array(
                 'value' => $token,
-                'time'  => time()
+                'time'  => time(),
             );
         } else {
             $token = $_SESSION['core']['token'][$name]['value'];

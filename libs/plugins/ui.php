@@ -67,7 +67,7 @@ function ui_pager($option = array())
         'query'     => $option['query'],
         'delimiter' => $option['delimiter'],
         'label'     => $option['label'],
-        'attribute' => $option['attribute']
+        'attribute' => $option['attribute'],
     );
 
     $pager = array(
@@ -76,7 +76,7 @@ function ui_pager($option = array())
         'back'  => '',
         'next'  => '',
         'pages' => '',
-        'all'   => ''
+        'all'   => '',
     );
 
     $all = ceil($option['count'] / $option['size']);

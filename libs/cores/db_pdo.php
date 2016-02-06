@@ -23,11 +23,11 @@ function db_driver_connect()
     if ($db['resource'][$db['target']]['config']['type'] == 'pdo_mysql') {
         $options = array(
             PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT,
-            PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true
+            PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
         );
     } elseif ($db['resource'][$db['target']]['config']['type'] == 'pdo_pgsql' or $db['resource'][$db['target']]['config']['type'] == 'pdo_sqlite' or $db['resource'][$db['target']]['config']['type'] == 'pdo_sqlite2') {
         $options = array(
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT,
         );
     }
 

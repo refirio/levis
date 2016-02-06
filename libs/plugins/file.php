@@ -668,7 +668,7 @@ function file_mimetype($file)
         'wvx'       => 'video/x-ms-wvx',
         'avi'       => 'video/x-msvideo',
         'movie'     => 'video/x-sgi-movie',
-        'ice'       => 'x-conference/x-cooltalk'
+        'ice'       => 'x-conference/x-cooltalk',
     );
 
     $info = pathinfo($file);
