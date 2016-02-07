@@ -8,6 +8,16 @@
 
 import('libs/plugins/file.php');
 
+/**
+ * Send encoded mail.
+ *
+ * @param  string  $to
+ * @param  string  $subject
+ * @param  string  $message
+ * @param  array  $headers
+ * @param  array  $files
+ * @return bool
+ */
 function mail_send($to, $subject, $message, $headers = array(), $files = array())
 {
     $subject = mb_convert_kana(unify($subject), 'KV', MAIN_INTERNAL_ENCODING);

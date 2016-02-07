@@ -6,6 +6,12 @@
 
 *******************************************************************************/
 
+/**
+ * Get a pager.
+ *
+ * @param  array  $option
+ * @return array
+ */
 function ui_pager($option = array())
 {
     if (!isset($option['key'])) {
@@ -141,6 +147,18 @@ function ui_pager($option = array())
     return $pager;
 }
 
+/**
+ * Get a form parts for time/date.
+ *
+ * @param  mixed  $timestamp
+ * @param  string  $type
+ * @param  string  $prefix
+ * @param  string  $suffix
+ * @param  int  $from
+ * @param  int  $to
+ * @param  int  $step
+ * @return string
+ */
 function ui_datetime($timestamp, $type = '', $prefix = '', $suffix = '', $from = 0, $to = 0, $step = 1)
 {
     if ($timestamp == null) {

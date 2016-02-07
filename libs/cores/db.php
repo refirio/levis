@@ -6,6 +6,12 @@
 
 *******************************************************************************/
 
+/**
+ * Connect the database.
+ *
+ * @param  mixed  $info
+ * @return void
+ */
 function db_connect($info)
 {
     global $db;
@@ -94,6 +100,14 @@ function db_connect($info)
     return;
 }
 
+/**
+ * Query to database.
+ *
+ * @param  mixed  $query
+ * @param  bool  $return
+ * @param  bool  $error
+ * @return mixed
+ */
 function db_query($query, $return = false, $error = true)
 {
     global $db;
@@ -131,6 +145,12 @@ function db_query($query, $return = false, $error = true)
     }
 }
 
+/**
+ * Get the result from database.
+ *
+ * @param  resource  $resource
+ * @return array
+ */
 function db_result($resource)
 {
     global $db;
@@ -148,6 +168,12 @@ function db_result($resource)
     return $results;
 }
 
+/**
+ * Get the count from database.
+ *
+ * @param  resource  $resource
+ * @return int
+ */
 function db_count($resource)
 {
     global $db;
@@ -159,6 +185,12 @@ function db_count($resource)
     return db_driver_count($resource);
 }
 
+/**
+ * Get the affected count from database.
+ *
+ * @param  resource  $resource
+ * @return int
+ */
 function db_affected_count($resource)
 {
     global $db;
@@ -170,6 +202,12 @@ function db_affected_count($resource)
     return db_driver_affected_count($resource);
 }
 
+/**
+ * Get the escaped data for database.
+ *
+ * @param  string  $data
+ * @return string
+ */
 function db_escape($data)
 {
     global $db;
@@ -185,6 +223,12 @@ function db_escape($data)
     return db_driver_escape($data);
 }
 
+/**
+ * Get the unescaped data for database.
+ *
+ * @param  string  $data
+ * @return string
+ */
 function db_unescape($data)
 {
     global $db;
@@ -200,6 +244,12 @@ function db_unescape($data)
     return db_driver_unescape($data);
 }
 
+/**
+ * Get the placeholder data for database.
+ *
+ * @param  string  $data
+ * @return string
+ */
 function db_placeholder($data)
 {
     $holder = rand_string();
@@ -235,6 +285,11 @@ function db_placeholder($data)
     return $data;
 }
 
+/**
+ * Get the error from database.
+ *
+ * @return string
+ */
 function db_error()
 {
     global $db;
@@ -246,6 +301,13 @@ function db_error()
     return db_driver_error();
 }
 
+/**
+ * Select the data from database.
+ *
+ * @param  array  $queries
+ * @param  bool  $return
+ * @return mixed
+ */
 function db_select($queries, $return = false)
 {
     global $db;
@@ -309,6 +371,13 @@ function db_select($queries, $return = false)
     }
 }
 
+/**
+ * Insert the data to database.
+ *
+ * @param  array  $queries
+ * @param  bool  $return
+ * @return mixed
+ */
 function db_insert($queries, $return = false)
 {
     global $db;
@@ -357,6 +426,13 @@ function db_insert($queries, $return = false)
     }
 }
 
+/**
+ * Update the data to database.
+ *
+ * @param  array  $queries
+ * @param  bool  $return
+ * @return mixed
+ */
 function db_update($queries, $return = false)
 {
     global $db;
@@ -418,6 +494,13 @@ function db_update($queries, $return = false)
     }
 }
 
+/**
+ * Delete the data to database.
+ *
+ * @param  array  $queries
+ * @param  bool  $return
+ * @return mixed
+ */
 function db_delete($queries, $return = false)
 {
     global $db;
@@ -459,6 +542,12 @@ function db_delete($queries, $return = false)
     }
 }
 
+/**
+ * Get the last insert id from database.
+ *
+ * @param  string  $data
+ * @return string
+ */
 function db_last_insert_id()
 {
     global $db;
@@ -470,6 +559,11 @@ function db_last_insert_id()
     return db_driver_last_insert_id();
 }
 
+/**
+ * Start a transaction.
+ *
+ * @return mixed
+ */
 function db_transaction()
 {
     global $db;
@@ -481,6 +575,11 @@ function db_transaction()
     return db_driver_transaction();
 }
 
+/**
+ * Commit a transaction.
+ *
+ * @return mixed
+ */
 function db_commit()
 {
     global $db;
@@ -492,6 +591,11 @@ function db_commit()
     return db_driver_commit();
 }
 
+/**
+ * Rollback a transaction.
+ *
+ * @return mixed
+ */
 function db_rollback()
 {
     global $db;
@@ -503,6 +607,10 @@ function db_rollback()
     return db_driver_rollback();
 }
 
+/**
+ * Output a admin page for database.
+ *
+ */
 function db_admin()
 {
     global $db;
@@ -522,6 +630,10 @@ function db_admin()
     exit;
 }
 
+/**
+ * Output a import page for database.
+ *
+ */
 function db_admin_import()
 {
     global $db;
@@ -632,6 +744,10 @@ function db_admin_import()
     return;
 }
 
+/**
+ * Output a export page for database.
+ *
+ */
 function db_admin_export()
 {
     global $db;
@@ -765,6 +881,10 @@ function db_admin_export()
     return;
 }
 
+/**
+ * Output a sql page for database.
+ *
+ */
 function db_admin_sql()
 {
     global $db;
@@ -1020,6 +1140,10 @@ function db_admin_sql()
     return;
 }
 
+/**
+ * Output a migrate page for database.
+ *
+ */
 function db_migrate()
 {
     global $db;
@@ -1230,6 +1354,10 @@ function db_migrate()
     exit;
 }
 
+/**
+ * Output a scaffold page for database.
+ *
+ */
 function db_scaffold()
 {
     global $db;
@@ -1915,6 +2043,10 @@ function db_scaffold()
     exit;
 }
 
+/**
+ * Output the scaffolded data from database.
+ *
+ */
 function db_scaffold_output($file, $data)
 {
     $file = DATABASE_SCAFFOLD_PATH . $file;
@@ -1942,6 +2074,13 @@ function db_scaffold_output($file, $data)
     return $result;
 }
 
+/**
+ * Get the sql data for database.
+ *
+ * @param  string  $type
+ * @param  string|null  $table
+ * @return string
+ */
 function db_sql($type, $table = null)
 {
     global $db;

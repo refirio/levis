@@ -6,6 +6,17 @@
 
 *******************************************************************************/
 
+/**
+ * Set the cookie.
+ *
+ * @param  string  $name
+ * @param  string  $value
+ * @param  int  $expire
+ * @param  string|null  $path
+ * @param  string|null  $domain
+ * @param  bool  $secure
+ * @return bool
+ */
 function cookie_set($name, $value, $expire = 0, $path = null, $domain = null, $secure = false)
 {
     if ($path === null) {

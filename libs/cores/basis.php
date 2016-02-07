@@ -14,6 +14,14 @@ $params = array();
 $db     = array();
 $view   = array();
 
+/**
+ * Load the given file.
+ *
+ * @param  string  $file
+ * @param  bool  $once
+ * @param  bool  $ignore
+ * @return void
+ */
 function import($file, $once = true, $ignore = false)
 {
     global $params, $db, $view;
@@ -57,6 +65,11 @@ function import($file, $once = true, $ignore = false)
     return;
 }
 
+/**
+ * Bootstrap.
+ *
+ * @return void
+ */
 function bootstrap()
 {
     if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/bootstrap.php')) {
@@ -66,6 +79,11 @@ function bootstrap()
     return;
 }
 
+/**
+ * Start the session.
+ *
+ * @return void
+ */
 function session()
 {
     if (SESSION_AUTOSTART == false) {
@@ -89,6 +107,11 @@ function session()
     return;
 }
 
+/**
+ * Connect the database.
+ *
+ * @return void
+ */
 function database()
 {
     db_connect('default');
@@ -100,6 +123,11 @@ function database()
     return;
 }
 
+/**
+ * Normalize the superglobals.
+ *
+ * @return void
+ */
 function normalize()
 {
     if (ini_get('magic_quotes_gpc')) {
@@ -129,6 +157,11 @@ function normalize()
     return;
 }
 
+/**
+ * Routing the url.
+ *
+ * @return void
+ */
 function routing()
 {
     global $params;
@@ -184,6 +217,12 @@ function routing()
     return;
 }
 
+/**
+ * Load the service files.
+ *
+ * @param  string|null  $target
+ * @return void
+ */
 function service($target = null)
 {
     $dir = 'app/services/';
@@ -218,6 +257,12 @@ function service($target = null)
     return;
 }
 
+/**
+ * Load the model files.
+ *
+ * @param  string|null  $target
+ * @return void
+ */
 function model($target = null)
 {
     $dir = 'app/models/';
@@ -292,6 +337,12 @@ function model($target = null)
     return;
 }
 
+/**
+ * Load the controller files.
+ *
+ * @param  string|null  $target
+ * @return void
+ */
 function controller($target = null)
 {
     global $params, $db, $view;
@@ -320,6 +371,13 @@ function controller($target = null)
     return;
 }
 
+/**
+ * Load the view files.
+ *
+ * @param  string|null  $target
+ * @param  bool  $return
+ * @return void
+ */
 function view($target = null, $return = false)
 {
     global $params, $view;
@@ -368,6 +426,12 @@ function view($target = null, $return = false)
     }
 }
 
+/**
+ * Get the unescaped data.
+ *
+ * @param  string  $data
+ * @return string
+ */
 function unescape($data)
 {
     if (is_array($data)) {
@@ -377,6 +441,12 @@ function unescape($data)
     return stripslashes($data);
 }
 
+/**
+ * Get the sanitized data.
+ *
+ * @param  string  $data
+ * @return string
+ */
 function sanitize($data)
 {
     if (is_array($data)) {
@@ -386,6 +456,12 @@ function sanitize($data)
     return str_replace("\0", '', $data);
 }
 
+/**
+ * Get the unified data.
+ *
+ * @param  string  $data
+ * @return string
+ */
 function unify($data)
 {
     if (is_array($data)) {
@@ -398,6 +474,14 @@ function unify($data)
     return $data;
 }
 
+/**
+ * Get the converted data.
+ *
+ * @param  mixed  $data
+ * @param  string  $to_encoding
+ * @param  string  $from_encoding
+ * @return mixed
+ */
 function convert($data, $to_encoding = 'UTF-8', $from_encoding = 'UTF-8,EUCJP-WIN,SJIS-WIN')
 {
     if (mb_convert_variables($to_encoding, $from_encoding, $data)) {
@@ -407,6 +491,14 @@ function convert($data, $to_encoding = 'UTF-8', $from_encoding = 'UTF-8,EUCJP-WI
     }
 }
 
+/**
+ * Get the alternative data.
+ *
+ * @param  mixed  $data
+ * @param  string  $to_encoding
+ * @param  string|null  $from_encoding
+ * @return mixed
+ */
 function alt($data, $alternative, $pattern = null)
 {
     if ($data === null || $data === '') {
@@ -418,6 +510,15 @@ function alt($data, $alternative, $pattern = null)
     }
 }
 
+/**
+ * Get the truncated data.
+ *
+ * @param  string  $data
+ * @param  int  $width
+ * @param  string  $trimmarker
+ * @param  string  $encoding
+ * @return string
+ */
 function truncate($data, $width = 0, $trimmarker = '...', $encoding = 'UTF-8')
 {
     if (mb_strlen($data, $encoding) > $width) {
@@ -427,6 +528,13 @@ function truncate($data, $width = 0, $trimmarker = '...', $encoding = 'UTF-8')
     return $data;
 }
 
+/**
+ * Output the data.
+ *
+ * @param  string  $data
+ * @param  bool  $return
+ * @return void|string
+ */
 function e($data, $return = false)
 {
     if ($return) {
@@ -436,6 +544,13 @@ function e($data, $return = false)
     }
 }
 
+/**
+ * Output the data for text.
+ *
+ * @param  string  $data
+ * @param  bool  $return
+ * @return void|string
+ */
 function t($data, $return = false)
 {
     $data = htmlspecialchars($data, ENT_QUOTES, MAIN_INTERNAL_ENCODING);
@@ -447,6 +562,13 @@ function t($data, $return = false)
     }
 }
 
+/**
+ * Output the data for html.
+ *
+ * @param  string  $data
+ * @param  bool  $return
+ * @return void|string
+ */
 function h($data, $return = false)
 {
     $data = htmlspecialchars($data, ENT_QUOTES, MAIN_INTERNAL_ENCODING);
@@ -459,6 +581,13 @@ function h($data, $return = false)
     }
 }
 
+/**
+ * Format a local time/date.
+ *
+ * @param  string|null  $format
+ * @param  mixed|null  $timestamp
+ * @return mixed
+ */
 function localdate($format = null, $timestamp = null)
 {
     static $time = 0;
@@ -482,6 +611,12 @@ function localdate($format = null, $timestamp = null)
     }
 }
 
+/**
+ * Get a client ip.
+ *
+ * @param  bool  $proxy
+ * @return string
+ */
 function clientip($proxy = false)
 {
     if ($proxy) {
@@ -497,6 +632,12 @@ function clientip($proxy = false)
     return $_SERVER['REMOTE_ADDR'];
 }
 
+/**
+ * Determine if the request is secure.
+ *
+ * @param  bool  $proxy
+ * @return bool
+ */
 function ssl($proxy = false)
 {
     if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
@@ -512,6 +653,13 @@ function ssl($proxy = false)
     return false;
 }
 
+/**
+ * Get or check the token.
+ *
+ * @param  string  $type
+ * @param  string  $name
+ * @return bool
+ */
 function token($type, $name = 'default')
 {
     if ($type == 'check') {
@@ -542,6 +690,12 @@ function token($type, $name = 'default')
     }
 }
 
+/**
+ * Redirect to the url.
+ *
+ * @param  string  $url
+ * @return void
+ */
 function redirect($url)
 {
     if (!regexp_match('^https?\:\/\/', $url)) {
@@ -553,6 +707,13 @@ function redirect($url)
     exit;
 }
 
+/**
+ * Output the data for debug.
+ *
+ * @param  mixed  $data
+ * @param  bool  $return
+ * @return void|mixed
+ */
 function debug($data, $return = false)
 {
     if ($return) {
@@ -566,6 +727,12 @@ function debug($data, $return = false)
     }
 }
 
+/**
+ * Log the message to a logs.
+ *
+ * @param  string  $message
+ * @return void
+ */
 function logging($message)
 {
     $message = regexp_replace("\r", '\r', $message);
@@ -585,6 +752,11 @@ function logging($message)
     return;
 }
 
+/**
+ * Output the result.
+ *
+ * @param  string|null  $type
+ */
 function ok($type = null)
 {
     if ($type == null && isset($_REQUEST['type'])) {
@@ -625,6 +797,12 @@ function ok($type = null)
     exit;
 }
 
+/**
+ * Output the result for warning.
+ *
+ * @param  string  $messages
+ * @param  string|null  $type
+ */
 function warning($messages, $type = null)
 {
     global $view;
@@ -687,6 +865,12 @@ function warning($messages, $type = null)
     exit;
 }
 
+/**
+ * Output the result for error.
+ *
+ * @param  string  $messages
+ * @param  string|null  $type
+ */
 function error($message, $type = null)
 {
     global $view;
@@ -737,6 +921,10 @@ function error($message, $type = null)
     exit;
 }
 
+/**
+ * Output a page for this framework.
+ *
+ */
 function about()
 {
     echo "<!DOCTYPE html>\n";
@@ -891,6 +1079,10 @@ function about()
     exit;
 }
 
+/**
+ * Output a style for this framework.
+ *
+ */
 function style()
 {
     echo "<style>\n";

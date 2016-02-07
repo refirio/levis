@@ -6,6 +6,11 @@
 
 *******************************************************************************/
 
+/**
+ * Connect the database.
+ *
+ * @return void
+ */
 function db_driver_connect()
 {
     global $db;
@@ -18,6 +23,12 @@ function db_driver_connect()
     return;
 }
 
+/**
+ * Query to database.
+ *
+ * @param  mixed  $query
+ * @return mixed
+ */
 function db_driver_query($query)
 {
     global $db;
@@ -25,6 +36,12 @@ function db_driver_query($query)
     return sqlite_query($db['resource'][$db['target']]['dbh'], $query);
 }
 
+/**
+ * Get the result from database.
+ *
+ * @param  resource  $resource
+ * @return array
+ */
 function db_driver_result($resource)
 {
     global $db;
@@ -37,6 +54,12 @@ function db_driver_result($resource)
     return $results;
 }
 
+/**
+ * Get the count from database.
+ *
+ * @param  resource  $resource
+ * @return int
+ */
 function db_driver_count($resource)
 {
     global $db;
@@ -44,6 +67,12 @@ function db_driver_count($resource)
     return sqlite_num_rows($resource);
 }
 
+/**
+ * Get the affected count from database.
+ *
+ * @param  resource  $resource
+ * @return int
+ */
 function db_driver_affected_count($resource)
 {
     global $db;
@@ -51,6 +80,12 @@ function db_driver_affected_count($resource)
     return sqlite_changes($db['resource'][$db['target']]['dbh']);
 }
 
+/**
+ * Get the escaped data for database.
+ *
+ * @param  string  $data
+ * @return string
+ */
 function db_driver_escape($data)
 {
     global $db;
@@ -58,6 +93,12 @@ function db_driver_escape($data)
     return '\'' . str_replace('\'', '\'\'', $data) . '\'';
 }
 
+/**
+ * Get the unescaped data for database.
+ *
+ * @param  string  $data
+ * @return string
+ */
 function db_driver_unescape($data)
 {
     global $db;
@@ -68,6 +109,11 @@ function db_driver_unescape($data)
     return $data;
 }
 
+/**
+ * Get the error from database.
+ *
+ * @return string
+ */
 function db_driver_error()
 {
     global $db;
@@ -75,6 +121,11 @@ function db_driver_error()
     return sqlite_last_error($db['resource'][$db['target']]['dbh']);
 }
 
+/**
+ * Start a transaction.
+ *
+ * @return mixed
+ */
 function db_driver_transaction()
 {
     global $db;
@@ -82,6 +133,11 @@ function db_driver_transaction()
     return mysql_query('EXCLUSIVE', $db['resource'][$db['target']]['dbh']);
 }
 
+/**
+ * Commit a transaction.
+ *
+ * @return mixed
+ */
 function db_driver_commit()
 {
     global $db;
@@ -89,6 +145,11 @@ function db_driver_commit()
     return mysql_query('COMMIT', $db['resource'][$db['target']]['dbh']);
 }
 
+/**
+ * Rollback a transaction.
+ *
+ * @return mixed
+ */
 function db_driver_rollback()
 {
     global $db;

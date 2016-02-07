@@ -6,6 +6,13 @@
 
 *******************************************************************************/
 
+/**
+ * Perform a regular expression match.
+ *
+ * @param  string  $pattern
+ * @param  string  $subject
+ * @return mixed
+ */
 function regexp_match($pattern, $subject)
 {
     $regexp = false;
@@ -27,6 +34,15 @@ function regexp_match($pattern, $subject)
     return $regexp;
 }
 
+/**
+ * Perform a regular expression search and replace.
+ *
+ * @param  string  $pattern
+ * @param  string  $replacement
+ * @param  string  $subject
+ * @param  int  $limit
+ * @return mixed
+ */
 function regexp_replace($pattern, $replacement, $subject, $limit = -1)
 {
     if (REGEXP_TYPE == 'ereg') {

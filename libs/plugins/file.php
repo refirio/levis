@@ -6,6 +6,12 @@
 
 *******************************************************************************/
 
+/**
+ * Get the file information.
+ *
+ * @param  string  $file
+ * @return array
+ */
 function file_info($file)
 {
     if (regexp_match('\.(gif|jpeg|jpg|jpe|png)$', $file)) {
@@ -20,6 +26,12 @@ function file_info($file)
     return array($width, $height, $size);
 }
 
+/**
+ * Get the file mimetype.
+ *
+ * @param  string  $file
+ * @return string
+ */
 function file_mimetype($file)
 {
     $mime_content_types = array(
@@ -680,6 +692,16 @@ function file_mimetype($file)
     }
 }
 
+/**
+ * Resize the file.
+ *
+ * @param  string  $original
+ * @param  string  $output
+ * @param  int  $output_width
+ * @param  int  $output_height
+ * @param  int  $quality
+ * @return bool
+ */
 function file_resize($original, $output, $output_width, $output_height, $quality = 80)
 {
     if (!regexp_match('\.(gif|jpeg|jpg|jpe|png)$', $original)) {
@@ -762,6 +784,15 @@ function file_resize($original, $output, $output_width, $output_height, $quality
     return true;
 }
 
+/**
+ * Gets line from file pointer and parse for CSV fields.
+ *
+ * @param  string  $handle
+ * @param  int|null  $length
+ * @param  string  $delimiter
+ * @param  string  $escape
+ * @return mixed
+ */
 function file_getcsv($handle, $length = null, $delimiter = ',', $escape = '"')
 {
     $delimiter = preg_quote($delimiter);

@@ -6,6 +6,11 @@
 
 *******************************************************************************/
 
+/**
+ * Connect the database.
+ *
+ * @return void
+ */
 function db_driver_connect()
 {
     global $db;
@@ -40,6 +45,12 @@ function db_driver_connect()
     return;
 }
 
+/**
+ * Query to database.
+ *
+ * @param  mixed  $query
+ * @return mixed
+ */
 function db_driver_query($query)
 {
     global $db;
@@ -47,6 +58,12 @@ function db_driver_query($query)
     return $db['resource'][$db['target']]['dbh']->query($query);
 }
 
+/**
+ * Get the result from database.
+ *
+ * @param  resource  $resource
+ * @return array
+ */
 function db_driver_result($resource)
 {
     global $db;
@@ -59,6 +76,12 @@ function db_driver_result($resource)
     return $results;
 }
 
+/**
+ * Get the count from database.
+ *
+ * @param  resource  $resource
+ * @return int
+ */
 function db_driver_count($resource)
 {
     global $db;
@@ -66,6 +89,12 @@ function db_driver_count($resource)
     return $resource->rowCount();
 }
 
+/**
+ * Get the affected count from database.
+ *
+ * @param  resource  $resource
+ * @return int
+ */
 function db_driver_affected_count($resource)
 {
     global $db;
@@ -73,6 +102,12 @@ function db_driver_affected_count($resource)
     return $resource->rowCount();
 }
 
+/**
+ * Get the escaped data for database.
+ *
+ * @param  string  $data
+ * @return string
+ */
 function db_driver_escape($data)
 {
     global $db;
@@ -84,6 +119,12 @@ function db_driver_escape($data)
     }
 }
 
+/**
+ * Get the unescaped data for database.
+ *
+ * @param  string  $data
+ * @return string
+ */
 function db_driver_unescape($data)
 {
     global $db;
@@ -101,6 +142,11 @@ function db_driver_unescape($data)
     }
 }
 
+/**
+ * Get the error from database.
+ *
+ * @return string
+ */
 function db_driver_error()
 {
     global $db;
@@ -113,6 +159,11 @@ function db_driver_error()
     return $error;
 }
 
+/**
+ * Get the last insert id from database.
+ *
+ * @return string
+ */
 function db_driver_last_insert_id()
 {
     global $db;
@@ -120,6 +171,11 @@ function db_driver_last_insert_id()
     return $db['resource'][$db['target']]['dbh']->lastInsertId();
 }
 
+/**
+ * Start a transaction.
+ *
+ * @return mixed
+ */
 function db_driver_transaction()
 {
     global $db;
@@ -127,6 +183,11 @@ function db_driver_transaction()
     return $db['resource'][$db['target']]['dbh']->beginTransaction();
 }
 
+/**
+ * Commit a transaction.
+ *
+ * @return mixed
+ */
 function db_driver_commit()
 {
     global $db;
@@ -134,6 +195,11 @@ function db_driver_commit()
     return $db['resource'][$db['target']]['dbh']->commit();
 }
 
+/**
+ * Rollback a transaction.
+ *
+ * @return mixed
+ */
 function db_driver_rollback()
 {
     global $db;

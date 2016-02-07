@@ -6,6 +6,12 @@
 
 *******************************************************************************/
 
+/**
+ * Get the directory information.
+ *
+ * @param  string  $dir
+ * @return int
+ */
 function directory_info($dir)
 {
     if (!is_dir($dir)) {
@@ -32,6 +38,14 @@ function directory_info($dir)
     return $size;
 }
 
+/**
+ * Makes directory.
+ *
+ * @param  string  $path
+ * @param  int  $mode
+ * @param  bool  $recursive
+ * @return bool
+ */
 function directory_mkdir($path, $mode = 0707, $recursive = true)
 {
     if (is_dir($path)) {
@@ -73,6 +87,13 @@ function directory_mkdir($path, $mode = 0707, $recursive = true)
     }
 }
 
+/**
+ * Removes directory
+ *
+ * @param  string  $path
+ * @param  bool  $recursive
+ * @return bool
+ */
 function directory_rmdir($path, $recursive = true)
 {
     if (!is_dir($path)) {
