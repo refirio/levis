@@ -108,7 +108,7 @@ function session()
 }
 
 /**
- * Connect the database.
+ * Connect to the database.
  *
  * @return void
  */

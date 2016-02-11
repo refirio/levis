@@ -7,7 +7,7 @@
 *******************************************************************************/
 
 /**
- * Get a rand number.
+ * Get a random number.
  *
  * @param  int  $min
  * @param  int  $max
@@ -26,7 +26,7 @@ function rand_number($min = null, $max = null)
 }
 
 /**
- * Get a rand string.
+ * Get a random string.
  *
  * @param  int  $max
  * @return string

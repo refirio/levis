@@ -7,7 +7,7 @@
 *******************************************************************************/
 
 /**
- * Connect the database.
+ * Connect to the database.
  *
  * @param  mixed  $info
  * @return void
@@ -1564,6 +1564,13 @@ function db_scaffold()
         //model
         $buffer  = '<?php' . "\n";
         $buffer .= "\n";
+
+        $buffer .= '/**' . "\n";
+        $buffer .= ' * Validate for ' . ($table_comment ? $table_comment : $table) . "\n";
+        $buffer .= ' *' . "\n";
+        $buffer .= ' * @param  array  $queries' . "\n";
+        $buffer .= ' * @return array' . "\n";
+        $buffer .= ' */' . "\n";
         $buffer .= 'function validate_' . $table . '($queries)' . "\n";
         $buffer .= '{' . "\n";
         $buffer .= '    $messages = array();' . "\n";
@@ -1572,6 +1579,12 @@ function db_scaffold()
         $buffer .= '    return $messages;' . "\n";
         $buffer .= '}' . "\n";
         $buffer .= "\n";
+
+        $buffer .= '/**' . "\n";
+        $buffer .= ' * Default for ' . ($table_comment ? $table_comment : $table) . "\n";
+        $buffer .= ' *' . "\n";
+        $buffer .= ' * @return array' . "\n";
+        $buffer .= ' */' . "\n";
         $buffer .= 'function default_' . $table . '()' . "\n";
         $buffer .= '{' . "\n";
         $buffer .= '    return array(' . "\n";
