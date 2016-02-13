@@ -640,7 +640,7 @@ function clientip($proxy = false)
  */
 function ssl($proxy = false)
 {
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+    if (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) == 'on' || $_SERVER['HTTPS'] == 1)) {
         return true;
     } elseif ($proxy) {
         if (!empty($_SERVER['HTTP_X_FORWARDED_PORT']) && $_SERVER['HTTP_X_FORWARDED_PORT'] == 443) {
