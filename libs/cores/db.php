@@ -1528,7 +1528,7 @@ function db_scaffold()
                 $view_form .= '                    <dt>' . ($comment ? $comment : $field) . ($null ? '' : '(required)') . '</dt>' . "\n";
                 $view_form .= '                        <dd>' . "\n";
                 $view_form .= '                            <?php if (empty($_GET[\'' . $primary_key . '\'])) : ?>' . "\n";
-                $view_form .= '                          ' . $input . "\n";
+                $view_form .= '                            ' . $input . "\n";
                 $view_form .= '                            <?php else : ?>' . "\n";
                 $view_form .= '                            <em><?php h($view[\'data\'][\'' . $field . '\']) ?></em><input type="hidden" name="' . $field . '" value="<?php t($view[\'data\'][\'' . $field . '\']) ?>" />' . "\n";
                 $view_form .= '                            <?php endif ?>' . "\n";
