@@ -868,7 +868,7 @@ function warning($messages, $type = null)
 /**
  * Output the result for error.
  *
- * @param  string  $messages
+ * @param  string  $message
  * @param  string|null  $type
  */
 function error($message, $type = null)
