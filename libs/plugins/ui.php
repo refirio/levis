@@ -161,40 +161,36 @@ function ui_pager($option = array())
  */
 function ui_datetime($timestamp, $type = '', $prefix = '', $suffix = '', $from = 0, $to = 0, $step = 1)
 {
-    if ($timestamp == null) {
-        $timestamp = '0000-00-00 00:00:00';
-    }
-
     switch ($type) {
         case 'year':
-            $value = intval(localdate('Y', $timestamp));
-            $from  = $from ? $from : date('Y') - 10;
-            $to    = $to   ? $to   : date('Y') + 10;
+            $value = $timestamp ? intval(localdate('Y', $timestamp)) : null;
+            $from  = $from      ? $from                              : date('Y') - 10;
+            $to    = $to        ? $to                                : date('Y') + 10;
             break;
         case 'month':
-            $value = intval(localdate('m', $timestamp));
-            $from  = $from ? $from : 1;
-            $to    = $to   ? $to   : 12;
+            $value = $timestamp ? intval(localdate('m', $timestamp)) : null;
+            $from  = $from      ? $from                              : 1;
+            $to    = $to        ? $to                                : 12;
             break;
         case 'day':
-            $value = intval(localdate('d', $timestamp));
-            $from  = $from ? $from : 1;
-            $to    = $to   ? $to   : 31;
+            $value = $timestamp ? intval(localdate('d', $timestamp)) : null;
+            $from  = $from      ? $from                              : 1;
+            $to    = $to        ? $to                                : 31;
             break;
         case 'hour':
-            $value = intval(localdate('H', $timestamp));
-            $from  = $from ? $from : 0;
-            $to    = $to   ? $to   : 23;
+            $value = $timestamp ? intval(localdate('H', $timestamp)) : null;
+            $from  = $from      ? $from                              : 0;
+            $to    = $to        ? $to                                : 23;
             break;
         case 'minute':
-            $value = intval(localdate('i', $timestamp));
-            $from  = $from ? $from : 0;
-            $to    = $to   ? $to   : 59;
+            $value = $timestamp ? intval(localdate('i', $timestamp)) : null;
+            $from  = $from      ? $from                              : 0;
+            $to    = $to        ? $to                                : 59;
             break;
         case 'second':
-            $value = intval(localdate('s', $timestamp));
-            $from  = $from ? $from : 0;
-            $to    = $to   ? $to   : 59;
+            $value = $timestamp ? intval(localdate('s', $timestamp)) : null;
+            $from  = $from      ? $from                              : 0;
+            $to    = $to        ? $to                                : 59;
             break;
         default:
             return '<option value="">Incorrect value was specified.</option>';
@@ -203,7 +199,7 @@ function ui_datetime($timestamp, $type = '', $prefix = '', $suffix = '', $from =
     $datetime = '';
 
     for ($i = $from; $i <= $to; $i += $step) {
-        $datetime .= '<option value="' . sprintf("%02d", $i) . '"' . ($i == $value ? ' selected="selected"' : '') . '>' . $prefix . $i . $suffix . '</option>';
+        $datetime .= '<option value="' . sprintf("%02d", $i) . '"' . (($value !== null && $i == $value) ? ' selected="selected"' : '') . '>' . $prefix . $i . $suffix . '</option>';
     }
 
     return $datetime;
