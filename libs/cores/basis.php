@@ -351,16 +351,22 @@ function controller($target = null)
         import('app/controllers/before.php');
     }
 
-    $directory = 'app/controllers/' . $_REQUEST['mode'] . '/';
+    if (empty($GLOBALS['core']['routing'])) {
+        $routing = '';
+    } else {
+        $routing = $GLOBALS['core']['routing'] . '/';
+    }
+
+    $directory = 'app/controllers/' . $routing . $_REQUEST['mode'] . '/';
     $file      = $_REQUEST['work'] . '.php';
 
     if ($target) {
         import('app/controllers/' . $target);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $directory . $file)) {
         import($directory . $file);
-    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH  . $directory . MAIN_DEFAULT_WORK . '.php')) {
+    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $directory . MAIN_DEFAULT_WORK . '.php')) {
         import($directory . MAIN_DEFAULT_WORK . '.php');
-    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH  . 'app/controllers/' . PAGE_CONTROLLER . '.php')) {
+    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/' . PAGE_CONTROLLER . '.php')) {
         import('app/controllers/' . PAGE_CONTROLLER . '.php');
     }
 
@@ -388,7 +394,13 @@ function view($target = null, $return = false)
         return;
     }
 
-    $directory = 'app/views/' . $_REQUEST['mode'] . '/';
+    if (empty($GLOBALS['core']['routing'])) {
+        $routing = '';
+    } else {
+        $routing = $GLOBALS['core']['routing'] . '/';
+    }
+
+    $directory = 'app/views/' . $routing . $_REQUEST['mode'] . '/';
     $file      = $_REQUEST['work'] . '.php';
 
     if ($return) {
