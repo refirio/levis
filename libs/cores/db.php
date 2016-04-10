@@ -359,8 +359,13 @@ function db_select($queries, $return = false)
     } else {
         $queries['limit'] = '';
     }
+    if (isset($queries['option']) && $queries['option'] != '') {
+        $queries['option'] = $queries['option'] . ' ';
+    } else {
+        $queries['option'] = '';
+    }
 
-    $query = $queries['select'] . $queries['from'] . $queries['where'] . $queries['group_by'] . $queries['having'] . $queries['order_by'] . $queries['offset'] . $queries['limit'];
+    $query = $queries['select'] . $queries['from'] . $queries['where'] . $queries['group_by'] . $queries['having'] . $queries['order_by'] . $queries['offset'] . $queries['limit'] . $queries['option'];
 
     if ($return) {
         return $query;
@@ -416,8 +421,13 @@ function db_insert($queries, $return = false)
     } else {
         return false;
     }
+    if (isset($queries['option']) && $queries['option'] != '') {
+        $queries['option'] = $queries['option'] . ' ';
+    } else {
+        $queries['option'] = '';
+    }
 
-    $query = $queries['insert_into'] . $queries['values'];
+    $query = $queries['insert_into'] . $queries['values'] . $queries['option'];
 
     if ($return) {
         return $query;
@@ -484,8 +494,13 @@ function db_update($queries, $return = false)
     } else {
         $queries['limit'] = '';
     }
+    if (isset($queries['option']) && $queries['option'] != '') {
+        $queries['option'] = $queries['option'] . ' ';
+    } else {
+        $queries['option'] = '';
+    }
 
-    $query = $queries['update'] . $queries['set'] . $queries['where'] . $queries['offset'] . $queries['limit'];
+    $query = $queries['update'] . $queries['set'] . $queries['where'] . $queries['offset'] . $queries['limit'] . $queries['option'];
 
     if ($return) {
         return $query;
@@ -532,8 +547,13 @@ function db_delete($queries, $return = false)
     } else {
         $queries['limit'] = '';
     }
+    if (isset($queries['option']) && $queries['option'] != '') {
+        $queries['option'] = $queries['option'] . ' ';
+    } else {
+        $queries['option'] = '';
+    }
 
-    $query = $queries['delete_from'] . $queries['where'] . $queries['offset'] . $queries['limit'];
+    $query = $queries['delete_from'] . $queries['where'] . $queries['offset'] . $queries['limit'] . $queries['option'];
 
     if ($return) {
         return $query;
