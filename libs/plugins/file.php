@@ -730,13 +730,17 @@ function file_resize($original, $output, $output_width, $output_height, $quality
     }
 
     if (regexp_match('\.gif$', $original)) {
-        $file = imagecreatefromgif($original);
+        $file    = imagecreatefromgif($original);
+        $bgcolor = imagecolorallocatealpha($file, 0, 0, 0, 127);
     } elseif (regexp_match('\.(jpeg|jpg|jpe)$', $original)) {
-        $file = imagecreatefromjpeg($original);
+        $file    = imagecreatefromjpeg($original);
+        $bgcolor = false;
     } elseif (regexp_match('\.png$', $original)) {
-        $file = imagecreatefrompng($original);
+        $file    = imagecreatefrompng($original);
+        $bgcolor = imagecolorallocatealpha($file, 0, 0, 0, 127);
     } else {
-        $file = false;
+        $file    = false;
+        $bgcolor = false;
     }
     if ($file == false) {
         return false;
@@ -745,6 +749,16 @@ function file_resize($original, $output, $output_width, $output_height, $quality
     $thumbnail = imagecreatetruecolor($width, $height);
     if ($thumbnail == false) {
         return false;
+    }
+
+    if (regexp_match('\.gif$', $original)) {
+        imagefill($thumbnail, 0, 0, $bgcolor);   
+        imagecolortransparent($thumbnail, $bgcolor);
+    } elseif (regexp_match('\.png$', $original)) {
+        imagefill($thumbnail, 0, 0, $bgcolor);   
+        imagealphablending($thumbnail, false);
+        imagesavealpha($thumbnail, true);
+        imagecolortransparent($thumbnail, $bgcolor);
     }
 
     $result = imagecopyresampled($thumbnail, $file, 0, 0, 0, 0, $width, $height, $original_width, $original_height);
