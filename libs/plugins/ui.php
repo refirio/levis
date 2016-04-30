@@ -152,45 +152,60 @@ function ui_pager($option = array())
  *
  * @param  mixed  $timestamp
  * @param  string  $type
- * @param  string  $prefix
- * @param  string  $suffix
- * @param  int  $from
- * @param  int  $to
- * @param  int  $step
+ * @param  array  $option
  * @return string
  */
-function ui_datetime($timestamp, $type = '', $prefix = '', $suffix = '', $from = 0, $to = 0, $step = 1)
+function ui_datetime($timestamp, $type = '', $option = array())
 {
+    if (!isset($option['format'])) {
+        $option['format'] = '%01d';
+    }
+    if (!isset($option['prefix'])) {
+        $option['prefix'] = '';
+    }
+    if (!isset($option['suffix'])) {
+        $option['suffix'] = '';
+    }
+    if (!isset($option['from'])) {
+        $option['from'] = 0;
+    }
+    if (!isset($option['to'])) {
+        $option['to'] = 0;
+    }
+    if (!isset($option['step'])) {
+        $option['step'] = 1;
+    }
+
     switch ($type) {
         case 'year':
-            $value = $timestamp ? intval(localdate('Y', $timestamp)) : null;
-            $from  = $from      ? $from                              : date('Y') - 10;
-            $to    = $to        ? $to                                : date('Y') + 10;
+            $value = $timestamp      ? intval(localdate('Y', $timestamp)) : null;
+            $from  = $option['from'] ? $option['from']                    : date('Y') - 10;
+            $to    = $option['to']   ? $option['to']                      : date('Y') + 10;
             break;
         case 'month':
-            $value = $timestamp ? intval(localdate('m', $timestamp)) : null;
-            $from  = $from      ? $from                              : 1;
-            $to    = $to        ? $to                                : 12;
+            $value = $timestamp      ? intval(localdate('m', $timestamp)) : null;
+            $from  = $option['from'] ? $option['from']                    : 1;
+            $to    = $option['to']   ? $option['to']                      : 12;
             break;
         case 'day':
-            $value = $timestamp ? intval(localdate('d', $timestamp)) : null;
-            $from  = $from      ? $from                              : 1;
-            $to    = $to        ? $to                                : 31;
+            $value = $timestamp      ? intval(localdate('d', $timestamp)) : null;
+            $from  = $option['from'] ? $option['from']                    : 1;
+            $to    = $option['to']   ? $option['to']                      : 31;
             break;
         case 'hour':
-            $value = $timestamp ? intval(localdate('H', $timestamp)) : null;
-            $from  = $from      ? $from                              : 0;
-            $to    = $to        ? $to                                : 23;
+            $value = $timestamp      ? intval(localdate('H', $timestamp)) : null;
+            $from  = $option['from'] ? $option['from']                    : 0;
+            $to    = $option['to']   ? $option['to']                      : 23;
             break;
         case 'minute':
-            $value = $timestamp ? intval(localdate('i', $timestamp)) : null;
-            $from  = $from      ? $from                              : 0;
-            $to    = $to        ? $to                                : 59;
+            $value = $timestamp      ? intval(localdate('i', $timestamp)) : null;
+            $from  = $option['from'] ? $option['from']                    : 0;
+            $to    = $option['to']   ? $option['to']                      : 59;
             break;
         case 'second':
-            $value = $timestamp ? intval(localdate('s', $timestamp)) : null;
-            $from  = $from      ? $from                              : 0;
-            $to    = $to        ? $to                                : 59;
+            $value = $timestamp      ? intval(localdate('s', $timestamp)) : null;
+            $from  = $option['from'] ? $option['from']                    : 0;
+            $to    = $option['to']   ? $option['to']                      : 59;
             break;
         default:
             return '<option value="">Incorrect value was specified.</option>';
@@ -198,8 +213,8 @@ function ui_datetime($timestamp, $type = '', $prefix = '', $suffix = '', $from =
 
     $datetime = '';
 
-    for ($i = $from; $i <= $to; $i += $step) {
-        $datetime .= '<option value="' . sprintf("%02d", $i) . '"' . (($value !== null && $i == $value) ? ' selected="selected"' : '') . '>' . $prefix . $i . $suffix . '</option>';
+    for ($i = $from; $i <= $to; $i += $option['step']) {
+        $datetime .= '<option value="' . sprintf('%02d', $i) . '"' . (($value !== null && $i == $value) ? ' selected="selected"' : '') . '>' . $option['prefix'] . sprintf($option['format'], $i) . $option['suffix'] . '</option>';
     }
 
     return $datetime;
