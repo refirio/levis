@@ -830,7 +830,7 @@ function file_getcsv($handle, $length = null, $delimiter = ',', $escape = '"')
         $csv_data = $csv_matches[1];
     }
 
-    for ($i= 0; $i < count($csv_data); $i++){
+    for ($i = 0; $i < count($csv_data); $i++){
         $csv_data[$i] = preg_replace('/^' . $escape . '(.*)' . $escape . '$/s', '$1', $csv_data[$i]);
         $csv_data[$i] = str_replace($escape . $escape, $escape, $csv_data[$i]);
     }
