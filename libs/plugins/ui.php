@@ -211,8 +211,47 @@ function ui_datetime($timestamp, $type = '', $option = array())
             return '<option value="">Incorrect value was specified.</option>';
     }
 
-    $datetime = '';
+    if ($regexp = regexp_match('^(\d\d\d\d)\-(\d\d)\-(\d\d)', $timestamp)) {
+        $year  = intval($regexp[1]);
+        $month = intval($regexp[2]);
+        $day   = intval($regexp[3]);
 
+        if (!checkdate($month, $day, $year)) {
+            if ($regexp = regexp_match('(\d\d)\:(\d\d)\:(\d\d)$', $timestamp)) {
+                $hour   = intval($regexp[1]);
+                $minute = intval($regexp[2]);
+                $second = intval($regexp[3]);
+            } else {
+                $hour   = 0;
+                $minute = 0;
+                $second = 0;
+            }
+
+            switch ($type) {
+                case 'year':
+                    $value = $year;
+                    break;
+                case 'month':
+                    $value = $month;
+                    break;
+                case 'day':
+                    $value = $day;
+                    break;
+                case 'hour':
+                    $value = $hour;
+                    break;
+                case 'minute':
+                    $value = $minute;
+                    break;
+                case 'second':
+                    $value = $second;
+                    break;
+                default:
+            }
+        }
+    }
+
+    $datetime = '';
     for ($i = $from; $i <= $to; $i += $option['step']) {
         $datetime .= '<option value="' . sprintf('%02d', $i) . '"' . (($value !== null && $i === $value) ? ' selected="selected"' : '') . '>' . $option['prefix'] . sprintf($option['format'], $i) . $option['suffix'] . '</option>';
     }

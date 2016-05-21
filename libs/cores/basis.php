@@ -614,9 +614,17 @@ function localdate($format = null, $timestamp = null)
         $time = time() + MAIN_TIME;
     }
 
-    if (regexp_match('^0000', $timestamp)) {
-        return null;
-    } elseif ($timestamp === null) {
+    if ($regexp = regexp_match('^(\d\d\d\d)\-(\d\d)\-(\d\d)', $timestamp)) {
+        $year  = intval($regexp[1]);
+        $month = intval($regexp[2]);
+        $day   = intval($regexp[3]);
+
+        if (!checkdate($month, $day, $year)) {
+            return null;
+        }
+    }
+
+    if ($timestamp === null) {
         $timestamp = $time;
     } elseif (!is_numeric($timestamp)) {
         $timestamp = strtotime($timestamp);
