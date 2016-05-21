@@ -350,6 +350,9 @@ function controller($target = null)
     if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/before.php')) {
         import('app/controllers/before.php');
     }
+    if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/before_' . $_REQUEST['mode'] . '.php')) {
+        import('app/controllers/before_' . $_REQUEST['mode'] . '.php');
+    }
 
     if (empty($GLOBALS['core']['routing'])) {
         $routing = '';
@@ -370,6 +373,9 @@ function controller($target = null)
         import('app/controllers/' . PAGE_CONTROLLER . '.php');
     }
 
+    if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/after_' . $_REQUEST['mode'] . '.php')) {
+        import('app/controllers/after_' . $_REQUEST['mode'] . '.php');
+    }
     if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/after.php')) {
         import('app/controllers/after.php');
     }
@@ -788,6 +794,8 @@ function ok($type = null)
         echo "<response>\n";
         echo "<status>OK</status>\n";
         echo "</response>\n";
+    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/ok_' . $_REQUEST['mode'] . '.php')) {
+        import('app/views/ok_' . $_REQUEST['mode'] . '.php', false, true);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/ok.php')) {
         import('app/views/ok.php', false, true);
     } else {
@@ -847,6 +855,10 @@ function warning($messages, $type = null)
 
         echo "</messages>\n";
         echo "</response>\n";
+    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/warning_' . $_REQUEST['mode'] . '.php')) {
+        $view['messages'] = $messages;
+
+        import('app/views/warning_' . $_REQUEST['mode'] . '.php', false, true);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/warning.php')) {
         $view['messages'] = $messages;
 
@@ -909,6 +921,10 @@ function error($message, $type = null)
         echo "<status>ERROR</status>\n";
         echo "<message>" . h($message, true) . "</message>\n";
         echo "</response>\n";
+    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/error_' . $_REQUEST['mode'] . '.php')) {
+        $view['message'] = $message;
+
+        import('app/views/error_' . $_REQUEST['mode'] . '.php', false, true);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/error.php')) {
         $view['message'] = $message;
 
