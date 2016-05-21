@@ -101,7 +101,7 @@ function db_connect($info)
 }
 
 /**
- * Query to database.
+ * Query to the database.
  *
  * @param  mixed  $query
  * @param  bool  $return
@@ -146,7 +146,7 @@ function db_query($query, $return = false, $error = true)
 }
 
 /**
- * Get the result from database.
+ * Get the result from the database.
  *
  * @param  resource  $resource
  * @return array
@@ -169,7 +169,7 @@ function db_result($resource)
 }
 
 /**
- * Get the count from database.
+ * Get the count from the database.
  *
  * @param  resource  $resource
  * @return int
@@ -186,7 +186,7 @@ function db_count($resource)
 }
 
 /**
- * Get the affected count from database.
+ * Get the affected count from the database.
  *
  * @param  resource  $resource
  * @return int
@@ -286,7 +286,7 @@ function db_placeholder($data)
 }
 
 /**
- * Get the error from database.
+ * Get the error from the database.
  *
  * @return string
  */
@@ -302,7 +302,7 @@ function db_error()
 }
 
 /**
- * Select the data from database.
+ * Select the data from the database.
  *
  * @param  array  $queries
  * @param  bool  $return
@@ -377,7 +377,7 @@ function db_select($queries, $return = false)
 }
 
 /**
- * Insert the data to database.
+ * Insert the data to the database.
  *
  * @param  array  $queries
  * @param  bool  $return
@@ -437,7 +437,7 @@ function db_insert($queries, $return = false)
 }
 
 /**
- * Update the data to database.
+ * Update the data to the database.
  *
  * @param  array  $queries
  * @param  bool  $return
@@ -510,7 +510,7 @@ function db_update($queries, $return = false)
 }
 
 /**
- * Delete the data to database.
+ * Delete the data to the database.
  *
  * @param  array  $queries
  * @param  bool  $return
@@ -563,7 +563,7 @@ function db_delete($queries, $return = false)
 }
 
 /**
- * Get the last insert id from database.
+ * Get the last insert id from the database.
  *
  * @param  string  $data
  * @return string
@@ -2077,7 +2077,7 @@ function db_scaffold()
 }
 
 /**
- * Output the scaffolded data from database.
+ * Output the scaffolded data from the database.
  *
  */
 function db_scaffold_output($file, $data)

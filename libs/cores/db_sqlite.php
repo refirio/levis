@@ -24,7 +24,7 @@ function db_driver_connect()
 }
 
 /**
- * Query to database.
+ * Query to the database.
  *
  * @param  mixed  $query
  * @return mixed
@@ -37,7 +37,7 @@ function db_driver_query($query)
 }
 
 /**
- * Get the result from database.
+ * Get the result from the database.
  *
  * @param  resource  $resource
  * @return array
@@ -55,7 +55,7 @@ function db_driver_result($resource)
 }
 
 /**
- * Get the count from database.
+ * Get the count from the database.
  *
  * @param  resource  $resource
  * @return int
@@ -68,7 +68,7 @@ function db_driver_count($resource)
 }
 
 /**
- * Get the affected count from database.
+ * Get the affected count from the database.
  *
  * @param  resource  $resource
  * @return int
@@ -110,7 +110,7 @@ function db_driver_unescape($data)
 }
 
 /**
- * Get the error from database.
+ * Get the error from the database.
  *
  * @return string
  */
