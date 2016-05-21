@@ -17,12 +17,12 @@ function db_driver_connect()
 
     $db['resource'][$db['target']]['dbh'] = mysql_connect($db['resource'][$db['target']]['config']['host'] . ($db['resource'][$db['target']]['config']['port'] ? ':' . $db['resource'][$db['target']]['config']['port'] : ''), $db['resource'][$db['target']]['config']['username'], $db['resource'][$db['target']]['config']['password'], true);
     if (!$db['resource'][$db['target']]['dbh']) {
-        error('mysql_connect error.' . (DEBUG_LEVEL ? ' [' . $db['resource'][$db['target']]['config']['host'] . ']' : ''));
+        error('db: mysql_connect error.' . (DEBUG_LEVEL ? ' [' . $db['resource'][$db['target']]['config']['host'] . ']' : ''));
     }
 
     $resource = mysql_select_db($db['resource'][$db['target']]['config']['name'], $db['resource'][$db['target']]['dbh']);
     if (!$resource) {
-        error('mysql_select_db error.' . (DEBUG_LEVEL ? ' [' . $db['resource'][$db['target']]['config']['name'] . ']' : ''));
+        error('db: mysql_select_db error.' . (DEBUG_LEVEL ? ' [' . $db['resource'][$db['target']]['config']['name'] . ']' : ''));
     }
 
     return;

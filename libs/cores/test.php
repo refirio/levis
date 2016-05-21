@@ -13,7 +13,7 @@
 function test_index()
 {
     if (!file_exists(MAIN_PATH . TEST_PATH)) {
-        error(MAIN_PATH . TEST_PATH . ' is not found.');
+        error('test: ' . MAIN_PATH . TEST_PATH . ' is not found.');
     }
 
     $results = array();
@@ -76,7 +76,7 @@ function test_index()
         }
         closedir($dh);
     } else {
-        error('opendir error.' . (DEBUG_LEVEL ? ' [' . MAIN_PATH . TEST_PATH . ']' : ''));
+        error('test: opendir error.' . (DEBUG_LEVEL ? ' [' . MAIN_PATH . TEST_PATH . ']' : ''));
     }
 
     echo "<!DOCTYPE html>\n";
@@ -125,7 +125,7 @@ function test_exec()
     global $view;
 
     if (!file_exists(MAIN_PATH . TEST_PATH)) {
-        error(MAIN_PATH . TEST_PATH . ' is not found.');
+        error('test: ' . MAIN_PATH . TEST_PATH . ' is not found.');
     }
 
     $index  = 0;
@@ -165,7 +165,7 @@ function test_exec()
             }
             closedir($dh);
         } else {
-            error('opendir error.' . (DEBUG_LEVEL ? ' [' . MAIN_PATH . TEST_PATH . ']' : ''));
+            error('test: opendir error.' . (DEBUG_LEVEL ? ' [' . MAIN_PATH . TEST_PATH . ']' : ''));
         }
 
         if ($flag === false) {
@@ -174,7 +174,7 @@ function test_exec()
     }
 
     if (!regexp_match('^[_a-zA-Z0-9\-]+$', $_GET['target'])) {
-        error($_GET['target'] . ' is not found.');
+        error('test: ' . $_GET['target'] . ' is not found.');
     }
 
     $view['ok'] = 0;

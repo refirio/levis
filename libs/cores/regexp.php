@@ -47,7 +47,7 @@ function regexp_replace($pattern, $replacement, $subject, $limit = -1)
 {
     if (REGEXP_TYPE === 'ereg') {
         if ($limit !== -1) {
-            error('REGEXP_TYPE [ereg] is not support $limit.');
+            error('regexp: REGEXP_TYPE [ereg] is not support $limit.');
         }
 
         $subject = eregi_replace($pattern, $replacement, $subject);

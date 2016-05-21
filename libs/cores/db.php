@@ -92,7 +92,7 @@ function db_connect($info)
         if (($data['config']['type'] === 'pdo_mysql' || $data['config']['type'] === 'mysql' || $data['config']['type'] === 'pdo_pgsql' || $data['config']['type'] === 'pgsql') && $data['config']['charset']) {
             $resource = db_query('SET NAMES \'' . $data['config']['charset'] . '\'');
             if (!$resource) {
-                error('database set names error.' . (DEBUG_LEVEL ? ' [' . $data['config']['charset'] . ']' : ''));
+                error('db: set names error.' . (DEBUG_LEVEL ? ' [' . $data['config']['charset'] . ']' : ''));
             }
         }
     }
@@ -138,7 +138,7 @@ function db_query($query, $return = false, $error = true)
         $resource = db_driver_query($query);
 
         if (!$resource && $error) {
-            error('database query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
+            error('db: query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
         }
 
         return $resource;
@@ -663,13 +663,13 @@ function db_admin_import()
             if (is_uploaded_file($_FILES['target']['tmp_name'])) {
                 $target = $_FILES['target']['tmp_name'];
             } else {
-                error('file not found.');
+                error('db: import file not found.');
             }
         } else {
             $target = DATABASE_NAME . '.sql';
 
             if (!is_file($target)) {
-                error('file not found.');
+                error('db: import file not found.');
             }
         }
 
@@ -695,7 +695,7 @@ function db_admin_import()
                     if (!$resource) {
                         db_rollback();
 
-                        error('database query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
+                        error('db: query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
                     }
 
                     $sql = '';
@@ -708,7 +708,7 @@ function db_admin_import()
 
             $view['message'] = $i . ' sql executed.';
         } else {
-            error('file can\'t read.');
+            error('db: import file can\'t read.');
         }
     } else {
         $view['message'] = '';
@@ -831,7 +831,7 @@ function db_admin_export()
             exit;
         } else {
             if (file_put_contents(DATABASE_NAME . '.sql', $text) === false) {
-                error('write error.' . (DEBUG_LEVEL ? ' [' . DATABASE_NAME . '.sql' . ']' : ''));
+                error('db: export file can\'t write.' . (DEBUG_LEVEL ? ' [' . DATABASE_NAME . '.sql' . ']' : ''));
             }
 
             $view['message'] = 'exported.';
@@ -1169,7 +1169,7 @@ function db_migrate()
     global $db;
 
     if (!file_exists(DATABASE_MIGRATE_PATH)) {
-        error(DATABASE_MIGRATE_PATH . ' is not found.');
+        error('db: ' . DATABASE_MIGRATE_PATH . ' is not found.');
     }
 
     //initialize
@@ -1239,7 +1239,7 @@ function db_migrate()
         }
         closedir($dh);
     } else {
-        error('opendir error.' . (DEBUG_LEVEL ? ' [' . $dir . ']' : ''));
+        error('db: opendir error.' . (DEBUG_LEVEL ? ' [' . $dir . ']' : ''));
     }
 
     sort($targets, SORT_STRING);
@@ -1247,7 +1247,7 @@ function db_migrate()
     //migrate
     $resource = db_query('DELETE FROM ' . DATABASE_PREFIX . 'levis_migrations WHERE status = ' . db_escape('pending') . ';');
     if (!$resource) {
-        error('database query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
+        error('db: query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
     }
 
     $migrate = '';
@@ -1261,7 +1261,7 @@ function db_migrate()
 
         $resource = db_query('INSERT INTO ' . DATABASE_PREFIX . 'levis_migrations(version, description, status) VALUES(' . db_escape($version) . ', ' . db_escape($description) . ', ' . db_escape('pending') . ');');
         if (!$resource) {
-            error('database query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
+            error('db: query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
         }
 
         $error = false;
@@ -1304,13 +1304,13 @@ function db_migrate()
 
             db_commit();
         } else {
-            error('file can\'t read.');
+            error('db: file can\'t read.');
         }
 
         if ($error === false) {
             $resource = db_query('UPDATE ' . DATABASE_PREFIX . 'levis_migrations SET status = ' . db_escape('success') . ', installed = ' . db_escape(localdate('Y-m-d H:i:s')) . ' WHERE version = ' . db_escape($version) . ';');
             if (!$resource) {
-                error('database query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
+                error('db: query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
             }
 
             $migrate .= $target . " ... OK\n";
@@ -1383,7 +1383,7 @@ function db_scaffold()
     global $db;
 
     if (!file_exists(DATABASE_SCAFFOLD_PATH)) {
-        error(DATABASE_SCAFFOLD_PATH . ' is not found.');
+        error('db:' . DATABASE_SCAFFOLD_PATH . ' is not found.');
     }
 
     //initialize
@@ -1409,7 +1409,7 @@ function db_scaffold()
     $results  = db_result($resource);
 
     if (count($results) === 0) {
-        error('table not found.');
+        error('db: table not found.');
     }
 
     $scaffold = '';

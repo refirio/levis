@@ -61,7 +61,7 @@ function ui_pager($option = array())
     }
 
     if ($option['width'] % 2 === 0 || $option['width'] < 5) {
-        error('Please specify the five or more odd to \'width\'');
+        error('ui_pager: Please specify the five or more odd to \'width\'');
     }
 
     $option = array(
@@ -208,7 +208,7 @@ function ui_datetime($timestamp, $type = '', $option = array())
             $to    = $option['to']   ? $option['to']                      : 59;
             break;
         default:
-            return '<option value="">Incorrect value was specified.</option>';
+            return '<option value="">ui_datetime: Incorrect value was specified.</option>';
     }
 
     if ($regexp = regexp_match('^(\d\d\d\d)\-(\d\d)\-(\d\d)', $timestamp)) {

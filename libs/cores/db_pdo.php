@@ -39,7 +39,7 @@ function db_driver_connect()
     try {
         $db['resource'][$db['target']]['dbh'] = new PDO($dsn, $db['resource'][$db['target']]['config']['username'], $db['resource'][$db['target']]['config']['password'], $options);
     } catch (PDOException $e) {
-        error('pdo_connect error.' . (DEBUG_LEVEL ? ' [' . $e->getMessage() . ']' : ''));
+        error('db: pdo_connect error.' . (DEBUG_LEVEL ? ' [' . $e->getMessage() . ']' : ''));
     }
 
     return;
