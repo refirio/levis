@@ -15,10 +15,10 @@
  */
 function rand_number($min = null, $max = null)
 {
-    if ($min == null) {
+    if ($min === null) {
         $min = 0;
     }
-    if ($max == null) {
+    if ($max === null) {
         $max = mt_getrandmax();
     }
 

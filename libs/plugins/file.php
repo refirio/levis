@@ -722,7 +722,7 @@ function file_resize($original, $output, $output_width, $output_height, $quality
         $height = $output_height;
     }
 
-    if ($original_width == $width && $original_height == $height && $output == null) {
+    if ($original_width === $width && $original_height === $height && $output === null) {
         header('Content-type: ' . file_mimetype($original));
         readfile($original);
 
@@ -742,12 +742,12 @@ function file_resize($original, $output, $output_width, $output_height, $quality
         $file    = false;
         $bgcolor = false;
     }
-    if ($file == false) {
+    if ($file === false) {
         return false;
     }
 
     $thumbnail = imagecreatetruecolor($width, $height);
-    if ($thumbnail == false) {
+    if ($thumbnail === false) {
         return false;
     }
 
@@ -762,7 +762,7 @@ function file_resize($original, $output, $output_width, $output_height, $quality
     }
 
     $result = imagecopyresampled($thumbnail, $file, 0, 0, 0, 0, $width, $height, $original_width, $original_height);
-    if ($result == false) {
+    if ($result === false) {
         return false;
     }
 
@@ -789,7 +789,7 @@ function file_resize($original, $output, $output_width, $output_height, $quality
             $result = false;
         }
     }
-    if ($result == false) {
+    if ($result === false) {
         return false;
     }
 
@@ -818,7 +818,7 @@ function file_getcsv($handle, $length = null, $delimiter = ',', $escape = '"')
         $line .= (empty($length) ? fgets($handle) : fgets($handle, $length));
 
         $count = preg_match_all('/' . $escape . '/', $line, $dummy);
-        if ($count % 2 == 0) {
+        if ($count % 2 === 0) {
             $eof = true;
         }
     }

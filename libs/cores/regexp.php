@@ -17,7 +17,7 @@ function regexp_match($pattern, $subject)
 {
     $regexp = false;
 
-    if (REGEXP_TYPE == 'ereg') {
+    if (REGEXP_TYPE === 'ereg') {
         if (eregi($pattern, $subject, $matches)) {
             $regexp = true;
         }
@@ -45,8 +45,8 @@ function regexp_match($pattern, $subject)
  */
 function regexp_replace($pattern, $replacement, $subject, $limit = -1)
 {
-    if (REGEXP_TYPE == 'ereg') {
-        if ($limit != -1) {
+    if (REGEXP_TYPE === 'ereg') {
+        if ($limit !== -1) {
             error('REGEXP_TYPE [ereg] is not support $limit.');
         }
 

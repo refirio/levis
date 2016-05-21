@@ -16,7 +16,7 @@ function db_connect($info)
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return;
     }
 
@@ -40,7 +40,7 @@ function db_connect($info)
                 'dbh' => null,
             );
         }
-    } elseif ($info == 'default') {
+    } elseif ($info === 'default') {
         $db['target'] = 'default';
 
         if (isset($db['resource'][$db['target']])) {
@@ -77,19 +77,19 @@ function db_connect($info)
             continue;
         }
 
-        if ($data['config']['type'] == 'pdo_mysql' || $data['config']['type'] == 'pdo_pgsql' || $data['config']['type'] == 'pdo_sqlite' || $data['config']['type'] == 'pdo_sqlite2') {
+        if ($data['config']['type'] === 'pdo_mysql' || $data['config']['type'] === 'pdo_pgsql' || $data['config']['type'] === 'pdo_sqlite' || $data['config']['type'] === 'pdo_sqlite2') {
             import('libs/cores/db_pdo.php');
-        } elseif ($data['config']['type'] == 'mysql') {
+        } elseif ($data['config']['type'] === 'mysql') {
             import('libs/cores/db_mysql.php');
-        } elseif ($data['config']['type'] == 'pgsql') {
+        } elseif ($data['config']['type'] === 'pgsql') {
             import('libs/cores/db_pgsql.php');
-        } elseif ($data['config']['type'] == 'sqlite') {
+        } elseif ($data['config']['type'] === 'sqlite') {
             import('libs/cores/db_sqlite.php');
         }
 
         db_driver_connect();
 
-        if (($data['config']['type'] == 'pdo_mysql' || $data['config']['type'] == 'mysql' || $data['config']['type'] == 'pdo_pgsql' || $data['config']['type'] == 'pgsql') && $data['config']['charset']) {
+        if (($data['config']['type'] === 'pdo_mysql' || $data['config']['type'] === 'mysql' || $data['config']['type'] === 'pdo_pgsql' || $data['config']['type'] === 'pgsql') && $data['config']['charset']) {
             $resource = db_query('SET NAMES \'' . $data['config']['charset'] . '\'');
             if (!$resource) {
                 error('database set names error.' . (DEBUG_LEVEL ? ' [' . $data['config']['charset'] . ']' : ''));
@@ -112,7 +112,7 @@ function db_query($query, $return = false, $error = true)
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return false;
     }
 
@@ -124,14 +124,14 @@ function db_query($query, $return = false, $error = true)
         $query = $queries['query'];
     }
 
-    if ($db['resource'][$db['target']]['config']['charset_input_to'] != $db['resource'][$db['target']]['config']['charset_input_from']) {
+    if ($db['resource'][$db['target']]['config']['charset_input_to'] !== $db['resource'][$db['target']]['config']['charset_input_from']) {
         $query = convert($query, $db['resource'][$db['target']]['config']['charset_input_to'], $db['resource'][$db['target']]['config']['charset_input_from']);
     }
 
     if ($return) {
         return $query;
     } else {
-        if (DEBUG_LEVEL == 2) {
+        if (DEBUG_LEVEL === 2) {
             echo '<pre><code>' . $query . '</code></pre>';
         }
 
@@ -155,13 +155,13 @@ function db_result($resource)
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return array();
     }
 
     $results = db_driver_result($resource);
 
-    if ($db['resource'][$db['target']]['config']['charset_output_to'] != $db['resource'][$db['target']]['config']['charset_output_from']) {
+    if ($db['resource'][$db['target']]['config']['charset_output_to'] !== $db['resource'][$db['target']]['config']['charset_output_from']) {
         $results = convert($results, $db['resource'][$db['target']]['config']['charset_output_to'], $db['resource'][$db['target']]['config']['charset_output_from']);
     }
 
@@ -178,7 +178,7 @@ function db_count($resource)
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return -1;
     }
 
@@ -195,7 +195,7 @@ function db_affected_count($resource)
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return -1;
     }
 
@@ -212,7 +212,7 @@ function db_escape($data)
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return $data;
     }
 
@@ -233,7 +233,7 @@ function db_unescape($data)
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return $data;
     }
 
@@ -255,7 +255,7 @@ function db_placeholder($data)
     $holder = rand_string();
 
     foreach ($data as $index => $query) {
-        if (is_array($query) && count($query) == 2 && isset($query[1]) && is_array($query[1])) {
+        if (is_array($query) && count($query) === 2 && isset($query[1]) && is_array($query[1])) {
             list($query, $holders) = $query;
 
             $query = str_replace(':', $holder, $query);
@@ -294,7 +294,7 @@ function db_error()
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return '';
     }
 
@@ -312,54 +312,54 @@ function db_select($queries, $return = false)
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return array();
     }
 
     $queries = db_placeholder($queries);
 
-    if (isset($queries['select']) && $queries['select'] != '') {
+    if (isset($queries['select']) && $queries['select'] !== '') {
         $queries['select'] = 'SELECT ' . $queries['select'] . ' ';
     } else {
         $queries['select'] = 'SELECT * ';
     }
-    if (isset($queries['from']) && $queries['from'] != '') {
+    if (isset($queries['from']) && $queries['from'] !== '') {
         $queries['from'] = 'FROM ' . $queries['from'] . ' ';
     } else {
         return array();
     }
 
-    if (isset($queries['where']) && $queries['where'] != '') {
+    if (isset($queries['where']) && $queries['where'] !== '') {
         $queries['where'] = 'WHERE ' . $queries['where'] . ' ';
     } else {
         $queries['where'] = '';
     }
-    if (isset($queries['group_by']) && $queries['group_by'] != '') {
+    if (isset($queries['group_by']) && $queries['group_by'] !== '') {
         $queries['group_by'] = 'GROUP BY ' . $queries['group_by'] . ' ';
     } else {
         $queries['group_by'] = '';
     }
-    if (isset($queries['having']) && $queries['having'] != '') {
+    if (isset($queries['having']) && $queries['having'] !== '') {
         $queries['having'] = 'HAVING ' . $queries['having'] . ' ';
     } else {
         $queries['having'] = '';
     }
-    if (isset($queries['order_by']) && $queries['order_by'] != '') {
+    if (isset($queries['order_by']) && $queries['order_by'] !== '') {
         $queries['order_by'] = 'ORDER BY ' . $queries['order_by'] . ' ';
     } else {
         $queries['order_by'] = '';
     }
-    if (isset($queries['offset']) && $queries['offset'] != '') {
+    if (isset($queries['offset']) && $queries['offset'] !== '') {
         $queries['offset'] = 'OFFSET ' . $queries['offset'] . ' ';
     } else {
         $queries['offset'] = '';
     }
-    if (isset($queries['limit']) && $queries['limit'] != '') {
+    if (isset($queries['limit']) && $queries['limit'] !== '') {
         $queries['limit'] = 'LIMIT ' . $queries['limit'] . ' ';
     } else {
         $queries['limit'] = '';
     }
-    if (isset($queries['option']) && $queries['option'] != '') {
+    if (isset($queries['option']) && $queries['option'] !== '') {
         $queries['option'] = $queries['option'] . ' ';
     } else {
         $queries['option'] = '';
@@ -387,13 +387,13 @@ function db_insert($queries, $return = false)
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return false;
     }
 
     $queries = db_placeholder($queries);
 
-    if (isset($queries['insert_into']) && $queries['insert_into'] != '') {
+    if (isset($queries['insert_into']) && $queries['insert_into'] !== '') {
         $queries['insert_into'] = 'INSERT INTO ' . $queries['insert_into'] . ' ';
     } else {
         return false;
@@ -416,12 +416,12 @@ function db_insert($queries, $return = false)
         }
 
         $queries['values'] = '(' . implode(', ', $keys) . ') VALUES(' . implode(', ', $values) . ') ';
-    } elseif (isset($queries['values']) && $queries['values'] != '') {
+    } elseif (isset($queries['values']) && $queries['values'] !== '') {
         $queries['values'] = 'VALUES ' . $queries['values'] . ' ';
     } else {
         return false;
     }
-    if (isset($queries['option']) && $queries['option'] != '') {
+    if (isset($queries['option']) && $queries['option'] !== '') {
         $queries['option'] = $queries['option'] . ' ';
     } else {
         $queries['option'] = '';
@@ -447,13 +447,13 @@ function db_update($queries, $return = false)
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return false;
     }
 
     $queries = db_placeholder($queries);
 
-    if (isset($queries['update']) && $queries['update'] != '') {
+    if (isset($queries['update']) && $queries['update'] !== '') {
         $queries['update'] = 'UPDATE ' . $queries['update'] . ' ';
     } else {
         return false;
@@ -473,28 +473,28 @@ function db_update($queries, $return = false)
         }
 
         $queries['set'] = 'SET ' . implode(', ', $sets) . ' ';
-    } elseif (isset($queries['set']) && $queries['set'] != '') {
+    } elseif (isset($queries['set']) && $queries['set'] !== '') {
         $queries['set'] = 'SET ' . $queries['set'] . ' ';
     } else {
         return false;
     }
 
-    if (isset($queries['where']) && $queries['where'] != '') {
+    if (isset($queries['where']) && $queries['where'] !== '') {
         $queries['where'] = 'WHERE ' . $queries['where'] . ' ';
     } else {
         $queries['where'] = '';
     }
-    if (isset($queries['offset']) && $queries['offset'] != '') {
+    if (isset($queries['offset']) && $queries['offset'] !== '') {
         $queries['offset'] = 'OFFSET ' . $queries['offset'] . ' ';
     } else {
         $queries['offset'] = '';
     }
-    if (isset($queries['limit']) && $queries['limit'] != '') {
+    if (isset($queries['limit']) && $queries['limit'] !== '') {
         $queries['limit'] = 'LIMIT ' . $queries['limit'] . ' ';
     } else {
         $queries['limit'] = '';
     }
-    if (isset($queries['option']) && $queries['option'] != '') {
+    if (isset($queries['option']) && $queries['option'] !== '') {
         $queries['option'] = $queries['option'] . ' ';
     } else {
         $queries['option'] = '';
@@ -520,34 +520,34 @@ function db_delete($queries, $return = false)
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return false;
     }
 
     $queries = db_placeholder($queries);
 
-    if (isset($queries['delete_from']) && $queries['delete_from'] != '') {
+    if (isset($queries['delete_from']) && $queries['delete_from'] !== '') {
         $queries['delete_from'] = 'DELETE FROM ' . $queries['delete_from'] . ' ';
     } else {
         return false;
     }
 
-    if (isset($queries['where']) && $queries['where'] != '') {
+    if (isset($queries['where']) && $queries['where'] !== '') {
         $queries['where'] = 'WHERE ' . $queries['where'] . ' ';
     } else {
         $queries['where'] = '';
     }
-    if (isset($queries['offset']) && $queries['offset'] != '') {
+    if (isset($queries['offset']) && $queries['offset'] !== '') {
         $queries['offset'] = 'OFFSET ' . $queries['offset'] . ' ';
     } else {
         $queries['offset'] = '';
     }
-    if (isset($queries['limit']) && $queries['limit'] != '') {
+    if (isset($queries['limit']) && $queries['limit'] !== '') {
         $queries['limit'] = 'LIMIT ' . $queries['limit'] . ' ';
     } else {
         $queries['limit'] = '';
     }
-    if (isset($queries['option']) && $queries['option'] != '') {
+    if (isset($queries['option']) && $queries['option'] !== '') {
         $queries['option'] = $queries['option'] . ' ';
     } else {
         $queries['option'] = '';
@@ -572,7 +572,7 @@ function db_last_insert_id()
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return -1;
     }
 
@@ -588,7 +588,7 @@ function db_transaction()
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return false;
     }
 
@@ -604,7 +604,7 @@ function db_commit()
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return false;
     }
 
@@ -620,7 +620,7 @@ function db_rollback()
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return false;
     }
 
@@ -635,13 +635,13 @@ function db_admin()
 {
     global $db;
 
-    if (DATABASE_TYPE == '') {
+    if (DATABASE_TYPE === '') {
         return false;
     }
 
-    if ($_REQUEST['work'] == 'import') {
+    if ($_REQUEST['work'] === 'import') {
         db_admin_import();
-    } elseif ($_REQUEST['work'] == 'export') {
+    } elseif ($_REQUEST['work'] === 'export') {
         db_admin_export();
     } else {
         db_admin_sql();
@@ -658,8 +658,8 @@ function db_admin_import()
 {
     global $db;
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        if ($_POST['means'] == 'upload') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($_POST['means'] === 'upload') {
             if (is_uploaded_file($_FILES['target']['tmp_name'])) {
                 $target = $_FILES['target']['tmp_name'];
             } else {
@@ -684,7 +684,7 @@ function db_admin_import()
                 $line = str_replace("\r\n", "\n", $line);
                 $line = str_replace("\r", "\n", $line);
 
-                if ((substr_count($line, '\'') - substr_count($line, '\\\'')) % 2 != 0) {
+                if ((substr_count($line, '\'') - substr_count($line, '\\\'')) % 2 !== 0) {
                     $flag = !$flag;
                 }
 
@@ -780,26 +780,26 @@ function db_admin_export()
         $view['tables'][] = array_shift($result);
     }
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $text  = '-- Database: ' . DATABASE_NAME . ' (' . DATABASE_TYPE . ")\n";
         $text .= '-- Datetime: ' . localdate('Y-m-d H:i:s') . "\n";
         $text .= '-- Host: ' . gethostbyaddr(clientip()) . "\n";
         $text .= "\n";
 
         foreach ($view['tables'] as $table) {
-            if (empty($_POST['table']) || $_POST['table'] == $table) {
+            if (empty($_POST['table']) || $_POST['table'] === $table) {
                 $resource = db_query(db_sql('table_create', $table));
                 $results  = db_result($resource);
 
-                if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+                if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
                     $text .= "DROP TABLE IF EXISTS " . $table . ";\n";
                     $text .= $results[0]['Create Table'] . ";\n";
                     $text .= "\n";
-                } elseif (DATABASE_TYPE == 'pdo_pgsql' || DATABASE_TYPE == 'pgsql') {
+                } elseif (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
                     $text .= "DROP TABLE IF EXISTS " . $table . ";\n";
                     $text .= $results[0]['case'] . ";\n";
                     $text .= "\n";
-                } elseif (DATABASE_TYPE == 'pdo_sqlite' || DATABASE_TYPE == 'pdo_sqlite2' || DATABASE_TYPE == 'sqlite') {
+                } elseif (DATABASE_TYPE === 'pdo_sqlite' || DATABASE_TYPE === 'pdo_sqlite2' || DATABASE_TYPE === 'sqlite') {
                     $text .= "DROP TABLE IF EXISTS " . $table . ";\n";
                     $text .= $results[0]['sql'] . ";\n";
                     $text .= "\n";
@@ -824,7 +824,7 @@ function db_admin_export()
             }
         }
 
-        if ($_POST['means'] == 'download') {
+        if ($_POST['means'] === 'download') {
             header('Content-Type: text/plain');
             header('Content-Disposition: attachment; filename="' . DATABASE_NAME . '.sql"');
             echo $text;
@@ -909,7 +909,7 @@ function db_admin_sql()
 {
     global $db;
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sql = $_POST['sql'];
     } else {
         $sql = db_sql('table_list');
@@ -927,7 +927,7 @@ function db_admin_sql()
 
     $view['sql'] = $sql;
 
-    if ($sql == db_sql('table_list')) {
+    if ($sql === db_sql('table_list')) {
         $head = '';
         $body = '';
 
@@ -936,7 +936,7 @@ function db_admin_sql()
         $head .= '<tr>';
         $head .= '<th>name</th>';
 
-        if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+        if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
             $head .= '<th>engine</th>';
             $head .= '<th>rows</th>';
             $head .= '<th>collation</th>';
@@ -946,7 +946,7 @@ function db_admin_sql()
         $head .= '<th>create</th>';
         $head .= '<th>columns</th>';
 
-        if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+        if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
             $head .= '<th>alter</th>';
         }
 
@@ -959,13 +959,13 @@ function db_admin_sql()
         foreach ($results as $result) {
             $table = array_shift($result);
 
-            if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+            if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
                 $create     = 'SHOW CREATE TABLE';
                 $define     = 'SHOW COLUMNS';
-            } elseif (DATABASE_TYPE == 'pdo_pgsql' || DATABASE_TYPE == 'pgsql') {
+            } elseif (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
                 $create     = 'create';
                 $define     = 'columns';
-            } elseif (DATABASE_TYPE == 'pdo_sqlite' || DATABASE_TYPE == 'pdo_sqlite2' || DATABASE_TYPE == 'sqlite') {
+            } elseif (DATABASE_TYPE === 'pdo_sqlite' || DATABASE_TYPE === 'pdo_sqlite2' || DATABASE_TYPE === 'sqlite') {
                 $create     = 'SELECT sql';
                 $define     = 'PRAGMA TABLE_INFO';
             }
@@ -982,22 +982,22 @@ function db_admin_sql()
             $insert_values = array();
 
             foreach ($define_results as $define_result) {
-                if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+                if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
                     $insert_keys[]   = $define_result['Field'];
-                    $insert_values[] = $define_result['Null'] == 'YES' ? 'NULL' : '\\\'\\\'';
-                } elseif (DATABASE_TYPE == 'pdo_pgsql' || DATABASE_TYPE == 'pgsql') {
+                    $insert_values[] = $define_result['Null'] === 'YES' ? 'NULL' : '\\\'\\\'';
+                } elseif (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
                     $insert_keys[]   = $define_result['column_name'];
-                    $insert_values[] = $define_result['is_nullable'] == 'YES' ? 'NULL' : '\\\'\\\'';
-                } elseif (DATABASE_TYPE == 'pdo_sqlite' || DATABASE_TYPE == 'pdo_sqlite2' || DATABASE_TYPE == 'sqlite') {
+                    $insert_values[] = $define_result['is_nullable'] === 'YES' ? 'NULL' : '\\\'\\\'';
+                } elseif (DATABASE_TYPE === 'pdo_sqlite' || DATABASE_TYPE === 'pdo_sqlite2' || DATABASE_TYPE === 'sqlite') {
                     $insert_keys[]   = $define_result['name'];
-                    $insert_values[] = $define_result['notnull'] == 0 ? 'NULL' : '\\\'\\\'';
+                    $insert_values[] = $define_result['notnull'] === 0 ? 'NULL' : '\\\'\\\'';
                 }
             }
 
             $body .= '<tr>';
             $body .= '<td><span style="font-family:monospace;">' . $table . '</span></td>';
 
-            if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+            if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
                 $body .= '<td><span style="font-family:monospace;">' . $result['Engine'] . '</span></td>';
                 $body .= '<td><span style="font-family:monospace;">' . $result['Rows'] . '</span></td>';
                 $body .= '<td><span style="font-family:monospace;">' . $result['Collation'] . '</span></td>';
@@ -1007,7 +1007,7 @@ function db_admin_sql()
             $body .= '<td><a href="javascript:insertSQL(\'' . str_replace('\'', '\\\'', $create_sql) . '\');">' . $create . '</a></td>';
             $body .= '<td><a href="javascript:insertSQL(\'' . str_replace('\'', '\\\'', $define_sql) . '\');">' . $define . '</a></td>';
 
-            if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+            if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
                 $body .= '<td><a href="javascript:insertSQL(\'ALTER TABLE ' . $table . ' COMMENT \\\'\\\';\');">ALTER TABLE</a></td>';
             }
 
@@ -1059,7 +1059,7 @@ function db_admin_sql()
                         $value_sql = str_replace("\n", '\n', $value_sql);
                         $value_sql = str_replace('"', '&quot;', $value_sql);
 
-                        if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+                        if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
                             $value_sql = str_replace('\'', '\\\\\\\'', $value_sql);
                         } else {
                             $value_sql = str_replace('\'', '\\\'\\\'', $value_sql);
@@ -1077,13 +1077,13 @@ function db_admin_sql()
 
                     $body .= '<td><span style="font-family:monospace;">' . $value . '</span></td>';
 
-                    if ($flag == false) {
+                    if ($flag === false) {
                         $head .= '<th>' . h($key, true) . '</th>';
                     }
                 }
             }
 
-            if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+            if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
                 if (regexp_match('^' . db_sql('table_define', '([_a-zA-Z0-9\-]+)'), $sql)) {
                     $add_value    = '<a href="javascript:insertSQL(\'ALTER TABLE ' . $table . ' ADD field INT(1) NOT NULL COMMENT \\\'\\\' AFTER ' . $result['Field'] . ';\');">ADD</a>';
                     $change_value = '<a href="javascript:insertSQL(\'ALTER TABLE ' . $table . ' CHANGE ' . $result['Field'] . ' ' . $result['Field'] . ' INT(1) NOT NULL COMMENT \\\'\\\';\');">CHANGE</a>';
@@ -1091,7 +1091,7 @@ function db_admin_sql()
 
                     $body .= '<td><span style="font-family:monospace;">' . $add_value . ' ' . $change_value . ' ' . $drop_value . '</span></td>';
 
-                    if ($flag == false) {
+                    if ($flag === false) {
                         $head .= '<th>alter</th>';
                     }
                 }
@@ -1173,7 +1173,7 @@ function db_migrate()
     }
 
     //initialize
-    if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+    if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
         db_query('
             CREATE TABLE IF NOT EXISTS ' . DATABASE_PREFIX . 'levis_migrations(
                 id          INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT \'id\',
@@ -1184,7 +1184,7 @@ function db_migrate()
                 PRIMARY KEY(id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT \'migration\';
         ');
-    } elseif (DATABASE_TYPE == 'pdo_pgsql' || DATABASE_TYPE == 'pgsql') {
+    } elseif (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
         db_query('
             CREATE TABLE IF NOT EXISTS ' . DATABASE_PREFIX . 'levis_migrations(
                 id          SERIAL       NOT NULL,
@@ -1275,7 +1275,7 @@ function db_migrate()
                 $line = str_replace("\r\n", "\n", $line);
                 $line = str_replace("\r", "\n", $line);
 
-                if ((substr_count($line, '\'') - substr_count($line, '\\\'')) % 2 != 0) {
+                if ((substr_count($line, '\'') - substr_count($line, '\\\'')) % 2 !== 0) {
                     $flag = !$flag;
                 }
 
@@ -1298,7 +1298,7 @@ function db_migrate()
             }
             fclose($fp);
 
-            if ($error == true) {
+            if ($error === true) {
                 break;
             }
 
@@ -1307,7 +1307,7 @@ function db_migrate()
             error('file can\'t read.');
         }
 
-        if ($error == false) {
+        if ($error === false) {
             $resource = db_query('UPDATE ' . DATABASE_PREFIX . 'levis_migrations SET status = ' . db_escape('success') . ', installed = ' . db_escape(localdate('Y-m-d H:i:s')) . ' WHERE version = ' . db_escape($version) . ';');
             if (!$resource) {
                 error('database query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
@@ -1408,14 +1408,14 @@ function db_scaffold()
     $resource = db_query(db_sql('table_list'));
     $results  = db_result($resource);
 
-    if (count($results) == 0) {
+    if (count($results) === 0) {
         error('table not found.');
     }
 
     $scaffold = '';
 
     foreach ($results as $result) {
-        if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+        if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
             $table_comment = $result['Comment'];
         } else {
             $table_comment = null;
@@ -1463,11 +1463,11 @@ function db_scaffold()
         $max_length = 0;
         foreach ($define_results as $define_result) {
             $field = '';
-            if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+            if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
                 $field = $define_result['Field'];
-            } elseif (DATABASE_TYPE == 'pdo_pgsql' || DATABASE_TYPE == 'pgsql') {
+            } elseif (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
                 $field = $define_result['column_name'];
-            } elseif (DATABASE_TYPE == 'pdo_sqlite' || DATABASE_TYPE == 'pdo_sqlite2' || DATABASE_TYPE == 'sqlite') {
+            } elseif (DATABASE_TYPE === 'pdo_sqlite' || DATABASE_TYPE === 'pdo_sqlite2' || DATABASE_TYPE === 'sqlite') {
                 $field = $define_result['name'];
             }
 
@@ -1478,32 +1478,32 @@ function db_scaffold()
             //define
             $field = '';
             $null  = false;
-            if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+            if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
                 $field   = $define_result['Field'];
                 $type    = $define_result['Type'];
-                $null    = $define_result['Null'] == 'YES' ? true : false;
+                $null    = $define_result['Null'] === 'YES' ? true : false;
                 $comment = $define_result['Comment'];
-            } elseif (DATABASE_TYPE == 'pdo_pgsql' || DATABASE_TYPE == 'pgsql') {
+            } elseif (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
                 $field   = $define_result['column_name'];
                 $type    = $define_result['data_type'];
-                $null    = $define_result['is_nullable'] == 'YES' ? true : false;
+                $null    = $define_result['is_nullable'] === 'YES' ? true : false;
                 $comment = null;
-            } elseif (DATABASE_TYPE == 'pdo_sqlite' || DATABASE_TYPE == 'pdo_sqlite2' || DATABASE_TYPE == 'sqlite') {
+            } elseif (DATABASE_TYPE === 'pdo_sqlite' || DATABASE_TYPE === 'pdo_sqlite2' || DATABASE_TYPE === 'sqlite') {
                 $field   = $define_result['name'];
                 $type    = $define_result['type'];
-                $null    = $define_result['notnull'] == 0 ? true : false;
+                $null    = $define_result['notnull'] === 0 ? true : false;
                 $comment = null;
             }
 
-            if ($field == $primary_key) {
+            if ($field === $primary_key) {
                 $primary_flag = true;
             }
 
             //model
-            if ($field == $primary_key || !$null) {
+            if ($field === $primary_key || !$null) {
                 $model_validate .= '    //' . ($comment ? $comment : $field) . "\n";
                 $model_validate .= '    if (isset($queries[\'' . $field . '\'])) {' . "\n";
-                $model_validate .= '        if ($queries[\'' . $field . '\'] == \'\') {' . "\n";
+                $model_validate .= '        if ($queries[\'' . $field . '\'] === \'\') {' . "\n";
                 $model_validate .= '            $messages[] = \'The ' . ($comment ? $comment : $field) . ' is required.\';' . "\n";
                 $model_validate .= '        }' . "\n";
                 $model_validate .= '    }' . "\n";
@@ -1517,7 +1517,7 @@ function db_scaffold()
 
             $space = str_repeat(' ', $max_length - strlen($field));;
 
-            if ($field == $primary_key) {
+            if ($field === $primary_key) {
                 $model_default .= '        \'' . $field . '\' ' . $space . '=> null,' . "\n";
             } elseif ($null) {
                 $model_default .= '        \'' . $field . '\' ' . $space . '=> null,' . "\n";
@@ -1530,7 +1530,7 @@ function db_scaffold()
             //view
             $view_head .= '                <th>' . ($comment ? $comment : $field) . '</th>' . "\n";
 
-            if ($field == $primary_key) {
+            if ($field === $primary_key) {
                 $view_data .= '                <td><a href="<?php t(MAIN_FILE) ?>/' . $table . '/post?' . $primary_key . '=<?php t($data[\'' . $primary_key . '\']) ?>"><?php h($data[\'' . $field . '\']) ?></a></td>' . "\n";
             } else {
                 $view_data .= '                <td><?php h($data[\'' . $field . '\']) ?></td>' . "\n";
@@ -1544,7 +1544,7 @@ function db_scaffold()
                 $input = '<input type="text" name="' . $field . '" size="10" value="<?php t($view[\'data\'][\'' . $field . '\']) ?>" />';
             }
 
-            if ($field == $primary_key) {
+            if ($field === $primary_key) {
                 $view_form .= '                    <dt>' . ($comment ? $comment : $field) . ($null ? '' : '(required)') . '</dt>' . "\n";
                 $view_form .= '                        <dd>' . "\n";
                 $view_form .= '                            <?php if (empty($_GET[\'' . $primary_key . '\'])) : ?>' . "\n";
@@ -1562,12 +1562,12 @@ function db_scaffold()
             $controller_validate .= '        \'' . $field . '\' ' . $space . '=> $_POST[\'' . $field . '\'],' . "\n";
             $controller_insert   .= '                \'' . $field . '\' ' . $space . '=> $_POST[\'' . $field . '\'],' . "\n";
 
-            if ($field != $primary_key) {
+            if ($field !== $primary_key) {
                 $controller_update .= '                \'' . $field . '\' ' . $space . '=> $_POST[\'' . $field . '\'],' . "\n";
             }
 
             //test
-            if ($field == $primary_key) {
+            if ($field === $primary_key) {
                 $test_data .= '            \'' . $field . '\' ' . $space . '=> [N],' . "\n";
             } elseif ($null) {
                 $test_data .= '            \'' . $field . '\' ' . $space . '=> null,' . "\n";
@@ -1683,7 +1683,7 @@ function db_scaffold()
 
         $buffer  = '<?php' . "\n";
         $buffer .= "\n";
-        $buffer .= 'if ($_SERVER[\'REQUEST_METHOD\'] == \'POST\') {' . "\n";
+        $buffer .= 'if ($_SERVER[\'REQUEST_METHOD\'] === \'POST\') {' . "\n";
         $buffer .= '    $warnings = validate_' . $table . '(array(' . "\n";
         $buffer .= $controller_validate;
         $buffer .= '    ));' . "\n";
@@ -1750,7 +1750,7 @@ function db_scaffold()
         if ($primary_flag) {
             $buffer  = '<?php' . "\n";
             $buffer .= "\n";
-            $buffer .= 'if ($_SERVER[\'REQUEST_METHOD\'] == \'POST\') {' . "\n";
+            $buffer .= 'if ($_SERVER[\'REQUEST_METHOD\'] === \'POST\') {' . "\n";
             $buffer .= '    $resource = delete_' . $table . '(array(' . "\n";
             $buffer .= '        \'where\' => array(' . "\n";
             $buffer .= '            \'' . $primary_key . ' = :' . $primary_key . '\',' . "\n";
@@ -1972,7 +1972,7 @@ function db_scaffold()
     $buffer .= '        <ul>' . "\n";
 
     foreach ($results as $result) {
-        if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
+        if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
             $table_comment = $result['Comment'];
         } else {
             $table_comment = null;
@@ -2118,22 +2118,22 @@ function db_sql($type, $table = null)
 {
     global $db;
 
-    if (DATABASE_TYPE == 'pdo_mysql' || DATABASE_TYPE == 'mysql') {
-        if ($type == 'table_list') {
+    if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
+        if ($type === 'table_list') {
             $sql = '
                 SHOW TABLE STATUS;
             ';
-        } elseif ($type == 'table_create') {
+        } elseif ($type === 'table_create') {
             $sql = '
                 SHOW CREATE TABLE ' . $table . ';
             ';
-        } elseif ($type == 'table_define') {
+        } elseif ($type === 'table_define') {
             $sql = '
                 SHOW FULL COLUMNS FROM ' . $table . ';
             ';
         }
-    } elseif (DATABASE_TYPE == 'pdo_pgsql' || DATABASE_TYPE == 'pgsql') {
-        if ($type == 'table_list') {
+    } elseif (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
+        if ($type === 'table_list') {
             $sql = '
                 SELECT
                     pg_class.relname AS relname
@@ -2142,7 +2142,7 @@ function db_sql($type, $table = null)
                 WHERE
                     pg_class.relkind = \'r\' AND pg_namespace.nspname = \'public\';
             ';
-        } elseif ($type == 'table_create') {
+        } elseif ($type === 'table_create') {
             $sql = '
                 SELECT
                     CASE
@@ -2245,7 +2245,7 @@ function db_sql($type, $table = null)
                 WHERE
                     tb.relname = \'' . $table . '\';
             ';
-        } elseif ($type == 'table_define') {
+        } elseif ($type === 'table_define') {
             $sql = '
                 SELECT
                     column_name, data_type, is_nullable
@@ -2255,8 +2255,8 @@ function db_sql($type, $table = null)
                     table_schema = \'public\' AND table_name = \'' . $table . '\';
             ';
         }
-    } elseif (DATABASE_TYPE == 'pdo_sqlite' || DATABASE_TYPE == 'pdo_sqlite2' || DATABASE_TYPE == 'sqlite') {
-        if ($type == 'table_list') {
+    } elseif (DATABASE_TYPE === 'pdo_sqlite' || DATABASE_TYPE === 'pdo_sqlite2' || DATABASE_TYPE === 'sqlite') {
+        if ($type === 'table_list') {
             $sql = '
                 SELECT
                     name
@@ -2265,7 +2265,7 @@ function db_sql($type, $table = null)
                 WHERE
                     type = \'table\';
             ';
-        } elseif ($type == 'table_create') {
+        } elseif ($type === 'table_create') {
             $sql = '
                 SELECT
                     sql
@@ -2274,7 +2274,7 @@ function db_sql($type, $table = null)
                 WHERE
                     tbl_name = \'' . $table . '\';
             ';
-        } elseif ($type == 'table_define') {
+        } elseif ($type === 'table_define') {
             $sql = '
                 PRAGMA TABLE_INFO(\'' . $table . '\');
             ';

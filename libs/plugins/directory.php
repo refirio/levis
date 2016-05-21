@@ -22,7 +22,7 @@ function directory_info($dir)
 
     if ($dh = opendir($dir)) {
         while (($entry = readdir($dh)) !== false) {
-            if ($entry == '.' || $entry == '..') {
+            if ($entry === '.' || $entry === '..') {
                 continue;
             }
             if (is_dir($dir . $entry)) {
@@ -57,11 +57,11 @@ function directory_mkdir($path, $mode = 0707, $recursive = true)
         $path  = '';
 
         foreach ($paths as $directory) {
-            if ($directory == '') {
+            if ($directory === '') {
                 continue;
             }
 
-            if ($path != '') {
+            if ($path !== '') {
                 $path .= '/';
             }
             $path .= $directory;
@@ -104,7 +104,7 @@ function directory_rmdir($path, $recursive = true)
 
     if ($dh = opendir($path)) {
         while (($entry = readdir($dh)) !== false) {
-            if ($entry == '.' || $entry == '..') {
+            if ($entry === '.' || $entry === '..') {
                 continue;
             }
             if (is_dir($path . $entry)) {

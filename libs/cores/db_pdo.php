@@ -15,22 +15,22 @@ function db_driver_connect()
 {
     global $db;
 
-    if ($db['resource'][$db['target']]['config']['type'] == 'pdo_mysql') {
+    if ($db['resource'][$db['target']]['config']['type'] === 'pdo_mysql') {
         $dsn = 'mysql:dbname=' . $db['resource'][$db['target']]['config']['name'] . ';host=' . $db['resource'][$db['target']]['config']['host'] . ($db['resource'][$db['target']]['config']['port'] ? ';port=' . $db['resource'][$db['target']]['config']['port'] : '');
-    } elseif ($db['resource'][$db['target']]['config']['type'] == 'pdo_pgsql') {
+    } elseif ($db['resource'][$db['target']]['config']['type'] === 'pdo_pgsql') {
         $dsn = 'pgsql:dbname=' . $db['resource'][$db['target']]['config']['name'] . ';host=' . $db['resource'][$db['target']]['config']['host'] . ($db['resource'][$db['target']]['config']['port'] ? ';port=' . $db['resource'][$db['target']]['config']['port'] : '');
-    } elseif ($db['resource'][$db['target']]['config']['type'] == 'pdo_sqlite') {
+    } elseif ($db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite') {
         $dsn = 'sqlite:' . $db['resource'][$db['target']]['config']['name'];
-    } elseif ($db['resource'][$db['target']]['config']['type'] == 'pdo_sqlite2') {
+    } elseif ($db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite2') {
         $dsn = 'sqlite2:' . $db['resource'][$db['target']]['config']['name'];
     }
 
-    if ($db['resource'][$db['target']]['config']['type'] == 'pdo_mysql') {
+    if ($db['resource'][$db['target']]['config']['type'] === 'pdo_mysql') {
         $options = array(
             PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT,
             PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
         );
-    } elseif ($db['resource'][$db['target']]['config']['type'] == 'pdo_pgsql' or $db['resource'][$db['target']]['config']['type'] == 'pdo_sqlite' or $db['resource'][$db['target']]['config']['type'] == 'pdo_sqlite2') {
+    } elseif ($db['resource'][$db['target']]['config']['type'] === 'pdo_pgsql' or $db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite' or $db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite2') {
         $options = array(
             PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT,
         );
@@ -112,9 +112,9 @@ function db_driver_escape($data)
 {
     global $db;
 
-    if ($db['resource'][$db['target']]['config']['type'] == 'pdo_mysql') {
+    if ($db['resource'][$db['target']]['config']['type'] === 'pdo_mysql') {
         return '\'' . addslashes($data) . '\'';
-    } elseif ($db['resource'][$db['target']]['config']['type'] == 'pdo_pgsql' or $db['resource'][$db['target']]['config']['type'] == 'pdo_sqlite' or $db['resource'][$db['target']]['config']['type'] == 'pdo_sqlite2') {
+    } elseif ($db['resource'][$db['target']]['config']['type'] === 'pdo_pgsql' or $db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite' or $db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite2') {
         return '\'' . str_replace('\'', '\'\'', $data) . '\'';
     }
 }
@@ -129,12 +129,12 @@ function db_driver_unescape($data)
 {
     global $db;
 
-    if ($db['resource'][$db['target']]['config']['type'] == 'pdo_mysql') {
+    if ($db['resource'][$db['target']]['config']['type'] === 'pdo_mysql') {
         $data = regexp_replace('(^\'|\'$)', '', $data);
         $data = stripslashes($data);
 
         return $data;
-    } elseif ($db['resource'][$db['target']]['config']['type'] == 'pdo_pgsql' or $db['resource'][$db['target']]['config']['type'] == 'pdo_sqlite' or $db['resource'][$db['target']]['config']['type'] == 'pdo_sqlite2') {
+    } elseif ($db['resource'][$db['target']]['config']['type'] === 'pdo_pgsql' or $db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite' or $db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite2') {
         $data = regexp_replace('(^\'|\'$)', '', $data);
         $data = str_replace('\'\'', '\'', $data);
 
@@ -152,7 +152,7 @@ function db_driver_error()
     global $db;
 
     $info = $db['resource'][$db['target']]['dbh']->errorInfo();
-    if (isset($info[2]) && $info[2] != 'not an error') {
+    if (isset($info[2]) && $info[2] !== 'not an error') {
         $error = $info[2];
     }
 

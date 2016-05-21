@@ -58,7 +58,7 @@ function import($file, $once = true, $ignore = false)
         }
     }
 
-    if ($ignore == false && $flag == false) {
+    if ($ignore === false && $flag === false) {
         error('import error.' . (DEBUG_LEVEL ? ' [' . $target . ']' : ''));
     }
 
@@ -86,7 +86,7 @@ function bootstrap()
  */
 function session()
 {
-    if (SESSION_AUTOSTART == false) {
+    if (SESSION_AUTOSTART === false) {
         return;
     }
 
@@ -175,7 +175,7 @@ function routing()
     $script_name = explode('/', $_SERVER['SCRIPT_NAME']);
 
     for ($i = 0; $i < sizeof($script_name); $i++) {
-        if ($request_uri[$i] == $script_name[$i]) {
+        if ($request_uri[$i] === $script_name[$i]) {
             unset($request_uri[$i]);
         }
     }
@@ -203,10 +203,10 @@ function routing()
         $_REQUEST['work'] = $params[1];
     }
 
-    if ($_REQUEST['mode'] == '' || !regexp_match('^[_a-zA-Z0-9\-]+$', $_REQUEST['mode'])) {
+    if ($_REQUEST['mode'] === '' || !regexp_match('^[_a-zA-Z0-9\-]+$', $_REQUEST['mode'])) {
         $_REQUEST['mode'] = MAIN_DEFAULT_MODE;
     }
-    if ($_REQUEST['work'] == '' || !regexp_match('^[_a-zA-Z0-9\-]+$', $_REQUEST['work'])) {
+    if ($_REQUEST['work'] === '' || !regexp_match('^[_a-zA-Z0-9\-]+$', $_REQUEST['work'])) {
         $_REQUEST['work'] = MAIN_DEFAULT_WORK;
     }
 
@@ -237,7 +237,7 @@ function service($target = null)
                 continue;
             }
 
-            if ($target && $target != $entry) {
+            if ($target && $target !== $entry) {
                 continue;
             }
 
@@ -274,7 +274,7 @@ function model($target = null)
                 continue;
             }
 
-            if ($target && $target != $entry) {
+            if ($target && $target !== $entry) {
                 continue;
             }
 
@@ -390,7 +390,7 @@ function view($target = null, $return = false)
 
     static $complete = false;
 
-    if ($_REQUEST['mode'] != 'test_exec' && $complete) {
+    if ($_REQUEST['mode'] !== 'test_exec' && $complete) {
         return;
     }
 
@@ -415,7 +415,7 @@ function view($target = null, $return = false)
         import($directory . MAIN_DEFAULT_WORK . '.php');
     } elseif (is_file(PAGE_PATH . implode('/', $params) . '.php')) {
         import(PAGE_PATH . implode('/', $params) . '.php');
-    } elseif ($_REQUEST['mode'] == MAIN_DEFAULT_MODE && $_REQUEST['work'] == MAIN_DEFAULT_WORK) {
+    } elseif ($_REQUEST['mode'] === MAIN_DEFAULT_MODE && $_REQUEST['work'] === MAIN_DEFAULT_WORK) {
         about();
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/404.php')) {
         import('app/views/404.php');
@@ -424,7 +424,7 @@ function view($target = null, $return = false)
         error('404 Not Found');
     }
 
-    if ($return == false) {
+    if ($return === false) {
         $complete = true;
     }
 
@@ -604,13 +604,13 @@ function localdate($format = null, $timestamp = null)
 {
     static $time = 0;
 
-    if ($time == 0) {
+    if ($time === 0) {
         $time = time() + MAIN_TIME;
     }
 
     if (regexp_match('^0000', $timestamp)) {
         return null;
-    } elseif ($timestamp == null) {
+    } elseif ($timestamp === null) {
         $timestamp = $time;
     } elseif (!is_numeric($timestamp)) {
         $timestamp = strtotime($timestamp);
@@ -652,12 +652,12 @@ function clientip($proxy = false)
  */
 function ssl($proxy = false)
 {
-    if (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) == 'on' || $_SERVER['HTTPS'] == 1)) {
+    if (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || $_SERVER['HTTPS'] === 1)) {
         return true;
     } elseif ($proxy) {
-        if (!empty($_SERVER['HTTP_X_FORWARDED_PORT']) && $_SERVER['HTTP_X_FORWARDED_PORT'] == 443) {
+        if (!empty($_SERVER['HTTP_X_FORWARDED_PORT']) && $_SERVER['HTTP_X_FORWARDED_PORT'] === 443) {
             return true;
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
             return true;
         }
     }
@@ -674,8 +674,8 @@ function ssl($proxy = false)
  */
 function token($type, $name = 'default')
 {
-    if ($type == 'check') {
-        if ($_REQUEST['token'] && isset($_SESSION['core']['token'][$name]) && $_REQUEST['token'] == $_SESSION['core']['token'][$name]['value']) {
+    if ($type === 'check') {
+        if ($_REQUEST['token'] && isset($_SESSION['core']['token'][$name]) && $_REQUEST['token'] === $_SESSION['core']['token'][$name]['value']) {
             $flag = true;
         } else {
             $flag = false;
@@ -752,7 +752,7 @@ function logging($message)
 
     $uri = str_replace("\n" . $_SERVER['SCRIPT_NAME'], '', "\n" . $_SERVER['REQUEST_URI']);
 
-    if ($uri == '') {
+    if ($uri === '') {
         $uri = '/';
     }
 
@@ -771,17 +771,17 @@ function logging($message)
  */
 function ok($type = null)
 {
-    if ($type == null && isset($_REQUEST['type'])) {
+    if ($type === null && isset($_REQUEST['type'])) {
         $type = $_REQUEST['type'];
     }
 
-    if ($type == 'json') {
+    if ($type === 'json') {
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
 
         echo json_encode(array(
             'status' => 'OK',
         ));
-    } elseif ($type == 'xml') {
+    } elseif ($type === 'xml') {
         header('Content-Type: text/xml; charset=' . MAIN_CHARSET);
 
         echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
@@ -822,18 +822,18 @@ function warning($messages, $type = null)
     if (!is_array($messages)) {
         $messages = array($messages);
     }
-    if ($type == null && isset($_REQUEST['type'])) {
+    if ($type === null && isset($_REQUEST['type'])) {
         $type = $_REQUEST['type'];
     }
 
-    if ($type == 'json') {
+    if ($type === 'json') {
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
 
         echo json_encode(array(
             'status'   => 'WARNING',
             'messages' => $messages,
         ));
-    } elseif ($type == 'xml') {
+    } elseif ($type === 'xml') {
         header('Content-Type: text/xml; charset=' . MAIN_CHARSET);
 
         echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
@@ -890,18 +890,18 @@ function error($message, $type = null)
     if (DEBUG_LOG) {
         logging($message);
     }
-    if ($type == null && isset($_REQUEST['type'])) {
+    if ($type === null && isset($_REQUEST['type'])) {
         $type = $_REQUEST['type'];
     }
 
-    if ($type == 'json') {
+    if ($type === 'json') {
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
 
         echo json_encode(array(
             'status'  => 'ERROR',
             'message' => $message,
         ));
-    } elseif ($type == 'xml') {
+    } elseif ($type === 'xml') {
         header('Content-Type: text/xml; charset=' . MAIN_CHARSET);
 
         echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";

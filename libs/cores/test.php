@@ -25,7 +25,7 @@ function test_index()
         $tests = explode(';', $_GET['test']);
 
         foreach ($tests as $test) {
-            if ($test == '') {
+            if ($test === '') {
                 continue;
             }
 
@@ -131,14 +131,14 @@ function test_exec()
     $index  = 0;
     $result = 0;
     if (isset($_GET['test'])) {
-        if ($_GET['test'] != '' && !regexp_match('^[0-9\:\;]+$', $_GET['test'])) {
+        if ($_GET['test'] !== '' && !regexp_match('^[0-9\:\;]+$', $_GET['test'])) {
             redirect('/?mode=test_index');
         }
 
         $tests = explode(';', $_GET['test']);
         $test  = $tests[count($tests) - 1];
 
-        if ($test != '') {
+        if ($test !== '') {
             list($index, $result) = explode(':', $test);
         }
 
@@ -156,7 +156,7 @@ function test_exec()
                     continue;
                 }
 
-                if ($index == $i++) {
+                if ($index === $i++) {
                     $index = $i;
                     $flag  = true;
 
@@ -168,7 +168,7 @@ function test_exec()
             error('opendir error.' . (DEBUG_LEVEL ? ' [' . MAIN_PATH . TEST_PATH . ']' : ''));
         }
 
-        if ($flag == false) {
+        if ($flag === false) {
             redirect('/?mode=test_index&test=' . $_GET['test']);
         }
     }
@@ -239,7 +239,7 @@ function test_result($title, $result)
 {
     global $view;
 
-    if ($result == true) {
+    if ($result === true) {
         $view['ok']++;
     } else {
         $view['ng']++;
@@ -277,7 +277,7 @@ function test_equals($title, $actual, $expected)
 {
     $result = false;
 
-    if ($actual == $expected) {
+    if ($actual === $expected) {
         $result = true;
     }
 
@@ -296,7 +296,7 @@ function test_not_equals($title, $actual, $expected)
 {
     $result = false;
 
-    if ($actual != $expected) {
+    if ($actual !== $expected) {
         $result = true;
     }
 

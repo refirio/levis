@@ -60,7 +60,7 @@ function ui_pager($option = array())
         $option['attribute']['text'] = '';
     }
 
-    if ($option['width'] % 2 == 0 || $option['width'] < 5) {
+    if ($option['width'] % 2 === 0 || $option['width'] < 5) {
         error('Please specify the five or more odd to \'width\'');
     }
 
@@ -131,7 +131,7 @@ function ui_pager($option = array())
     }
 
     for ($i = $from; $i <= $to; $i++) {
-        if ($option['now'] == $i) {
+        if ($option['now'] === $i) {
             $pager['pages'][] = $option['attribute']['text'] ? '<span' . $option['attribute']['text'] . '>' . $i . '</span>' : $i;
         } else {
             $pager['pages'][] = '<a href="' . $option['query'] . $option['key'] . '=' . $i . '"' . $option['attribute']['link'] . '>' . $i . '</a>';
@@ -214,7 +214,7 @@ function ui_datetime($timestamp, $type = '', $option = array())
     $datetime = '';
 
     for ($i = $from; $i <= $to; $i += $option['step']) {
-        $datetime .= '<option value="' . sprintf('%02d', $i) . '"' . (($value !== null && $i == $value) ? ' selected="selected"' : '') . '>' . $option['prefix'] . sprintf($option['format'], $i) . $option['suffix'] . '</option>';
+        $datetime .= '<option value="' . sprintf('%02d', $i) . '"' . (($value !== null && $i === $value) ? ' selected="selected"' : '') . '>' . $option['prefix'] . sprintf($option['format'], $i) . $option['suffix'] . '</option>';
     }
 
     return $datetime;
