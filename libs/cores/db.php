@@ -636,7 +636,10 @@ function db_admin()
     global $db;
 
     if (DATABASE_TYPE === '') {
-        return false;
+        return;
+    }
+    if (!DEBUG_LEVEL || !regexp_match(DEBUG_ADDR, clientip())) {
+        return;
     }
 
     if ($_REQUEST['work'] === 'import') {
@@ -1381,6 +1384,10 @@ function db_migrate()
 function db_scaffold()
 {
     global $db;
+
+    if (!DEBUG_LEVEL || !regexp_match(DEBUG_ADDR, clientip())) {
+        return;
+    }
 
     if (!file_exists(DATABASE_SCAFFOLD_PATH)) {
         error('db:' . DATABASE_SCAFFOLD_PATH . ' is not found.');

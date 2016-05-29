@@ -12,6 +12,10 @@
  */
 function test_index()
 {
+    if (!DEBUG_LEVEL || !regexp_match(DEBUG_ADDR, clientip())) {
+        return;
+    }
+
     if (!file_exists(MAIN_PATH . TEST_PATH)) {
         error('test: ' . MAIN_PATH . TEST_PATH . ' is not found.');
     }
@@ -123,6 +127,10 @@ function test_index()
 function test_exec()
 {
     global $view;
+
+    if (!DEBUG_LEVEL || !regexp_match(DEBUG_ADDR, clientip())) {
+        return;
+    }
 
     if (!file_exists(MAIN_PATH . TEST_PATH)) {
         error('test: ' . MAIN_PATH . TEST_PATH . ' is not found.');
