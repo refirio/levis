@@ -746,7 +746,7 @@ function debug($data, $return = false)
         return print_r($data, true);
     } else {
         print('<pre>');
-        print_r($data);
+        var_dump($data);
         print('</pre>');
 
         return;
