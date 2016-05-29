@@ -253,7 +253,7 @@ function ui_datetime($timestamp, $type = '', $option = array())
 
     $datetime = '';
     for ($i = $from; $i <= $to; $i += $option['step']) {
-        $datetime .= '<option value="' . sprintf('%02d', $i) . '"' . (($value !== null && $i === $value) ? ' selected="selected"' : '') . '>' . $option['prefix'] . sprintf($option['format'], $i) . $option['suffix'] . '</option>';
+        $datetime .= '<option value="' . sprintf('%02d', $i) . '"' . (($value !== null && $i == $value) ? ' selected="selected"' : '') . '>' . $option['prefix'] . sprintf($option['format'], $i) . $option['suffix'] . '</option>';
     }
 
     return $datetime;
