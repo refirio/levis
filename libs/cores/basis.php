@@ -350,8 +350,8 @@ function controller($target = null)
     if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/before.php')) {
         import('app/controllers/before.php');
     }
-    if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/before_' . $_REQUEST['mode'] . '.php')) {
-        import('app/controllers/before_' . $_REQUEST['mode'] . '.php');
+    if (isset($params[0]) && is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/before_' . $params[0] . '.php')) {
+        import('app/controllers/before_' . $params[0] . '.php');
     }
 
     if (empty($GLOBALS['core']['routing'])) {
@@ -373,8 +373,8 @@ function controller($target = null)
         import('app/controllers/' . PAGE_CONTROLLER . '.php');
     }
 
-    if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/after_' . $_REQUEST['mode'] . '.php')) {
-        import('app/controllers/after_' . $_REQUEST['mode'] . '.php');
+    if (isset($params[0]) && is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/after_' . $params[0] . '.php')) {
+        import('app/controllers/after_' . $params[0] . '.php');
     }
     if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/after.php')) {
         import('app/controllers/after.php');
