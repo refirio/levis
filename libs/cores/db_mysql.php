@@ -17,12 +17,20 @@ function db_driver_connect()
 
     $db['resource'][$db['target']]['dbh'] = mysql_connect($db['resource'][$db['target']]['config']['host'] . ($db['resource'][$db['target']]['config']['port'] ? ':' . $db['resource'][$db['target']]['config']['port'] : ''), $db['resource'][$db['target']]['config']['username'], $db['resource'][$db['target']]['config']['password'], true);
     if (!$db['resource'][$db['target']]['dbh']) {
-        error('db: mysql_connect error.' . (DEBUG_LEVEL ? ' [' . $db['resource'][$db['target']]['config']['host'] . ']' : ''));
+        if (LOGGING_MESSAGE) {
+            logging('message', 'db: Connect error');
+        }
+
+        error('db: Connect error');
     }
 
     $resource = mysql_select_db($db['resource'][$db['target']]['config']['name'], $db['resource'][$db['target']]['dbh']);
     if (!$resource) {
-        error('db: mysql_select_db error.' . (DEBUG_LEVEL ? ' [' . $db['resource'][$db['target']]['config']['name'] . ']' : ''));
+        if (LOGGING_MESSAGE) {
+            logging('message', 'db: Connect error');
+        }
+
+        error('db: Select DB error');
     }
 
     return;

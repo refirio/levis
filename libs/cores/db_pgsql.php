@@ -17,7 +17,11 @@ function db_driver_connect()
 
     $db['resource'][$db['target']]['dbh'] = pg_connect('host=' . $db['resource'][$db['target']]['config']['host'] . ($db['resource'][$db['target']]['config']['port'] ? ' port=' . $db['resource'][$db['target']]['config']['port'] : '') . ' dbname=' . $db['resource'][$db['target']]['config']['name'] . ' user=' . $db['resource'][$db['target']]['config']['username'] . ' password=' . $db['resource'][$db['target']]['config']['password'], true);
     if (!$db['resource'][$db['target']]['dbh']) {
-        error('db: pg_connect error.' . (DEBUG_LEVEL ? ' [' . $db['resource'][$db['target']]['config']['host'] . ']' : ''));
+        if (LOGGING_MESSAGE) {
+            logging('message', 'db: Connect error');
+        }
+
+        error('db: Connect error');
     }
 
     return;

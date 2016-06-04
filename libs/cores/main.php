@@ -23,6 +23,16 @@ normalize();
 
 routing();
 
+if (LOGGING_GET) {
+    logging('get');
+}
+if (LOGGING_POST && !empty($_POST)) {
+    logging('post');
+}
+if (LOGGING_FILES && !empty($_FILES)) {
+    logging('files');
+}
+
 switch ($_REQUEST['mode']) {
     case 'info_php':
         info_php();

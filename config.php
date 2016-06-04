@@ -58,12 +58,15 @@ define('PAGE_CONTROLLER', 'page');
 
 define('TEST_PATH', 'test/');
 
-/********* Logging ************************************************************/
-
-define('LOGGING_FILE', 'logging.txt');
-
 /********* Debug **************************************************************/
 
 define('DEBUG_LEVEL', 1);
 define('DEBUG_ADDR', '');
-define('DEBUG_LOG', false);
+
+/********* Logging ************************************************************/
+
+define('LOGGING_PATH', 'logs/');
+define('LOGGING_MESSAGE', false);
+define('LOGGING_GET', false);
+define('LOGGING_POST', false);
+define('LOGGING_FILES', false);

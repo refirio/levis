@@ -17,7 +17,11 @@ function db_driver_connect()
 
     $db['resource'][$db['target']]['dbh'] = sqlite_open($db['resource'][$db['target']]['config']['name'], 0666, $error);
     if (!$db['resource'][$db['target']]['dbh']) {
-        error('db: sqlite_connect error.' . (DEBUG_LEVEL ? ' [' . $error . ']' : ''));
+        if (LOGGING_MESSAGE) {
+            logging('message', 'db: Connect error');
+        }
+
+        error('db: Connect error');
     }
 
     return;

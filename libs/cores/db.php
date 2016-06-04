@@ -92,7 +92,11 @@ function db_connect($info)
         if (($data['config']['type'] === 'pdo_mysql' || $data['config']['type'] === 'mysql' || $data['config']['type'] === 'pdo_pgsql' || $data['config']['type'] === 'pgsql') && $data['config']['charset']) {
             $resource = db_query('SET NAMES \'' . $data['config']['charset'] . '\'');
             if (!$resource) {
-                error('db: set names error.' . (DEBUG_LEVEL ? ' [' . $data['config']['charset'] . ']' : ''));
+                if (LOGGING_MESSAGE) {
+                    logging('message', 'db: Set names error: ' . db_error());
+                }
+
+                error('db: Set names error' . (DEBUG_LEVEL ? ': ' . db_error(): ''));
             }
         }
     }
@@ -138,7 +142,11 @@ function db_query($query, $return = false, $error = true)
         $resource = db_driver_query($query);
 
         if (!$resource && $error) {
-            error('db: query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
+            if (LOGGING_MESSAGE) {
+                logging('message', 'db: Query error: ' . db_error());
+            }
+
+            error('db: Query error' . (DEBUG_LEVEL ? ': ' . db_error(): ''));
         }
 
         return $resource;
@@ -666,13 +674,13 @@ function db_admin_import()
             if (is_uploaded_file($_FILES['target']['tmp_name'])) {
                 $target = $_FILES['target']['tmp_name'];
             } else {
-                error('db: import file not found.');
+                error('db: Import file not found');
             }
         } else {
             $target = DATABASE_NAME . '.sql';
 
             if (!is_file($target)) {
-                error('db: import file not found.');
+                error('db: Import file not found');
             }
         }
 
@@ -698,7 +706,11 @@ function db_admin_import()
                     if (!$resource) {
                         db_rollback();
 
-                        error('db: query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
+                        if (LOGGING_MESSAGE) {
+                            logging('message', 'db: Query error: ' . db_error());
+                        }
+
+                        error('db: Query error' . (DEBUG_LEVEL ? ': ' . db_error(): ''));
                     }
 
                     $sql = '';
@@ -711,7 +723,7 @@ function db_admin_import()
 
             $view['message'] = $i . ' sql executed.';
         } else {
-            error('db: import file can\'t read.');
+            error('db: Import file can\'t read');
         }
     } else {
         $view['message'] = '';
@@ -834,7 +846,7 @@ function db_admin_export()
             exit;
         } else {
             if (file_put_contents(DATABASE_NAME . '.sql', $text) === false) {
-                error('db: export file can\'t write.' . (DEBUG_LEVEL ? ' [' . DATABASE_NAME . '.sql' . ']' : ''));
+                error('db: Export file can\'t write');
             }
 
             $view['message'] = 'exported.';
@@ -1172,7 +1184,7 @@ function db_migrate()
     global $db;
 
     if (!file_exists(DATABASE_MIGRATE_PATH)) {
-        error('db: ' . DATABASE_MIGRATE_PATH . ' is not found.');
+        error('db: ' . DATABASE_MIGRATE_PATH . ' is not found');
     }
 
     //initialize
@@ -1242,7 +1254,11 @@ function db_migrate()
         }
         closedir($dh);
     } else {
-        error('db: opendir error.' . (DEBUG_LEVEL ? ' [' . $dir . ']' : ''));
+        if (LOGGING_MESSAGE) {
+            logging('message', 'db: Opendir error: ' . db_error());
+        }
+
+        error('db: Opendir error' . (DEBUG_LEVEL ? ': ' . db_error(): ''));
     }
 
     sort($targets, SORT_STRING);
@@ -1250,7 +1266,11 @@ function db_migrate()
     //migrate
     $resource = db_query('DELETE FROM ' . DATABASE_PREFIX . 'levis_migrations WHERE status = ' . db_escape('pending') . ';');
     if (!$resource) {
-        error('db: query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
+        if (LOGGING_MESSAGE) {
+            logging('message', 'db: Query error: ' . db_error());
+        }
+
+        error('db: Query error' . (DEBUG_LEVEL ? ': ' . db_error(): ''));
     }
 
     $migrate = '';
@@ -1264,7 +1284,11 @@ function db_migrate()
 
         $resource = db_query('INSERT INTO ' . DATABASE_PREFIX . 'levis_migrations(version, description, status) VALUES(' . db_escape($version) . ', ' . db_escape($description) . ', ' . db_escape('pending') . ');');
         if (!$resource) {
-            error('db: query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
+            if (LOGGING_MESSAGE) {
+                logging('message', 'db: Query error: ' . db_error());
+            }
+
+            error('db: Query error' . (DEBUG_LEVEL ? ': ' . db_error(): ''));
         }
 
         $error = false;
@@ -1307,13 +1331,21 @@ function db_migrate()
 
             db_commit();
         } else {
-            error('db: file can\'t read.');
+            if (LOGGING_MESSAGE) {
+                logging('message', 'db: File can\'t read: ' . db_error());
+            }
+
+            error('db: File can\'t read' . (DEBUG_LEVEL ? ': ' . db_error(): ''));
         }
 
         if ($error === false) {
             $resource = db_query('UPDATE ' . DATABASE_PREFIX . 'levis_migrations SET status = ' . db_escape('success') . ', installed = ' . db_escape(localdate('Y-m-d H:i:s')) . ' WHERE version = ' . db_escape($version) . ';');
             if (!$resource) {
-                error('db: query error.' . (DEBUG_LEVEL ? ' [' . db_error() . ']' : ''));
+                if (LOGGING_MESSAGE) {
+                    logging('message', 'db: Query error: ' . db_error());
+                }
+
+                error('db: Query error' . (DEBUG_LEVEL ? ': ' . db_error(): ''));
             }
 
             $migrate .= $target . " ... OK\n";
@@ -1390,7 +1422,7 @@ function db_scaffold()
     }
 
     if (!file_exists(DATABASE_SCAFFOLD_PATH)) {
-        error('db:' . DATABASE_SCAFFOLD_PATH . ' is not found.');
+        error('db: ' . DATABASE_SCAFFOLD_PATH . ' is not found');
     }
 
     //initialize
@@ -1416,7 +1448,7 @@ function db_scaffold()
     $results  = db_result($resource);
 
     if (count($results) === 0) {
-        error('db: table not found.');
+        error('db: Table not found');
     }
 
     $scaffold = '';
@@ -1712,7 +1744,7 @@ function db_scaffold()
             $buffer .= '            ),' . "\n";
             $buffer .= '        ));' . "\n";
             $buffer .= '        if (!$resource) {' . "\n";
-            $buffer .= '            error(\'update error.\');' . "\n";
+            $buffer .= '            error(\'Update error.\');' . "\n";
             $buffer .= '        }' . "\n";
         }
 
@@ -1723,7 +1755,7 @@ function db_scaffold()
         $buffer .= '            ),' . "\n";
         $buffer .= '        ));' . "\n";
         $buffer .= '        if (!$resource) {' . "\n";
-        $buffer .= '            error(\'insert error.\');' . "\n";
+        $buffer .= '            error(\'Insert error.\');' . "\n";
         $buffer .= '        }' . "\n";
         $buffer .= '    }' . "\n";
         $buffer .= "\n";
@@ -1741,7 +1773,7 @@ function db_scaffold()
             $buffer .= '            ),' . "\n";
             $buffer .= '        ));' . "\n";
             $buffer .= '        if (empty($' . $table . ')) {' . "\n";
-            $buffer .= '            error(\'data not found.\');' . "\n";
+            $buffer .= '            error(\'Data not found.\');' . "\n";
             $buffer .= '        } else {' . "\n";
             $buffer .= '            $view[\'data\'] = $' . $table . '[0];' . "\n";
             $buffer .= '        }' . "\n";
@@ -1767,10 +1799,10 @@ function db_scaffold()
             $buffer .= '        ),' . "\n";
             $buffer .= '    ));' . "\n";
             $buffer .= '    if (!$resource) {' . "\n";
-            $buffer .= '        error(\'delete error.\');' . "\n";
+            $buffer .= '        error(\'Delete error.\');' . "\n";
             $buffer .= '    }' . "\n";
             $buffer .= '} else {' . "\n";
-            $buffer .= '    error(\'method error.\');' . "\n";
+            $buffer .= '    error(\'Method error.\');' . "\n";
             $buffer .= '}' . "\n";
             $buffer .= "\n";
             $buffer .= 'redirect(\'/' . $table . '/' . MAIN_DEFAULT_WORK . '\');' . "\n";

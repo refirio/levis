@@ -80,7 +80,11 @@ function test_index()
         }
         closedir($dh);
     } else {
-        error('test: opendir error.' . (DEBUG_LEVEL ? ' [' . MAIN_PATH . TEST_PATH . ']' : ''));
+        if (LOGGING_MESSAGE) {
+            logging('message', 'test: Opendir error: ' . $target);
+        }
+
+        error('test: Opendir error' . (DEBUG_LEVEL ? ': ' . $target: ''));
     }
 
     echo "<!DOCTYPE html>\n";
@@ -173,7 +177,11 @@ function test_exec()
             }
             closedir($dh);
         } else {
-            error('test: opendir error.' . (DEBUG_LEVEL ? ' [' . MAIN_PATH . TEST_PATH . ']' : ''));
+            if (LOGGING_MESSAGE) {
+                logging('message', 'test: Opendir error: ' . $target);
+            }
+
+            error('test: Opendir error' . (DEBUG_LEVEL ? ': ' . $target: ''));
         }
 
         if ($flag === false) {

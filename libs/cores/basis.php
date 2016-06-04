@@ -59,7 +59,11 @@ function import($file, $once = true, $ignore = false)
     }
 
     if ($ignore === false && $flag === false) {
-        error('import error.' . (DEBUG_LEVEL ? ' [' . $target . ']' : ''));
+        if (LOGGING_MESSAGE) {
+            logging('message', 'Import error: ' . $target);
+        }
+
+        error('Import error' . (DEBUG_LEVEL ? ': ' . $target: ''));
     }
 
     return;
@@ -251,7 +255,11 @@ function service($target = null)
         }
         closedir($dh);
     } else {
-        error('opendir error.' . (DEBUG_LEVEL ? ' [' . $dir . ']' : ''));
+        if (LOGGING_MESSAGE) {
+            logging('message', 'Opendir error: ' . $target);
+        }
+
+        error('Opendir error' . (DEBUG_LEVEL ? ': ' . $target: ''));
     }
 
     return;
@@ -329,7 +337,11 @@ function model($target = null)
         }
         closedir($dh);
     } else {
-        error('opendir error.' . (DEBUG_LEVEL ? ' [' . $dir . ']' : ''));
+        if (LOGGING_MESSAGE) {
+            logging('message', 'Opendir error: ' . $target);
+        }
+
+        error('Opendir error' . (DEBUG_LEVEL ? ': ' . $target: ''));
     }
 
     eval($php);
@@ -756,23 +768,45 @@ function debug($data, $return = false)
 /**
  * Log the message to a logs.
  *
- * @param  string  $message
+ * @param  string  $type
+ * @param  string|null  $message
  * @return void
  */
-function logging($message)
+function logging($type = 'message', $message = null)
 {
-    $message = regexp_replace("\r", '\r', $message);
-    $message = regexp_replace("\n", '\n', $message);
-
     $uri = str_replace("\n" . $_SERVER['SCRIPT_NAME'], '', "\n" . $_SERVER['REQUEST_URI']);
 
     if ($uri === '') {
         $uri = '/';
     }
 
-    if ($fp = fopen(LOGGING_FILE, 'a')) {
-        fwrite($fp, '[' . localdate('Y-m-d H:i:s') . '] ' . $_SERVER['REQUEST_URI'] . ' ' . $message . "\n");
-        fclose($fp);
+    if ($type === 'get') {
+        if ($fp = fopen(LOGGING_PATH . 'get/' . localdate('Ymd') . '.log', 'a')) {
+            fwrite($fp, clientip() . ' ' . clientip(true) . ' [' . localdate('Y-m-d H:i:s') . '] ' . $uri . "\n");
+            fclose($fp);
+        }
+    } elseif ($type === 'post') {
+        if ($fp = fopen(LOGGING_PATH . 'post/' . localdate('YmdHis') . '.log', 'a')) {
+            fwrite($fp, $uri . "\n" . print_r($_POST, true) . "\n");
+            fclose($fp);
+        }
+    } elseif ($type === 'files') {
+        if ($fp = fopen(LOGGING_PATH . 'files/' . localdate('YmdHi') . '.log', 'a')) {
+            fwrite($fp, $uri . "\n" . print_r($_FILES, true) . "\n");
+            fclose($fp);
+        }
+    } else {
+        $message = regexp_replace("\r", '\r', $message);
+        $message = regexp_replace("\n", '\n', $message);
+
+        if ($message === null) {
+            $message = '-';
+        }
+
+        if ($fp = fopen(LOGGING_PATH . 'message/' . localdate('Ymd') . '.log', 'a')) {
+            fwrite($fp, '[' . localdate('Y-m-d H:i:s') . '] ' . $uri . ' ' . $message . "\n");
+            fclose($fp);
+        }
     }
 
     return;
@@ -907,9 +941,6 @@ function error($message, $type = null)
 {
     global $view;
 
-    if (DEBUG_LOG) {
-        logging($message);
-    }
     if ($type === null && isset($_REQUEST['type'])) {
         $type = $_REQUEST['type'];
     }
@@ -1093,20 +1124,20 @@ function about()
     echo "<dd><code>" . alt(TEST_PATH, '-') . "</code></dd>\n";
     echo "</dl>\n";
 
-    echo "<h3>Logging</h3>\n";
-    echo "<dl>\n";
-    echo "<dt>file</dt>\n";
-    echo "<dd><code>" . alt(LOGGING_FILE, '-') . "</code></dd>\n";
-    echo "</dl>\n";
-
     echo "<h3>Debug</h3>\n";
     echo "<dl>\n";
     echo "<dt>level</dt>\n";
     echo "<dd><code>" . DEBUG_LEVEL . "</code></dd>\n";
     echo "<dt>addr</dt>\n";
     echo "<dd><code>" . alt(DEBUG_ADDR, '-') . "</code></dd>\n";
-    echo "<dt>log</dt>\n";
-    echo "<dd><code>" . (DEBUG_LOG ? 'true' : 'false') . "</code></dd>\n";
+    echo "</dl>\n";
+
+    echo "<h3>Logging</h3>\n";
+    echo "<dl>\n";
+    echo "<dt>path</dt>\n";
+    echo "<dd><code>" . alt(LOGGING_PATH, '-') . "</code></dd>\n";
+    echo "<dt>message</dt>\n";
+    echo "<dd><code>" . (LOGGING_MESSAGE ? 'true' : 'false') . "</code></dd>\n";
     echo "</dl>\n";
 
     echo "</body>\n";
