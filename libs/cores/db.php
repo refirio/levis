@@ -837,6 +837,7 @@ function db_admin_export()
                 $resource = db_query('SELECT * FROM ' . $table . ';');
                 $results  = db_result($resource);
 
+                $values = array();
                 foreach ($results as $result) {
                     $inserts = array();
                     foreach ($result as $data) {
@@ -846,7 +847,18 @@ function db_admin_export()
                             $inserts[] = db_escape($data);
                         }
                     }
-                    $text .= "INSERT INTO " . $table . " VALUES(" . implode(',', $inserts) . ");\n";
+
+                    if ($_POST['format'] === 'combined') {
+                        $values[] = '(' . implode(', ', $inserts) . ')';
+                    } else {
+                        $text .= "INSERT INTO " . $table . " VALUES(" . implode(', ', $inserts) . ");\n";
+                    }
+                }
+
+                if ($_POST['format'] === 'combined' && !empty($values)) {
+                    $text .= "INSERT INTO " . $table . " VALUES\n";
+                    $text .= implode(",\n", $values);
+                    $text .= ";\n";
                 }
 
                 $text .= "\n";
@@ -913,6 +925,11 @@ function db_admin_export()
     }
 
     echo "</select>\n";
+    echo "</dd>\n";
+    echo "<dt>format</dt>\n";
+    echo "<dd>\n";
+    echo "<label><input type=\"radio\" name=\"format\" value=\"combined\" checked=\"checked\" /> combined</label><br />\n";
+    echo "<label><input type=\"radio\" name=\"format\" value=\"separated\" /> separated</label>\n";
     echo "</dd>\n";
     echo "<dt>means</dt>\n";
     echo "<dd>\n";
