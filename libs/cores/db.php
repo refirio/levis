@@ -600,6 +600,8 @@ function db_transaction()
         return false;
     }
 
+    $db['transaction'][$db['target']] = true;
+
     return db_driver_transaction();
 }
 
@@ -616,6 +618,12 @@ function db_commit()
         return false;
     }
 
+    if (isset($db['transaction'][$db['target']]) && $db['transaction'][$db['target']] === true) {
+        $db['transaction'][$db['target']] = false;
+    } else {
+        return false;
+    }
+
     return db_driver_commit();
 }
 
@@ -629,6 +637,12 @@ function db_rollback()
     global $db;
 
     if (DATABASE_TYPE === '') {
+        return false;
+    }
+
+    if (isset($db['transaction'][$db['target']]) && $db['transaction'][$db['target']] === true) {
+        $db['transaction'][$db['target']] = false;
+    } else {
         return false;
     }
 

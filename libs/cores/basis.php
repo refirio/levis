@@ -819,6 +819,8 @@ function ok($type = null)
         $type = $_REQUEST['type'];
     }
 
+    db_commit();
+
     if ($type === 'json') {
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
 
@@ -871,6 +873,8 @@ function warning($messages, $type = null)
     if ($type === null && isset($_REQUEST['type'])) {
         $type = $_REQUEST['type'];
     }
+
+    db_rollback();
 
     if ($type === 'json') {
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
@@ -940,6 +944,8 @@ function error($message, $type = null)
     if ($type === null && isset($_REQUEST['type'])) {
         $type = $_REQUEST['type'];
     }
+
+    db_rollback();
 
     if ($type === 'json') {
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
