@@ -1737,9 +1737,9 @@ function db_scaffold()
         $buffer  = '<?php' . "\n";
         $buffer .= "\n";
         $buffer .= 'if ($_SERVER[\'REQUEST_METHOD\'] === \'POST\') {' . "\n";
-        $buffer .= '    $warnings = validate_' . $table . '(array(' . "\n";
+        $buffer .= '    $warnings = validate_' . $table . '(normalize_' . $table . '(array(' . "\n";
         $buffer .= $controller_validate;
-        $buffer .= '    ));' . "\n";
+        $buffer .= '    )));' . "\n";
         $buffer .= '    if (!empty($warnings)) {' . "\n";
         $buffer .= '        warning($warnings);' . "\n";
         $buffer .= '    }' . "\n";
@@ -1859,7 +1859,7 @@ function db_scaffold()
         $buffer .= "\n";
         $buffer .= '    //insert' . "\n";
         $buffer .= '    foreach ($insert_' . $table . ' as $insert_data) {' . "\n";
-        $buffer .= '        $warnings = validate_' . $table . '($insert_data);' . "\n";
+        $buffer .= '        $warnings = validate_' . $table . '(normalize_' . $table . '($insert_data));' . "\n";
         $buffer .= '        if (empty($warnings)) {' . "\n";
         $buffer .= '            insert_' . $table . '(array(' . "\n";
         $buffer .= '                \'values\' => $insert_data,' . "\n";
@@ -1891,7 +1891,7 @@ function db_scaffold()
         $buffer .= $test_update;
         $buffer .= "\n";
         $buffer .= '    //update' . "\n";
-        $buffer .= '    $warnings = validate_' . $table . '($update_' . $table . '[3]);' . "\n";
+        $buffer .= '    $warnings = validate_' . $table . '(normalize_' . $table . '($update_' . $table . '[3]));' . "\n";
         $buffer .= '    if (empty($warnings)) {' . "\n";
         $buffer .= '        update_' . $table . '(array(' . "\n";
         $buffer .= '            \'set\'   => $update_' . $table . '[3],' . "\n";
@@ -1976,7 +1976,7 @@ function db_scaffold()
         $buffer .= "\n";
         $buffer .= '    //insert' . "\n";
         $buffer .= '    foreach ($insert_' . $table . ' as $insert_data) {' . "\n";
-        $buffer .= '        $warnings = validate_' . $table . '($insert_data);' . "\n";
+        $buffer .= '        $warnings = validate_' . $table . '(normalize_' . $table . '($insert_data));' . "\n";
         $buffer .= '        if (empty($warnings)) {' . "\n";
         $buffer .= '            insert_' . $table . '(array(' . "\n";
         $buffer .= '                \'values\' => $insert_data,' . "\n";
