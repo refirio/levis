@@ -774,25 +774,21 @@ function debug($data, $return = false)
  */
 function logging($type = 'message', $message = null)
 {
-    $uri = str_replace("\n" . $_SERVER['SCRIPT_NAME'], '', "\n" . $_SERVER['REQUEST_URI']);
-
-    if ($uri === '') {
-        $uri = '/';
-    }
+    $log = clientip() . ' ' . clientip(true) . ' [' . localdate('Y-m-d H:i:s') . '] ' . $_SERVER['REQUEST_URI'];
 
     if ($type === 'get') {
         if ($fp = fopen(LOGGING_PATH . 'get/' . localdate('Ymd') . '.log', 'a')) {
-            fwrite($fp, clientip() . ' ' . clientip(true) . ' [' . localdate('Y-m-d H:i:s') . '] ' . $uri . "\n");
+            fwrite($fp, $log . "\n");
             fclose($fp);
         }
     } elseif ($type === 'post') {
         if ($fp = fopen(LOGGING_PATH . 'post/' . localdate('YmdHis') . '.log', 'a')) {
-            fwrite($fp, $uri . "\n" . print_r($_POST, true) . "\n");
+            fwrite($fp, $log . "\n" . print_r($_POST, true) . "\n");
             fclose($fp);
         }
     } elseif ($type === 'files') {
-        if ($fp = fopen(LOGGING_PATH . 'files/' . localdate('YmdHi') . '.log', 'a')) {
-            fwrite($fp, $uri . "\n" . print_r($_FILES, true) . "\n");
+        if ($fp = fopen(LOGGING_PATH . 'files/' . localdate('YmdHis') . '.log', 'a')) {
+            fwrite($fp, $log . "\n" . print_r($_FILES, true) . "\n");
             fclose($fp);
         }
     } else {
@@ -804,7 +800,7 @@ function logging($type = 'message', $message = null)
         }
 
         if ($fp = fopen(LOGGING_PATH . 'message/' . localdate('Ymd') . '.log', 'a')) {
-            fwrite($fp, '[' . localdate('Y-m-d H:i:s') . '] ' . $uri . ' ' . $message . "\n");
+            fwrite($fp, $log . ' ' . $message . "\n");
             fclose($fp);
         }
     }
