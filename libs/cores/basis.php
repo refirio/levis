@@ -1140,6 +1140,12 @@ function about()
     echo "<dd><code>" . alt(LOGGING_PATH, '-') . "</code></dd>\n";
     echo "<dt>message</dt>\n";
     echo "<dd><code>" . (LOGGING_MESSAGE ? 'true' : 'false') . "</code></dd>\n";
+    echo "<dt>get</dt>\n";
+    echo "<dd><code>" . (LOGGING_GET ? 'true' : 'false') . "</code></dd>\n";
+    echo "<dt>post</dt>\n";
+    echo "<dd><code>" . (LOGGING_POST ? 'true' : 'false') . "</code></dd>\n";
+    echo "<dt>files</dt>\n";
+    echo "<dd><code>" . (LOGGING_FILES ? 'true' : 'false') . "</code></dd>\n";
     echo "</dl>\n";
 
     echo "</body>\n";
