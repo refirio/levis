@@ -1101,7 +1101,7 @@ function db_admin_sql()
                         $value_sql  = 'NULL';
                         $value_html = '<em>NULL</em>';
                     } else {
-                        $value_sql = str_replace('\\', '\\\\\\', $value);
+                        $value_sql = str_replace('\\', '\\\\\\\\', $value);
                         $value_sql = str_replace("\n", '\n', $value_sql);
                         $value_sql = str_replace('"', '&quot;', $value_sql);
 
