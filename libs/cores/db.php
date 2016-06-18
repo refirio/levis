@@ -838,6 +838,7 @@ function db_admin_export()
                 $results  = db_result($resource);
 
                 $values = array();
+                $i      = 0;
                 foreach ($results as $result) {
                     $inserts = array();
                     foreach ($result as $data) {
@@ -849,16 +850,20 @@ function db_admin_export()
                     }
 
                     if ($_POST['format'] === 'combined') {
-                        $values[] = '(' . implode(', ', $inserts) . ')';
+                        $values[intval($i / 50)][] = '(' . implode(', ', $inserts) . ')';
                     } else {
                         $text .= "INSERT INTO " . $table . " VALUES(" . implode(', ', $inserts) . ");\n";
                     }
+
+                    $i++;
                 }
 
                 if ($_POST['format'] === 'combined' && !empty($values)) {
-                    $text .= "INSERT INTO " . $table . " VALUES\n";
-                    $text .= implode(",\n", $values);
-                    $text .= ";\n";
+                    foreach ($values as $value) {
+                        $text .= "INSERT INTO " . $table . " VALUES\n";
+                        $text .= implode(",\n", $value);
+                        $text .= ";\n";
+                    }
                 }
 
                 $text .= "\n";
