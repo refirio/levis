@@ -1267,6 +1267,11 @@ function db_migrate()
 
     sort($targets, SORT_STRING);
 
+    //backup
+    if (!empty($targets)) {
+        db_export(DATABASE_BACKUP_PATH . localdate('YmdHis') . '.sql');
+    }
+
     //migrate
     $resource = db_query('DELETE FROM ' . DATABASE_PREFIX . 'levis_migrations WHERE status = ' . db_escape('pending') . ';');
     if (!$resource) {
