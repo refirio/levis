@@ -655,8 +655,6 @@ function db_rollback()
  */
 function db_admin()
 {
-    global $db;
-
     if (DATABASE_TYPE === '') {
         return;
     }
@@ -668,6 +666,8 @@ function db_admin()
         db_admin_import();
     } elseif ($_REQUEST['work'] === 'export') {
         db_admin_export();
+    } elseif ($_REQUEST['work'] === 'backup') {
+        db_admin_backup();
     } else {
         db_admin_sql();
     }
@@ -681,8 +681,6 @@ function db_admin()
  */
 function db_admin_import()
 {
-    global $db;
-
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($_POST['means'] === 'upload') {
             if (is_uploaded_file($_FILES['target']['tmp_name'])) {
@@ -698,47 +696,9 @@ function db_admin_import()
             }
         }
 
-        if ($fp = fopen($target, 'r')) {
-            $sql  = '';
-            $i    = 0;
-            $flag = true;
+        $count = db_import($target);
 
-            db_transaction();
-
-            while ($line = fgets($fp)) {
-                $line = str_replace("\r\n", "\n", $line);
-                $line = str_replace("\r", "\n", $line);
-
-                if ((substr_count($line, '\'') - substr_count($line, '\\\'')) % 2 !== 0) {
-                    $flag = !$flag;
-                }
-
-                $sql .= $line;
-
-                if (preg_match('/;$/', trim($line)) && $flag) {
-                    $resource = db_query($sql);
-                    if (!$resource) {
-                        db_rollback();
-
-                        if (LOGGING_MESSAGE) {
-                            logging('message', 'db: Query error: ' . db_error());
-                        }
-
-                        error('db: Query error' . (DEBUG_LEVEL ? ': ' . db_error(): ''));
-                    }
-
-                    $sql = '';
-                    $i++;
-                }
-            }
-            fclose($fp);
-
-            db_commit();
-
-            $view['message'] = $i . ' sql executed.';
-        } else {
-            error('db: Import file can\'t read');
-        }
+        $view['message'] = $count . ' sql executed.';
     } else {
         $view['message'] = '';
     }
@@ -760,6 +720,11 @@ function db_admin_import()
     echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=sql\">SQL</a></li>\n";
     echo "<li>Import</li>\n";
     echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=export\">Export</a></li>\n";
+
+    if (file_exists(DATABASE_BACKUP_PATH)) {
+        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=backup\">Backup</a></li>\n";
+    }
+
     echo "</ul>\n";
 
     echo "<h2>Import</h2>\n";
@@ -799,8 +764,6 @@ function db_admin_import()
  */
 function db_admin_export()
 {
-    global $db;
-
     $resource = db_query(db_sql('table_list'));
     $results  = db_result($resource);
 
@@ -810,75 +773,13 @@ function db_admin_export()
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $text  = '-- Database: ' . DATABASE_NAME . ' (' . DATABASE_TYPE . ")\n";
-        $text .= '-- Datetime: ' . localdate('Y-m-d H:i:s') . "\n";
-        $text .= '-- Host: ' . gethostbyaddr(clientip()) . "\n";
-        $text .= "\n";
-
-        foreach ($view['tables'] as $table) {
-            if (empty($_POST['table']) || $_POST['table'] === $table) {
-                $resource = db_query(db_sql('table_create', $table));
-                $results  = db_result($resource);
-
-                if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
-                    $text .= "DROP TABLE IF EXISTS " . $table . ";\n";
-                    $text .= $results[0]['Create Table'] . ";\n";
-                    $text .= "\n";
-                } elseif (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
-                    $text .= "DROP TABLE IF EXISTS " . $table . ";\n";
-                    $text .= $results[0]['case'] . ";\n";
-                    $text .= "\n";
-                } elseif (DATABASE_TYPE === 'pdo_sqlite' || DATABASE_TYPE === 'pdo_sqlite2' || DATABASE_TYPE === 'sqlite') {
-                    $text .= "DROP TABLE IF EXISTS " . $table . ";\n";
-                    $text .= $results[0]['sql'] . ";\n";
-                    $text .= "\n";
-                }
-
-                $resource = db_query('SELECT * FROM ' . $table . ';');
-                $results  = db_result($resource);
-
-                $values = array();
-                $i      = 0;
-                foreach ($results as $result) {
-                    $inserts = array();
-                    foreach ($result as $data) {
-                        if ($data === null) {
-                            $inserts[] = 'NULL';
-                        } else {
-                            $inserts[] = db_escape($data);
-                        }
-                    }
-
-                    if ($_POST['format'] === 'combined') {
-                        $values[intval($i / 50)][] = '(' . implode(', ', $inserts) . ')';
-                    } else {
-                        $text .= "INSERT INTO " . $table . " VALUES(" . implode(', ', $inserts) . ");\n";
-                    }
-
-                    $i++;
-                }
-
-                if ($_POST['format'] === 'combined' && !empty($values)) {
-                    foreach ($values as $value) {
-                        $text .= "INSERT INTO " . $table . " VALUES\n";
-                        $text .= implode(",\n", $value);
-                        $text .= ";\n";
-                    }
-                }
-
-                $text .= "\n";
-            }
-        }
+        $table    = empty($_POST['table']) ? null : $_POST['table'];
+        $combined = $_POST['format'] === 'combined' ? true : false;
 
         if ($_POST['means'] === 'download') {
-            header('Content-Type: text/plain');
-            header('Content-Disposition: attachment; filename="' . DATABASE_NAME . '.sql"');
-            echo $text;
-            exit;
+            db_export(null, $table, $combined);
         } else {
-            if (file_put_contents(DATABASE_NAME . '.sql', $text) === false) {
-                error('db: Export file can\'t write');
-            }
+            db_export(DATABASE_NAME . '.sql', $table, $combined);
 
             $view['message'] = 'exported.';
         }
@@ -901,6 +802,11 @@ function db_admin_export()
     echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=sql\">SQL</a></li>\n";
     echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=import\">Import</a></li>\n";
     echo "<li>Export</li>\n";
+
+    if (file_exists(DATABASE_BACKUP_PATH)) {
+        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=backup\">Backup</a></li>\n";
+    }
+
     echo "</ul>\n";
 
     echo "<h2>Export</h2>\n";
@@ -953,13 +859,72 @@ function db_admin_export()
 }
 
 /**
+ * Output a backup page for database.
+ *
+ */
+function db_admin_backup()
+{
+    if (!file_exists(DATABASE_BACKUP_PATH)) {
+        error('db: ' . DATABASE_BACKUP_PATH . ' is not found');
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        db_export(DATABASE_BACKUP_PATH . localdate('YmdHis') . '.sql');
+
+        $view['message'] = 'completed.';
+    }
+
+    echo "<!DOCTYPE html>\n";
+    echo "<html>\n";
+    echo "<head>\n";
+    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+    echo "<title>DB</title>\n";
+
+    style();
+
+    echo "</head>\n";
+    echo "<body>\n";
+    echo "<h1><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin\">DB</a></h1>\n";
+
+    echo "<h2>Menu</h2>\n";
+    echo "<ul>\n";
+    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=sql\">SQL</a></li>\n";
+    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=import\">Import</a></li>\n";
+    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=export\">Export</a></li>\n";
+    echo "<li>Backup</li>\n";
+    echo "</ul>\n";
+
+    echo "<h2>Backup</h2>\n";
+
+    if (isset($view['message'])) {
+        echo "<ul>\n";
+        echo "<li>" . $view['message'] . "</li>\n";
+        echo "</ul>\n";
+    } else {
+        echo "<ul>\n";
+        echo "<li>Export to SQL file.</li>\n";
+        echo "</ul>\n";
+    }
+
+    echo "<form action=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=backup\" method=\"post\">\n";
+    echo "<fieldset>\n";
+    echo "<legend>backup</legend>\n";
+    echo "<p><input type=\"submit\" value=\"backup\" /></p>\n";
+    echo "</fieldset>\n";
+    echo "</form>\n";
+
+    echo "</body>\n";
+    echo "</html>\n";
+
+    return;
+}
+
+/**
  * Output a sql page for database.
  *
  */
 function db_admin_sql()
 {
-    global $db;
-
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sql = $_POST['sql'];
     } else {
@@ -1183,6 +1148,11 @@ function db_admin_sql()
     echo "<li>SQL</li>\n";
     echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=import\">Import</a></li>\n";
     echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=export\">Export</a></li>\n";
+
+    if (file_exists(DATABASE_BACKUP_PATH)) {
+        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=backup\">Backup</a></li>\n";
+    }
+
     echo "</ul>\n";
 
     echo "<h2>SQL</h2>\n";
@@ -1217,8 +1187,6 @@ function db_admin_sql()
  */
 function db_migrate()
 {
-    global $db;
-
     if (!file_exists(DATABASE_MIGRATE_PATH)) {
         error('db: ' . DATABASE_MIGRATE_PATH . ' is not found');
     }
@@ -1451,8 +1419,6 @@ function db_migrate()
  */
 function db_scaffold()
 {
-    global $db;
-
     if (!DEBUG_LEVEL || !regexp_match(DEBUG_ADDR, clientip())) {
         return;
     }
@@ -2183,16 +2149,157 @@ function db_scaffold_output($file, $data)
 }
 
 /**
+ * Import SQL from the file.
+ *
+ * @param  string  $file
+ */
+function db_import($file)
+{
+    if ($fp = fopen($file, 'r')) {
+        $sql  = '';
+        $i    = 0;
+        $flag = true;
+
+        db_transaction();
+
+        while ($line = fgets($fp)) {
+            $line = str_replace("\r\n", "\n", $line);
+            $line = str_replace("\r", "\n", $line);
+
+            if ((substr_count($line, '\'') - substr_count($line, '\\\'')) % 2 !== 0) {
+                $flag = !$flag;
+            }
+
+            $sql .= $line;
+
+            if (preg_match('/;$/', trim($line)) && $flag) {
+                $resource = db_query($sql);
+                if (!$resource) {
+                    db_rollback();
+
+                    if (LOGGING_MESSAGE) {
+                        logging('message', 'db: Query error: ' . db_error());
+                    }
+
+                    error('db: Query error' . (DEBUG_LEVEL ? ': ' . db_error(): ''));
+                }
+
+                $sql = '';
+                $i++;
+            }
+        }
+        fclose($fp);
+
+        db_commit();
+
+        $view['message'] = $i . ' sql executed.';
+    } else {
+        error('db: Import file can\'t read');
+    }
+
+    return;
+}
+
+/**
+ * Export SQL to the file.
+ *
+ * @param  string|null  $file
+ * @param  string|null  $table
+ * @param  bool  $combined
+ */
+function db_export($file = null, $table = null, $combined = true)
+{
+    $resource = db_query(db_sql('table_list'));
+    $results  = db_result($resource);
+
+    $tables = array();
+    foreach ($results as $result) {
+        $tables[] = array_shift($result);
+    }
+
+    $text  = '-- Database: ' . DATABASE_NAME . ' (' . DATABASE_TYPE . ")\n";
+    $text .= '-- Datetime: ' . localdate('Y-m-d H:i:s') . "\n";
+    $text .= '-- Host: ' . gethostbyaddr(clientip()) . "\n";
+    $text .= "\n";
+
+    foreach ($tables as $table) {
+        if ($table === null || $table === $table) {
+            $resource = db_query(db_sql('table_create', $table));
+            $results  = db_result($resource);
+
+            if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
+                $text .= "DROP TABLE IF EXISTS " . $table . ";\n";
+                $text .= $results[0]['Create Table'] . ";\n";
+                $text .= "\n";
+            } elseif (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
+                $text .= "DROP TABLE IF EXISTS " . $table . ";\n";
+                $text .= $results[0]['case'] . ";\n";
+                $text .= "\n";
+            } elseif (DATABASE_TYPE === 'pdo_sqlite' || DATABASE_TYPE === 'pdo_sqlite2' || DATABASE_TYPE === 'sqlite') {
+                $text .= "DROP TABLE IF EXISTS " . $table . ";\n";
+                $text .= $results[0]['sql'] . ";\n";
+                $text .= "\n";
+            }
+
+            $resource = db_query('SELECT * FROM ' . $table . ';');
+            $results  = db_result($resource);
+
+            $values = array();
+            $i      = 0;
+            foreach ($results as $result) {
+                $inserts = array();
+                foreach ($result as $data) {
+                    if ($data === null) {
+                        $inserts[] = 'NULL';
+                    } else {
+                        $inserts[] = db_escape($data);
+                    }
+                }
+
+                if ($combined === true) {
+                    $values[intval($i / 50)][] = '(' . implode(', ', $inserts) . ')';
+                } else {
+                    $text .= "INSERT INTO " . $table . " VALUES(" . implode(', ', $inserts) . ");\n";
+                }
+
+                $i++;
+            }
+
+            if ($combined === true && !empty($values)) {
+                foreach ($values as $value) {
+                    $text .= "INSERT INTO " . $table . " VALUES\n";
+                    $text .= implode(",\n", $value);
+                    $text .= ";\n";
+                }
+            }
+
+            $text .= "\n";
+        }
+    }
+
+    if ($file === null) {
+        header('Content-Type: text/plain');
+        header('Content-Disposition: attachment; filename="' . DATABASE_NAME . '.sql"');
+        echo $text;
+        exit;
+    } else {
+        if (file_put_contents($file, $text) === false) {
+            error('db: Export file can\'t write');
+        }
+    }
+
+    return;
+}
+
+/**
  * Get the sql data for database.
  *
  * @param  string  $type
  * @param  string|null  $table
- * @return string
+ * @return string  $sql
  */
 function db_sql($type, $table = null)
 {
-    global $db;
-
     if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
         if ($type === 'table_list') {
             $sql = '
