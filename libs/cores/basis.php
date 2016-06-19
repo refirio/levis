@@ -962,7 +962,7 @@ function error($message, $type = null)
         echo "<status>ERROR</status>\n";
         echo "<message>" . h($message, true) . "</message>\n";
         echo "</response>\n";
-    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/error_' . $_REQUEST['mode'] . '.php')) {
+    } elseif (isset($_REQUEST['mode']) && is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/error_' . $_REQUEST['mode'] . '.php')) {
         $view['message'] = $message;
 
         import('app/views/error_' . $_REQUEST['mode'] . '.php', false, true);
