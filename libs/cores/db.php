@@ -864,6 +864,10 @@ function db_admin_export()
  */
 function db_admin_backup()
 {
+    if (!DEBUG_LEVEL || !regexp_match(DEBUG_ADDR, clientip())) {
+        return;
+    }
+
     if (!file_exists(DATABASE_BACKUP_PATH)) {
         error('db: ' . DATABASE_BACKUP_PATH . ' is not found');
     }
@@ -912,6 +916,41 @@ function db_admin_backup()
     echo "<p><input type=\"submit\" value=\"backup\" /></p>\n";
     echo "</fieldset>\n";
     echo "</form>\n";
+
+    echo "<h2>History</h2>\n";
+    echo "<table summary=\"history\">\n";
+    echo "<tr>\n";
+    echo "<th>file</th>\n";
+    echo "<th>datetime</th>\n";
+    echo "</tr>\n";
+
+    if ($dh = opendir(DATABASE_BACKUP_PATH)) {
+        while (($entry = readdir($dh)) !== false) {
+            if (!is_file(DATABASE_BACKUP_PATH . $entry)) {
+                continue;
+            }
+
+            if ($regexp = regexp_match('^(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)\.sql$', $entry)) {
+                $datetime = $regexp[1] . '-' . $regexp[2] . '-' . $regexp[3] . ' ' . $regexp[4] . ':' . $regexp[5] . ':' . $regexp[6];
+            } else {
+                continue;
+            }
+
+            echo "<tr>\n";
+            echo "<td><span style=\"font-family:monospace;\">" . h($entry, true) . "</span></td>\n";
+            echo "<td><span style=\"font-family:monospace;\">" . h($datetime, true) . "</span></td>\n";
+            echo "</tr>\n";
+        }
+        closedir($dh);
+    } else {
+        if (LOGGING_MESSAGE) {
+            logging('message', 'Opendir error: ' . DATABASE_BACKUP_PATH);
+        }
+
+        error('Opendir error' . (DEBUG_LEVEL ? ': ' . DATABASE_BACKUP_PATH: ''));
+    }
+
+    echo "</table>\n";
 
     echo "</body>\n";
     echo "</html>\n";
@@ -1268,7 +1307,7 @@ function db_migrate()
     sort($targets, SORT_STRING);
 
     //backup
-    if (!empty($targets)) {
+    if (!empty($targets) && file_exists(DATABASE_BACKUP_PATH)) {
         db_export(DATABASE_BACKUP_PATH . localdate('YmdHis') . '.sql');
     }
 
