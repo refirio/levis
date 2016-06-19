@@ -1085,6 +1085,8 @@ function about()
         echo "<dd><code>" . alt(DATABASE_MIGRATE_PATH, '-') . "</code></dd>\n";
         echo "<dt>scaffold path</dt>\n";
         echo "<dd><code>" . alt(DATABASE_SCAFFOLD_PATH, '-') . "</code></dd>\n";
+        echo "<dt>backup path</dt>\n";
+        echo "<dd><code>" . alt(DATABASE_BACKUP_PATH, '-') . "</code></dd>\n";
         echo "</dl>\n";
     }
 
