@@ -781,14 +781,23 @@ function logging($type = 'message', $message = null)
             fwrite($fp, $log . "\n");
             fclose($fp);
         }
-    } elseif ($type === 'post') {
-        if ($fp = fopen(LOGGING_PATH . 'post/' . localdate('YmdHis') . '.log', 'a')) {
-            fwrite($fp, $log . "\n" . print_r($_POST, true) . "\n");
-            fclose($fp);
+    } elseif ($type === 'post' || $type === 'files') {
+        $directory = LOGGING_PATH . $type . '/' . localdate('Ymd') . '/';
+
+        if (!is_dir($directory)) {
+            if (mkdir($directory, 0707)) {
+                chmod($directory, 0707);
+            }
         }
-    } elseif ($type === 'files') {
-        if ($fp = fopen(LOGGING_PATH . 'files/' . localdate('YmdHis') . '.log', 'a')) {
-            fwrite($fp, $log . "\n" . print_r($_FILES, true) . "\n");
+
+        if ($type === 'post') {
+            $data = $_POST;
+        } elseif ($type === 'files') {
+            $data = $_FILES;
+        }
+
+        if ($fp = fopen($directory . localdate('His') . '.log', 'a')) {
+            fwrite($fp, $log . "\n" . print_r($data, true) . "\n");
             fclose($fp);
         }
     } else {
