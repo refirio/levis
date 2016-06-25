@@ -12,7 +12,7 @@
  */
 function info_php()
 {
-    if (!DEBUG_LEVEL || !regexp_match(DEBUG_ADDR, clientip())) {
+    if (auth() === false) {
         return;
     }
 
@@ -27,7 +27,7 @@ function info_php()
  */
 function info_levis()
 {
-    if (!DEBUG_LEVEL || !regexp_match(DEBUG_ADDR, clientip())) {
+    if (auth() === false) {
         return;
     }
 

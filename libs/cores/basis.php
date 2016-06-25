@@ -818,6 +818,26 @@ function logging($type = 'message', $message = null)
 }
 
 /**
+ * Check the authorization.
+ *
+ * @return bool
+ */
+function auth()
+{
+    if (!DEBUG_LEVEL) {
+        if (DEBUG_PASSWORD && empty($_SESSION['core']['auth'])) {
+            password();
+        } elseif (DEBUG_ADDR && !in_array(clientip(), explode(',', DEBUG_ADDR))) {
+            return false;
+        } elseif (!DEBUG_PASSWORD && !DEBUG_ADDR) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
  * Output the result.
  *
  * @param  string|null  $type
@@ -1000,6 +1020,59 @@ function error($message, $type = null)
 }
 
 /**
+ * Output a page for authorization.
+ *
+ */
+function password()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($_POST['password'] === DEBUG_PASSWORD) {
+            $_SESSION['core']['auth'] = true;
+
+            redirect('/?mode=' . $_REQUEST['mode']);
+        }
+
+        $view['message'] = 'Password is incorrect.';
+    } else {
+        $view['message'] = '';
+    }
+
+    echo "<!DOCTYPE html>\n";
+    echo "<html>\n";
+    echo "<head>\n";
+    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+    echo "<title>Authorization</title>\n";
+
+    style();
+
+    echo "</head>\n";
+    echo "<body>\n";
+    echo "<h1>Authorization</h1>\n";
+
+    if ($view['message'] !== '') {
+        echo "<ul>\n";
+        echo "<li>" . $view['message'] . "</li>\n";
+        echo "</ul>\n";
+    }
+
+    echo "<form action=\"" . t(MAIN_FILE, true) . "/?mode=" . t($_REQUEST['mode'], true) . "\" method=\"post\">\n";
+    echo "<fieldset>\n";
+    echo "<legend>authorise</legend>\n";
+    echo "<dl>\n";
+    echo "<dt>password</dt>\n";
+    echo "<dd><input type=\"password\" name=\"password\" size=\"20\" value=\"\" /></dd>\n";
+    echo "</dl>\n";
+    echo "<p><input type=\"submit\" value=\"authorise\" /></p>\n";
+    echo "</fieldset>\n";
+    echo "</form>\n";
+
+    echo "</body>\n";
+    echo "</html>\n";
+
+    exit;
+}
+
+/**
  * Output a page for this framework.
  *
  */
@@ -1141,6 +1214,8 @@ function about()
     echo "<dl>\n";
     echo "<dt>level</dt>\n";
     echo "<dd><code>" . DEBUG_LEVEL . "</code></dd>\n";
+    echo "<dt>password</dt>\n";
+    echo "<dd><code>" . alt(str_repeat('*', strlen(DEBUG_PASSWORD)), '-') . "</code></dd>\n";
     echo "<dt>addr</dt>\n";
     echo "<dd><code>" . alt(DEBUG_ADDR, '-') . "</code></dd>\n";
     echo "</dl>\n";

@@ -12,7 +12,7 @@
  */
 function test_index()
 {
-    if (!DEBUG_LEVEL || !regexp_match(DEBUG_ADDR, clientip())) {
+    if (auth() === false) {
         return;
     }
 
@@ -132,7 +132,7 @@ function test_exec()
 {
     global $view;
 
-    if (!DEBUG_LEVEL || !regexp_match(DEBUG_ADDR, clientip())) {
+    if (auth() === false) {
         return;
     }
 

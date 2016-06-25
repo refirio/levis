@@ -658,7 +658,7 @@ function db_admin()
     if (DATABASE_TYPE === '') {
         return;
     }
-    if (!DEBUG_LEVEL || !regexp_match(DEBUG_ADDR, clientip())) {
+    if (auth() === false) {
         return;
     }
 
@@ -864,7 +864,7 @@ function db_admin_export()
  */
 function db_admin_backup()
 {
-    if (!DEBUG_LEVEL || !regexp_match(DEBUG_ADDR, clientip())) {
+    if (auth() === false) {
         return;
     }
 
@@ -1463,7 +1463,7 @@ function db_migrate()
  */
 function db_scaffold()
 {
-    if (!DEBUG_LEVEL || !regexp_match(DEBUG_ADDR, clientip())) {
+    if (auth() === false) {
         return;
     }
 
