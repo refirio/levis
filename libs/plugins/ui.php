@@ -131,7 +131,7 @@ function ui_pager($option = array())
     }
 
     for ($i = $from; $i <= $to; $i++) {
-        if ($option['now'] === $i) {
+        if ($option['now'] == $i) {
             $pager['pages'][] = $option['attribute']['text'] ? '<span' . $option['attribute']['text'] . '>' . $i . '</span>' : $i;
         } else {
             $pager['pages'][] = '<a href="' . $option['query'] . $option['key'] . '=' . $i . '"' . $option['attribute']['link'] . '>' . $i . '</a>';
