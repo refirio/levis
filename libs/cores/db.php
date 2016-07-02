@@ -1226,6 +1226,10 @@ function db_admin_sql()
  */
 function db_migrate()
 {
+    if (auth() === false) {
+        return;
+    }
+
     if (!file_exists(DATABASE_MIGRATE_PATH)) {
         error('db: ' . DATABASE_MIGRATE_PATH . ' is not found');
     }
