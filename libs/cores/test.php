@@ -168,7 +168,7 @@ function test_exec()
                     continue;
                 }
 
-                if ($index === $i++) {
+                if ($index == $i++) {
                     $index = $i;
                     $flag  = true;
 
