@@ -2252,10 +2252,10 @@ function db_import($file)
  * Export SQL to the file.
  *
  * @param  string|null  $file
- * @param  string|null  $table
+ * @param  string|null  $target
  * @param  bool  $combined
  */
-function db_export($file = null, $table = null, $combined = true)
+function db_export($file = null, $target = null, $combined = true)
 {
     $resource = db_query(db_sql('table_list'));
     $results  = db_result($resource);
@@ -2271,7 +2271,7 @@ function db_export($file = null, $table = null, $combined = true)
     $text .= "\n";
 
     foreach ($tables as $table) {
-        if ($table === null || $table === $table) {
+        if ($target === null || $target === $table) {
             $resource = db_query(db_sql('table_create', $table));
             $results  = db_result($resource);
 
