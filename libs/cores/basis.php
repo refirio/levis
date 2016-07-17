@@ -701,7 +701,7 @@ function ssl($proxy = false)
 function token($type, $name = 'default')
 {
     if ($type === 'check') {
-        if ($_REQUEST['token'] && isset($_SESSION['core']['token'][$name]) && $_REQUEST['token'] === $_SESSION['core']['token'][$name]['value']) {
+        if ($_REQUEST['token'] && isset($_SESSION['core']['token'][$name]['value']) && $_REQUEST['token'] === $_SESSION['core']['token'][$name]['value']) {
             $flag = true;
         } else {
             $flag = false;
