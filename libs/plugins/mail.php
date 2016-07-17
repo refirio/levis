@@ -88,6 +88,9 @@ function mail_send($to, $subject, $message, $headers = array(), $files = array()
             $header .= "\n";
         }
 
+        $key   = regexp_replace('(\r|\n)', '', $key);
+        $value = regexp_replace('(\r|\n)', '', $value);
+
         $header .= $key . ': ' . $value;
     }
 
