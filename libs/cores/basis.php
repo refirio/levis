@@ -840,10 +840,18 @@ function auth()
 /**
  * Output the result.
  *
+ * @param  string|null  $message
+ * @param  array  $values
  * @param  string|null  $type
  */
-function ok($type = null)
+function ok($message = null, $values = array(), $type = null)
 {
+    if ($message === null) {
+        $message = 'complete.';
+    }
+    if (empty($values)) {
+        $values = array('token' => token('create'));
+    }
     if ($type === null && isset($_REQUEST['type'])) {
         $type = $_REQUEST['type'];
     }
@@ -854,7 +862,9 @@ function ok($type = null)
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
 
         echo json_encode(array(
-            'status' => 'OK',
+            'status'  => 'OK',
+            'message' => $message,
+            'values'  => $values,
         ));
     } elseif ($type === 'xml') {
         header('Content-Type: text/xml; charset=' . MAIN_CHARSET);
@@ -862,10 +872,24 @@ function ok($type = null)
         echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
         echo "<response>\n";
         echo "<status>OK</status>\n";
+        echo "<message>" . h($message, true) . "</message>\n";
+        echo "<values>\n";
+
+        foreach ($values as $key => $value) {
+            echo "<" . $key . ">" . h($value, true) . "</" . $key . ">\n";
+        }
+
+        echo "</values>\n";
         echo "</response>\n";
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/ok_' . $_REQUEST['mode'] . '.php')) {
+        $view['message'] = $message;
+        $view['values']  = $values;
+
         import('app/views/ok_' . $_REQUEST['mode'] . '.php', false, true);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/ok.php')) {
+        $view['message'] = $message;
+        $view['values']  = $values;
+
         import('app/views/ok.php', false, true);
     } else {
         echo "<!DOCTYPE html>\n";
@@ -879,6 +903,7 @@ function ok($type = null)
         echo "</head>\n";
         echo "<body>\n";
         echo "<h1>OK</h1>\n";
+        echo "<p>" . h($message, true) . "</p>\n";
         echo "</body>\n";
         echo "</html>\n";
     }
@@ -890,14 +915,18 @@ function ok($type = null)
  * Output the result for warning.
  *
  * @param  string  $messages
+ * @param  array  $values
  * @param  string|null  $type
  */
-function warning($messages, $type = null)
+function warning($messages, $values = array(), $type = null)
 {
     global $view;
 
     if (!is_array($messages)) {
         $messages = array($messages);
+    }
+    if (empty($values)) {
+        $values = array('token' => token('create'));
     }
     if ($type === null && isset($_REQUEST['type'])) {
         $type = $_REQUEST['type'];
@@ -911,6 +940,7 @@ function warning($messages, $type = null)
         echo json_encode(array(
             'status'   => 'WARNING',
             'messages' => $messages,
+            'values'   => $values,
         ));
     } elseif ($type === 'xml') {
         header('Content-Type: text/xml; charset=' . MAIN_CHARSET);
@@ -925,13 +955,22 @@ function warning($messages, $type = null)
         }
 
         echo "</messages>\n";
+        echo "<values>\n";
+
+        foreach ($values as $key => $value) {
+            echo "<" . $key . ">" . h($value, true) . "</" . $key . ">\n";
+        }
+
+        echo "</values>\n";
         echo "</response>\n";
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/warning_' . $_REQUEST['mode'] . '.php')) {
         $view['messages'] = $messages;
+        $view['values']   = $values;
 
         import('app/views/warning_' . $_REQUEST['mode'] . '.php', false, true);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/warning.php')) {
         $view['messages'] = $messages;
+        $view['values']   = $values;
 
         import('app/views/warning.php', false, true);
     } else {
@@ -964,12 +1003,16 @@ function warning($messages, $type = null)
  * Output the result for error.
  *
  * @param  string  $message
+ * @param  array  $values
  * @param  string|null  $type
  */
-function error($message, $type = null)
+function error($message, $values = array(), $type = null)
 {
     global $view;
 
+    if (empty($values)) {
+        $values = array('token' => token('create'));
+    }
     if ($type === null && isset($_REQUEST['type'])) {
         $type = $_REQUEST['type'];
     }
@@ -982,6 +1025,7 @@ function error($message, $type = null)
         echo json_encode(array(
             'status'  => 'ERROR',
             'message' => $message,
+            'values'  => $values,
         ));
     } elseif ($type === 'xml') {
         header('Content-Type: text/xml; charset=' . MAIN_CHARSET);
@@ -990,13 +1034,22 @@ function error($message, $type = null)
         echo "<response>\n";
         echo "<status>ERROR</status>\n";
         echo "<message>" . h($message, true) . "</message>\n";
+        echo "<values>\n";
+
+        foreach ($values as $key => $value) {
+            echo "<" . $key . ">" . h($value, true) . "</" . $key . ">\n";
+        }
+
+        echo "</values>\n";
         echo "</response>\n";
     } elseif (isset($_REQUEST['mode']) && is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/error_' . $_REQUEST['mode'] . '.php')) {
         $view['message'] = $message;
+        $view['values']  = $values;
 
         import('app/views/error_' . $_REQUEST['mode'] . '.php', false, true);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/error.php')) {
         $view['message'] = $message;
+        $view['values']  = $values;
 
         import('app/views/error.php', false, true);
     } else {
