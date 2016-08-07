@@ -746,6 +746,40 @@ function redirect($url)
 }
 
 /**
+ * Forward to the target.
+ *
+ * @param  string|null  $target
+ * @return string|null|void
+ */
+function forward($target = null)
+{
+    global $params, $view;
+
+    static $forwarded = null;
+
+    if ($target === null) {
+        return $forwarded;
+    } else {
+        $forwarded = $target;
+
+        if ($regexp = regexp_match('^\/([_a-zA-Z0-9\-]+)\/([_a-zA-Z0-9\-]+)$', $target)) {
+            $_REQUEST['mode'] = $regexp[1];
+            $_REQUEST['work'] = $regexp[2];
+
+            $params = array($regexp[1], $regexp[2]);
+
+            controller($regexp[1] . '/' . $regexp[2] . '.php');
+
+            view($regexp[1] . '/' . $regexp[2] . '.php');
+
+            exit;
+        } else {
+            error('​Forward error' . (DEBUG_LEVEL ? ': ' . $target: ''));
+        }
+    }
+}
+
+/**
  * Output the data for debug.
  *
  * @param  mixed  $data
