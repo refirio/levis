@@ -2325,8 +2325,14 @@ function db_export($file = null, $target = null, $combined = true)
     }
 
     if ($file === null) {
+        if ($target === null) {
+            $filename = DATABASE_NAME . '.sql';
+        } else {
+            $filename = DATABASE_NAME . '-' . $target . '.sql';
+        }
+
         header('Content-Type: text/plain');
-        header('Content-Disposition: attachment; filename="' . DATABASE_NAME . '.sql"');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
         echo $text;
         exit;
     } else {
