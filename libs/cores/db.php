@@ -2252,7 +2252,7 @@ function db_import($file)
  *
  * @param  string|null  $file
  * @param  string|null  $target
- * @param  bool  $combined
+ * @param  bool
  */
 function db_export($file = null, $target = null, $combined = true)
 {
@@ -2349,7 +2349,7 @@ function db_export($file = null, $target = null, $combined = true)
  *
  * @param  string  $type
  * @param  string|null  $table
- * @return string  $sql
+ * @return string
  */
 function db_sql($type, $table = null)
 {
