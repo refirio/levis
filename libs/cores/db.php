@@ -2200,6 +2200,7 @@ function db_scaffold_output($file, $data)
  * Import SQL from the file.
  *
  * @param  string  $file
+ * @return int
  */
 function db_import($file)
 {
@@ -2239,13 +2240,11 @@ function db_import($file)
         fclose($fp);
 
         db_commit();
-
-        $view['message'] = $i . ' sql executed.';
     } else {
         error('db: Import file can\'t read');
     }
 
-    return;
+    return $i;
 }
 
 /**
