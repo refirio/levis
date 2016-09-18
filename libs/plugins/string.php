@@ -9,7 +9,8 @@
 /**
  * Get a linked string.
  *
- * @param  string  $string
+ * @param string $string
+ *
  * @return string
  */
 function string_autolink($string)

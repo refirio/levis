@@ -9,7 +9,8 @@
 /**
  * Get a pager.
  *
- * @param  array  $option
+ * @param array $option
+ *
  * @return array
  */
 function ui_pager($option = array())
@@ -150,9 +151,10 @@ function ui_pager($option = array())
 /**
  * Get a form parts for time/date.
  *
- * @param  mixed  $timestamp
- * @param  string  $type
- * @param  array  $option
+ * @param mixed  $timestamp
+ * @param string $type
+ * @param array  $option
+ *
  * @return string
  */
 function ui_datetime($timestamp, $type = '', $option = array())

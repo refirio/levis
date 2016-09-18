@@ -21,9 +21,10 @@ function hash_salt()
 /**
  * Get a hash.
  *
- * @param  string  $data
- * @param  string  $salt
- * @param  int  $count
+ * @param string $data
+ * @param string $salt
+ * @param int    $count
+ *
  * @return string
  */
 function hash_crypt($data, $salt, $count = 10000)

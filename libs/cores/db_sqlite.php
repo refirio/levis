@@ -30,7 +30,8 @@ function db_driver_connect()
 /**
  * Query to the database.
  *
- * @param  mixed  $query
+ * @param mixed $query
+ *
  * @return mixed
  */
 function db_driver_query($query)
@@ -43,7 +44,8 @@ function db_driver_query($query)
 /**
  * Get the result from the database.
  *
- * @param  resource  $resource
+ * @param resource $resource
+ *
  * @return array
  */
 function db_driver_result($resource)
@@ -61,7 +63,8 @@ function db_driver_result($resource)
 /**
  * Get the count from the database.
  *
- * @param  resource  $resource
+ * @param resource $resource
+ *
  * @return int
  */
 function db_driver_count($resource)
@@ -74,7 +77,8 @@ function db_driver_count($resource)
 /**
  * Get the affected count from the database.
  *
- * @param  resource  $resource
+ * @param resource $resource
+ *
  * @return int
  */
 function db_driver_affected_count($resource)
@@ -87,7 +91,8 @@ function db_driver_affected_count($resource)
 /**
  * Get the escaped data for database.
  *
- * @param  string  $data
+ * @param string $data
+ *
  * @return string
  */
 function db_driver_escape($data)
@@ -100,7 +105,8 @@ function db_driver_escape($data)
 /**
  * Get the unescaped data for database.
  *
- * @param  string  $data
+ * @param string $data
+ *
  * @return string
  */
 function db_driver_unescape($data)

@@ -9,7 +9,8 @@
 /**
  * Connect to the database.
  *
- * @param  mixed  $info
+ * @param mixed $info
+ *
  * @return void
  */
 function db_connect($info)
@@ -107,9 +108,10 @@ function db_connect($info)
 /**
  * Query to the database.
  *
- * @param  mixed  $query
- * @param  bool  $return
- * @param  bool  $error
+ * @param mixed $query
+ * @param bool  $return
+ * @param bool  $error
+ *
  * @return mixed
  */
 function db_query($query, $return = false, $error = true)
@@ -156,7 +158,8 @@ function db_query($query, $return = false, $error = true)
 /**
  * Get the result from the database.
  *
- * @param  resource  $resource
+ * @param resource $resource
+ *
  * @return array
  */
 function db_result($resource)
@@ -179,7 +182,8 @@ function db_result($resource)
 /**
  * Get the count from the database.
  *
- * @param  resource  $resource
+ * @param resource $resource
+ *
  * @return int
  */
 function db_count($resource)
@@ -196,7 +200,8 @@ function db_count($resource)
 /**
  * Get the affected count from the database.
  *
- * @param  resource  $resource
+ * @param resource $resource
+ *
  * @return int
  */
 function db_affected_count($resource)
@@ -213,7 +218,8 @@ function db_affected_count($resource)
 /**
  * Get the escaped data for database.
  *
- * @param  string  $data
+ * @param string $data
+ *
  * @return string
  */
 function db_escape($data)
@@ -234,7 +240,8 @@ function db_escape($data)
 /**
  * Get the unescaped data for database.
  *
- * @param  string  $data
+ * @param string $data
+ *
  * @return string
  */
 function db_unescape($data)
@@ -255,7 +262,8 @@ function db_unescape($data)
 /**
  * Get the placeholder data for database.
  *
- * @param  string  $data
+ * @param string $data
+ *
  * @return string
  */
 function db_placeholder($data)
@@ -312,8 +320,9 @@ function db_error()
 /**
  * Select the data from the database.
  *
- * @param  array  $queries
- * @param  bool  $return
+ * @param array $queries
+ * @param bool  $return
+ *
  * @return mixed
  */
 function db_select($queries, $return = false)
@@ -387,8 +396,9 @@ function db_select($queries, $return = false)
 /**
  * Insert the data to the database.
  *
- * @param  array  $queries
- * @param  bool  $return
+ * @param array $queries
+ * @param bool  $return
+ *
  * @return mixed
  */
 function db_insert($queries, $return = false)
@@ -447,8 +457,9 @@ function db_insert($queries, $return = false)
 /**
  * Update the data to the database.
  *
- * @param  array  $queries
- * @param  bool  $return
+ * @param array $queries
+ * @param bool  $return
+ *
  * @return mixed
  */
 function db_update($queries, $return = false)
@@ -520,8 +531,9 @@ function db_update($queries, $return = false)
 /**
  * Delete the data to the database.
  *
- * @param  array  $queries
- * @param  bool  $return
+ * @param array $queries
+ * @param bool  $return
+ *
  * @return mixed
  */
 function db_delete($queries, $return = false)
@@ -573,7 +585,8 @@ function db_delete($queries, $return = false)
 /**
  * Get the last insert id from the database.
  *
- * @param  string  $data
+ * @param string $data
+ *
  * @return string
  */
 function db_last_insert_id()
@@ -1689,7 +1702,8 @@ function db_scaffold()
         $buffer .= '/**' . "\n";
         $buffer .= ' * Validate for ' . ($table_comment ? $table_comment : $table) . "\n";
         $buffer .= ' *' . "\n";
-        $buffer .= ' * @param  array  $queries' . "\n";
+        $buffer .= ' * @param array $queries' . "\n";
+        $buffer .= ' *' . "\n";
         $buffer .= ' * @return array' . "\n";
         $buffer .= ' */' . "\n";
         $buffer .= 'function validate_' . $table . '($queries)' . "\n";
@@ -2211,7 +2225,8 @@ function db_scaffold_output($file, $data)
 /**
  * Import SQL from the file.
  *
- * @param  string  $file
+ * @param string $file
+ *
  * @return int
  */
 function db_import($file)
@@ -2262,9 +2277,9 @@ function db_import($file)
 /**
  * Export SQL to the file.
  *
- * @param  string|null  $file
- * @param  string|null  $target
- * @param  bool
+ * @param string|null $file
+ * @param string|null $target
+ * @param bool        $combined
  */
 function db_export($file = null, $target = null, $combined = true)
 {
@@ -2359,8 +2374,9 @@ function db_export($file = null, $target = null, $combined = true)
 /**
  * Get the sql data for database.
  *
- * @param  string  $type
- * @param  string|null  $table
+ * @param string      $type
+ * @param string|null $table
+ *
  * @return string
  */
 function db_sql($type, $table = null)

@@ -17,9 +17,10 @@ $view   = array();
 /**
  * Load the given file.
  *
- * @param  string  $file
- * @param  bool  $once
- * @param  bool  $ignore
+ * @param string $file
+ * @param bool   $once
+ * @param bool   $ignore
+ *
  * @return void
  */
 function import($file, $once = true, $ignore = false)
@@ -224,7 +225,8 @@ function routing()
 /**
  * Load the service files.
  *
- * @param  string|null  $target
+ * @param string|null $target
+ *
  * @return void
  */
 function service($target = null)
@@ -268,7 +270,8 @@ function service($target = null)
 /**
  * Load the model files.
  *
- * @param  string|null  $target
+ * @param string|null $target
+ *
  * @return void
  */
 function model($target = null)
@@ -352,7 +355,8 @@ function model($target = null)
 /**
  * Load the controller files.
  *
- * @param  string|null  $target
+ * @param string|null $target
+ *
  * @return void
  */
 function controller($target = null)
@@ -398,8 +402,9 @@ function controller($target = null)
 /**
  * Load the view files.
  *
- * @param  string|null  $target
- * @param  bool  $return
+ * @param string|null $target
+ * @param bool        $return
+ *
  * @return void
  */
 function view($target = null, $return = false)
@@ -459,7 +464,8 @@ function view($target = null, $return = false)
 /**
  * Get the unescaped data.
  *
- * @param  string  $data
+ * @param string $data
+ *
  * @return string
  */
 function unescape($data)
@@ -474,7 +480,8 @@ function unescape($data)
 /**
  * Get the sanitized data.
  *
- * @param  string  $data
+ * @param string $data
+ *
  * @return string
  */
 function sanitize($data)
@@ -489,7 +496,8 @@ function sanitize($data)
 /**
  * Get the unified data.
  *
- * @param  string  $data
+ * @param string $data
+ *
  * @return string
  */
 function unify($data)
@@ -507,9 +515,10 @@ function unify($data)
 /**
  * Get the converted data.
  *
- * @param  mixed  $data
- * @param  string  $to_encoding
- * @param  string  $from_encoding
+ * @param mixed  $data
+ * @param string $to_encoding
+ * @param string $from_encoding
+ *
  * @return mixed
  */
 function convert($data, $to_encoding = 'UTF-8', $from_encoding = 'UTF-8,EUCJP-WIN,SJIS-WIN')
@@ -524,9 +533,10 @@ function convert($data, $to_encoding = 'UTF-8', $from_encoding = 'UTF-8,EUCJP-WI
 /**
  * Get the alternative data.
  *
- * @param  mixed  $data
- * @param  string  $to_encoding
- * @param  string|null  $from_encoding
+ * @param mixed       $data
+ * @param string      $to_encoding
+ * @param string|null $from_encoding
+ *
  * @return mixed
  */
 function alt($data, $alternative, $pattern = null)
@@ -543,10 +553,11 @@ function alt($data, $alternative, $pattern = null)
 /**
  * Get the truncated data.
  *
- * @param  string  $data
- * @param  int  $width
- * @param  string  $trimmarker
- * @param  string  $encoding
+ * @param string $data
+ * @param int    $width
+ * @param string $trimmarker
+ * @param string $encoding
+ *
  * @return string
  */
 function truncate($data, $width = 0, $trimmarker = '...', $encoding = 'UTF-8')
@@ -561,8 +572,9 @@ function truncate($data, $width = 0, $trimmarker = '...', $encoding = 'UTF-8')
 /**
  * Output the data.
  *
- * @param  string  $data
- * @param  bool  $return
+ * @param string $data
+ * @param bool   $return
+ *
  * @return void|string
  */
 function e($data, $return = false)
@@ -577,8 +589,9 @@ function e($data, $return = false)
 /**
  * Output the data for text.
  *
- * @param  string  $data
- * @param  bool  $return
+ * @param string $data
+ * @param bool   $return
+ *
  * @return void|string
  */
 function t($data, $return = false)
@@ -595,8 +608,9 @@ function t($data, $return = false)
 /**
  * Output the data for html.
  *
- * @param  string  $data
- * @param  bool  $return
+ * @param string $data
+ * @param bool   $return
+ *
  * @return void|string
  */
 function h($data, $return = false)
@@ -614,8 +628,9 @@ function h($data, $return = false)
 /**
  * Format a local time/date.
  *
- * @param  string|null  $format
- * @param  mixed|null  $timestamp
+ * @param string|null $format
+ * @param mixed|null  $timestamp
+ *
  * @return mixed
  */
 function localdate($format = null, $timestamp = null)
@@ -652,7 +667,8 @@ function localdate($format = null, $timestamp = null)
 /**
  * Get a client ip.
  *
- * @param  bool  $proxy
+ * @param bool $proxy
+ *
  * @return string
  */
 function clientip($proxy = false)
@@ -673,7 +689,8 @@ function clientip($proxy = false)
 /**
  * Determine if the request is secure.
  *
- * @param  bool  $proxy
+ * @param bool $proxy
+ *
  * @return bool
  */
 function ssl($proxy = false)
@@ -694,8 +711,9 @@ function ssl($proxy = false)
 /**
  * Get or check the token.
  *
- * @param  string  $type
- * @param  string  $name
+ * @param string $type
+ * @param string $name
+ *
  * @return bool
  */
 function token($type, $name = 'default')
@@ -731,7 +749,8 @@ function token($type, $name = 'default')
 /**
  * Redirect to the url.
  *
- * @param  string  $url
+ * @param string $url
+ *
  * @return void
  */
 function redirect($url)
@@ -748,7 +767,8 @@ function redirect($url)
 /**
  * Forward to the target.
  *
- * @param  string|null  $target
+ * @param string|null $target
+ *
  * @return string|null|void
  */
 function forward($target = null)
@@ -782,8 +802,9 @@ function forward($target = null)
 /**
  * Output the data for debug.
  *
- * @param  mixed  $data
- * @param  bool  $return
+ * @param mixed $data
+ * @param bool  $return
+ *
  * @return void|mixed
  */
 function debug($data, $return = false)
@@ -802,8 +823,9 @@ function debug($data, $return = false)
 /**
  * Log the message to a logs.
  *
- * @param  string  $type
- * @param  string|null  $message
+ * @param string      $type
+ * @param string|null $message
+ *
  * @return void
  */
 function logging($type = 'message', $message = null)
@@ -874,9 +896,9 @@ function auth()
 /**
  * Output the result.
  *
- * @param  string|null  $message
- * @param  array  $values
- * @param  string|null  $type
+ * @param string|null $message
+ * @param array       $values
+ * @param string|null $type
  */
 function ok($message = null, $values = array(), $type = null)
 {
@@ -948,9 +970,9 @@ function ok($message = null, $values = array(), $type = null)
 /**
  * Output the result for warning.
  *
- * @param  string  $messages
- * @param  array  $values
- * @param  string|null  $type
+ * @param string      $messages
+ * @param array       $values
+ * @param string|null $type
  */
 function warning($messages, $values = array(), $type = null)
 {
@@ -1036,9 +1058,9 @@ function warning($messages, $values = array(), $type = null)
 /**
  * Output the result for error.
  *
- * @param  string  $message
- * @param  array  $values
- * @param  string|null  $type
+ * @param string      $message
+ * @param array       $values
+ * @param string|null $type
  */
 function error($message, $values = array(), $type = null)
 {

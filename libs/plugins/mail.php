@@ -11,11 +11,12 @@ import('libs/plugins/file.php');
 /**
  * Send encoded mail.
  *
- * @param  string  $to
- * @param  string  $subject
- * @param  string  $message
- * @param  array  $headers
- * @param  array  $files
+ * @param string $to
+ * @param string $subject
+ * @param string $message
+ * @param array  $headers
+ * @param array  $files
+ *
  * @return bool
  */
 function mail_send($to, $subject, $message, $headers = array(), $files = array())

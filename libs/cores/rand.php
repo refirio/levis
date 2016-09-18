@@ -9,8 +9,9 @@
 /**
  * Get a random number.
  *
- * @param  int  $min
- * @param  int  $max
+ * @param int $min
+ * @param int $max
+ *
  * @return int
  */
 function rand_number($min = null, $max = null)
@@ -28,7 +29,8 @@ function rand_number($min = null, $max = null)
 /**
  * Get a random string.
  *
- * @param  int  $max
+ * @param int $max
+ *
  * @return string
  */
 function rand_string($max = 32)

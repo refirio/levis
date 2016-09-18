@@ -9,7 +9,8 @@
 /**
  * Get the file information.
  *
- * @param  string  $file
+ * @param string $file
+ *
  * @return array
  */
 function file_info($file)
@@ -29,7 +30,8 @@ function file_info($file)
 /**
  * Get the file mimetype.
  *
- * @param  string  $file
+ * @param string $file
+ *
  * @return string
  */
 function file_mimetype($file)
@@ -695,11 +697,12 @@ function file_mimetype($file)
 /**
  * Resize the file.
  *
- * @param  string  $original
- * @param  string  $output
- * @param  int  $output_width
- * @param  int  $output_height
- * @param  int  $quality
+ * @param string $original
+ * @param string $output
+ * @param int    $output_width
+ * @param int    $output_height
+ * @param int    $quality
+ *
  * @return bool
  */
 function file_resize($original, $output, $output_width, $output_height, $quality = 80)
@@ -752,10 +755,10 @@ function file_resize($original, $output, $output_width, $output_height, $quality
     }
 
     if (regexp_match('\.gif$', $original)) {
-        imagefill($thumbnail, 0, 0, $bgcolor);   
+        imagefill($thumbnail, 0, 0, $bgcolor);
         imagecolortransparent($thumbnail, $bgcolor);
     } elseif (regexp_match('\.png$', $original)) {
-        imagefill($thumbnail, 0, 0, $bgcolor);   
+        imagefill($thumbnail, 0, 0, $bgcolor);
         imagealphablending($thumbnail, false);
         imagesavealpha($thumbnail, true);
         imagecolortransparent($thumbnail, $bgcolor);
@@ -801,10 +804,11 @@ function file_resize($original, $output, $output_width, $output_height, $quality
 /**
  * Gets line from file pointer and parse for CSV fields.
  *
- * @param  string  $handle
- * @param  int|null  $length
- * @param  string  $delimiter
- * @param  string  $escape
+ * @param string   $handle
+ * @param int|null $length
+ * @param string   $delimiter
+ * @param string   $escape
+ *
  * @return mixed
  */
 function file_getcsv($handle, $length = null, $delimiter = ',', $escape = '"')

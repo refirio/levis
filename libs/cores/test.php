@@ -247,8 +247,9 @@ function test_exec()
 /**
  * Output a result of the test.
  *
- * @param  string  $data
- * @param  bool  $return
+ * @param string $data
+ * @param bool   $return
+ *
  * @return void|string
  */
 function test_result($title, $result)
@@ -269,7 +270,8 @@ function test_result($title, $result)
 /**
  * Load the test files.
  *
- * @param  string|null  $file
+ * @param string|null $file
+ *
  * @return void
  */
 function test_import($file)
@@ -284,9 +286,10 @@ function test_import($file)
 /**
  * Test if the actual data is equal to the expected data.
  *
- * @param  string  $title
- * @param  mixed  $actual
- * @param  mixed  $expected
+ * @param string $title
+ * @param mixed  $actual
+ * @param mixed  $expected
+ *
  * @return void
  */
 function test_equals($title, $actual, $expected)
@@ -303,9 +306,10 @@ function test_equals($title, $actual, $expected)
 /**
  * Test if the actual data is not equal to the expected data.
  *
- * @param  string  $title
- * @param  mixed  $actual
- * @param  mixed  $expected
+ * @param string $title
+ * @param mixed  $actual
+ * @param mixed  $expected
+ *
  * @return void
  */
 function test_not_equals($title, $actual, $expected)
@@ -322,9 +326,10 @@ function test_not_equals($title, $actual, $expected)
 /**
  * Test if the actual data is greater than the expected data.
  *
- * @param  string  $title
- * @param  mixed  $actual
- * @param  mixed  $expected
+ * @param string $title
+ * @param mixed  $actual
+ * @param mixed  $expected
+ *
  * @return void
  */
 function test_greaterthan($title, $actual, $expected)
@@ -341,9 +346,10 @@ function test_greaterthan($title, $actual, $expected)
 /**
  * Test if the actual data is greater than or equal to the expected data.
  *
- * @param  string  $title
- * @param  mixed  $actual
- * @param  mixed  $expected
+ * @param string $title
+ * @param mixed  $actual
+ * @param mixed  $expected
+ *
  * @return void
  */
 function test_greaterthanorequal($title, $actual, $expected)
@@ -360,9 +366,10 @@ function test_greaterthanorequal($title, $actual, $expected)
 /**
  * Test if the actual data is less than the expected data.
  *
- * @param  string  $title
- * @param  mixed  $actual
- * @param  mixed  $expected
+ * @param string $title
+ * @param mixed  $actual
+ * @param mixed  $expected
+ *
  * @return void
  */
 function test_lessthan($title, $actual, $expected)
@@ -379,9 +386,10 @@ function test_lessthan($title, $actual, $expected)
 /**
  * Test if the actual data is less than or equal to the expected data.
  *
- * @param  string  $title
- * @param  mixed  $actual
- * @param  mixed  $expected
+ * @param string $title
+ * @param mixed  $actual
+ * @param mixed  $expected
+ *
  * @return void
  */
 function test_lessthanorequal($title, $actual, $expected)
@@ -398,9 +406,10 @@ function test_lessthanorequal($title, $actual, $expected)
 /**
  * Test if the actual data contains the expected data.
  *
- * @param  string  $title
- * @param  mixed  $actual
- * @param  mixed  $expected
+ * @param string $title
+ * @param mixed  $actual
+ * @param mixed  $expected
+ *
  * @return void
  */
 function test_contains($title, $actual, $expected)
@@ -417,9 +426,10 @@ function test_contains($title, $actual, $expected)
 /**
  * Test if the actual data not contains the expected data.
  *
- * @param  string  $title
- * @param  mixed  $actual
- * @param  mixed  $expected
+ * @param string $title
+ * @param mixed  $actual
+ * @param mixed  $expected
+ *
  * @return void
  */
 function test_not_contains($title, $actual, $expected)
@@ -436,9 +446,10 @@ function test_not_contains($title, $actual, $expected)
 /**
  * Test if the actual data match the expected data.
  *
- * @param  string  $title
- * @param  mixed  $actual
- * @param  mixed  $expected
+ * @param string $title
+ * @param mixed  $actual
+ * @param mixed  $expected
+ *
  * @return void
  */
 function test_regexp($title, $actual, $expected)
@@ -455,9 +466,10 @@ function test_regexp($title, $actual, $expected)
 /**
  * Test if the actual data not match the expected data.
  *
- * @param  string  $title
- * @param  mixed  $actual
- * @param  mixed  $expected
+ * @param string $title
+ * @param mixed  $actual
+ * @param mixed  $expected
+ *
  * @return void
  */
 function test_not_regexp($title, $actual, $expected)
@@ -474,9 +486,10 @@ function test_not_regexp($title, $actual, $expected)
 /**
  * Test if the actual data has the expected key.
  *
- * @param  string  $title
- * @param  mixed  $actual
- * @param  mixed  $expected
+ * @param string $title
+ * @param mixed  $actual
+ * @param mixed  $expected
+ *
  * @return void
  */
 function test_array_haskey($title, $actual, $expected)
@@ -493,9 +506,10 @@ function test_array_haskey($title, $actual, $expected)
 /**
  * Test if the actual data has not the expected key.
  *
- * @param  string  $title
- * @param  mixed  $actual
- * @param  mixed  $expected
+ * @param string $title
+ * @param mixed  $actual
+ * @param mixed  $expected
+ *
  * @return void
  */
 function test_array_not_haskey($title, $actual, $expected)
@@ -512,9 +526,10 @@ function test_array_not_haskey($title, $actual, $expected)
 /**
  * Test if the actual data has the expected subset.
  *
- * @param  string  $title
- * @param  mixed  $actual
- * @param  mixed  $expected
+ * @param string $title
+ * @param mixed  $actual
+ * @param mixed  $expected
+ *
  * @return void
  */
 function test_array_subset($title, $actual, $expected, $strict = false)
@@ -531,9 +546,10 @@ function test_array_subset($title, $actual, $expected, $strict = false)
 /**
  * Test if the actual data has not the expected subset.
  *
- * @param  string  $title
- * @param  mixed  $actual
- * @param  mixed  $expected
+ * @param string $title
+ * @param mixed  $actual
+ * @param mixed  $expected
+ *
  * @return void
  */
 function test_array_not_subset($title, $actual, $expected, $strict = false)

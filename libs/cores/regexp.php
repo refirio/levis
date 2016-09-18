@@ -9,8 +9,9 @@
 /**
  * Perform a regular expression match.
  *
- * @param  string  $pattern
- * @param  string  $subject
+ * @param string $pattern
+ * @param string $subject
+ *
  * @return mixed
  */
 function regexp_match($pattern, $subject)
@@ -37,10 +38,11 @@ function regexp_match($pattern, $subject)
 /**
  * Perform a regular expression search and replace.
  *
- * @param  string  $pattern
- * @param  string  $replacement
- * @param  string  $subject
- * @param  int  $limit
+ * @param string $pattern
+ * @param string $replacement
+ * @param string $subject
+ * @param int    $limit
+ *
  * @return mixed
  */
 function regexp_replace($pattern, $replacement, $subject, $limit = -1)
