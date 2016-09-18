@@ -788,7 +788,7 @@ function db_admin_export()
         } else {
             db_export(DATABASE_NAME . '.sql', $table, $combined);
 
-            $view['message'] = 'exported.';
+            $view['message'] = 'Exported.';
         }
     }
 
