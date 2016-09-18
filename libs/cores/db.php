@@ -746,7 +746,14 @@ function db_admin_import()
     echo "<dt><label><input type=\"radio\" name=\"means\" value=\"upload\" checked=\"checked\" /> upload</label></dt>\n";
     echo "<dd><input type=\"file\" name=\"target\" size=\"30\" /></dd>\n";
     echo "<dt><label><input type=\"radio\" name=\"means\" value=\"file\" /> read</label></dt>\n";
-    echo "<dd><code>" . DATABASE_NAME . ".sql</code></dd>\n";
+    echo "<dd>\n";
+    echo "<code title=\"" . dirname($_SERVER['SCRIPT_FILENAME']) . '/' . DATABASE_NAME . ".sql\">" . DATABASE_NAME . ".sql</code>\n";
+
+    if (!is_file(DATABASE_NAME . '.sql')) {
+        echo "(Not found.)\n";
+    }
+
+    echo "</dd>\n";
     echo "</dl>\n";
     echo "<p><input type=\"submit\" value=\"import\" /></p>\n";
     echo "</fieldset>\n";
@@ -845,7 +852,12 @@ function db_admin_export()
     echo "<dt>means</dt>\n";
     echo "<dd>\n";
     echo "<label><input type=\"radio\" name=\"means\" value=\"download\" checked=\"checked\" /> download</label><br />\n";
-    echo "<label><input type=\"radio\" name=\"means\" value=\"write\" /> write to <code>" . DATABASE_NAME . ".sql</code></label>\n";
+    echo "<label><input type=\"radio\" name=\"means\" value=\"write\" /> write to <code title=\"" . dirname($_SERVER['SCRIPT_FILENAME']) . '/' . DATABASE_NAME . ".sql\">" . DATABASE_NAME . ".sql</code></label>\n";
+
+    if (is_file(DATABASE_NAME . '.sql')) {
+        echo "(Already exists.)\n";
+    }
+
     echo "</dd>\n";
     echo "</dl>\n";
     echo "<p><input type=\"submit\" value=\"export\" /></p>\n";
