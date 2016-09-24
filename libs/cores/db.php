@@ -1614,22 +1614,19 @@ function db_scaffold()
             }
 
             // model
+            $model_validate .= '    // ' . ($comment ? $comment : $field) . "\n";
+            $model_validate .= '    if (isset($queries[\'' . $field . '\'])) {' . "\n";
+
             if ($field === $primary_key || !$null) {
-                $model_validate .= '    // ' . ($comment ? $comment : $field) . "\n";
-                $model_validate .= '    if (isset($queries[\'' . $field . '\'])) {' . "\n";
                 $model_validate .= '        if ($queries[\'' . $field . '\'] === \'\') {' . "\n";
                 $model_validate .= '            $messages[] = \'The ' . ($comment ? $comment : $field) . ' is required.\';' . "\n";
                 $model_validate .= '        }' . "\n";
-                $model_validate .= '    }' . "\n";
-                $model_validate .= "\n";
-            } else {
-                $model_validate .= '    // ' . ($comment ? $comment : $field) . "\n";
-                $model_validate .= '    if (isset($queries[\'' . $field . '\'])) {' . "\n";
-                $model_validate .= '    }' . "\n";
-                $model_validate .= "\n";
             }
 
-            $space = str_repeat(' ', $max_length - strlen($field));;
+            $model_validate .= '    }' . "\n";
+            $model_validate .= "\n";
+
+            $space = str_repeat(' ', $max_length - strlen($field));
 
             if ($field === $primary_key) {
                 $model_default .= '        \'' . $field . '\' ' . $space . '=> null,' . "\n";
@@ -1789,7 +1786,7 @@ function db_scaffold()
         $buffer .= '    \'limit\' => array(' . "\n";
         $buffer .= '        \':limit\',' . "\n";
         $buffer .= '        array(' . "\n";
-        $buffer .= '            \'limit\' => $GLOBALS[\'limits\'][\'' . $table . '\'],' . "\n";
+        $buffer .= '            \'limit\' => $GLOBALS[\'config\'][\'limits\'][\'' . $table . '\'],' . "\n";
         $buffer .= '        ),' . "\n";
         $buffer .= '    ),' . "\n";
         $buffer .= '));' . "\n";
@@ -2015,6 +2012,7 @@ function db_scaffold()
         $buffer .= "\n";
         $buffer .= '// post' . "\n";
         $buffer .= '{' . "\n";
+        $buffer .= '    // test' . "\n";
         $buffer .= '    $view[\'data\'] = $insert_' . $table . '[1];' . "\n";
         $buffer .= "\n";
         $buffer .= '    $html = view(\'' . $table . '/post.php\', true);' . "\n";
@@ -2053,9 +2051,9 @@ function db_scaffold()
         $buffer .= '    controller(\'' . $table . '/index.php\');' . "\n";
         $buffer .= '    $html = view(\'' . $table . '/index.php\', true);' . "\n";
         $buffer .= "\n";
-        $buffer .= '    test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[1][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
-        $buffer .= '    test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[2][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
-        $buffer .= '    test_contains(\'' . $table . '/index\', $html, \'<td>\' . $insert_' . $table . '[3][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
+        $buffer .= '    test_contains(\'' . $table . '/index 1\', $html, \'<td>\' . $insert_' . $table . '[1][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
+        $buffer .= '    test_contains(\'' . $table . '/index 2\', $html, \'<td>\' . $insert_' . $table . '[2][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
+        $buffer .= '    test_contains(\'' . $table . '/index 3\', $html, \'<td>\' . $insert_' . $table . '[3][\'' . $primary_key . '\'] . \'</td>\');' . "\n";
         $buffer .= '}' . "\n";
         $buffer .= "\n";
         $buffer .= '// post' . "\n";
@@ -2131,16 +2129,17 @@ function db_scaffold()
 
     $scaffold .= db_scaffold_output($footer_file, $buffer);
 
-    // config
+    // before
     $buffer  = '<?php' . "\n";
     $buffer .= "\n";
     $buffer .= 'import(\'' . $config_file . '\');' . "\n";
 
     $scaffold .= db_scaffold_output($before_file, $buffer);
 
+    // config
     $buffer  = '<?php' . "\n";
     $buffer .= "\n";
-    $buffer .= '$GLOBALS[\'limits\'] = array(' . "\n";
+    $buffer .= '$GLOBALS[\'config\'][\'limits\'] = array(' . "\n";
 
     $max_length = 0;
     foreach ($results as $result) {
