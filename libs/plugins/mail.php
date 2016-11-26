@@ -15,11 +15,12 @@ import('libs/plugins/file.php');
  * @param string $subject
  * @param string $message
  * @param array  $headers
+ * @param string $parameters
  * @param array  $files
  *
  * @return bool
  */
-function mail_send($to, $subject, $message, $headers = array(), $files = array())
+function mail_send($to, $subject, $message, $headers = array(), $parameters = null, $files = array())
 {
     $subject = mb_convert_kana(unify($subject), 'KV', MAIN_INTERNAL_ENCODING);
     $message = mb_convert_kana(unify($message), 'KV', MAIN_INTERNAL_ENCODING);
@@ -95,5 +96,5 @@ function mail_send($to, $subject, $message, $headers = array(), $files = array()
         $header .= $key . ': ' . $value;
     }
 
-    return mail($to, $subject, $body, $header);
+    return mail($to, $subject, $body, $header, $parameters);
 }
