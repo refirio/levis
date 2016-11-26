@@ -232,6 +232,8 @@ function db_escape($data)
 
     if ($data === 0 || regexp_match('^[1-9]+[0-9]*$', $data)) {
         return $data;
+    } elseif ($data === null) {
+        return 'NULL';
     }
 
     return db_driver_escape($data);
@@ -254,6 +256,8 @@ function db_unescape($data)
 
     if ($data === 0 || regexp_match('^[1-9]+[0-9]*$', $data)) {
         return $data;
+    } elseif ($data === null) {
+        return 'NULL';
     }
 
     return db_driver_unescape($data);
@@ -426,7 +430,7 @@ function db_insert($queries, $return = false)
 
             if (is_array($value)) {
                 $values[] = $value[0];
-            } elseif ($value === null || $value === '' || $value === '\'\'') {
+            } elseif ($value === '' || $value === '\'\'') {
                 $values[] = 'NULL';
             } else {
                 $values[] = db_escape($value);
@@ -484,7 +488,7 @@ function db_update($queries, $return = false)
         foreach ($queries['set'] as $key => $value) {
             if (is_array($value)) {
                 $sets[] = $key . ' = ' . $value[0];
-            } elseif ($value === null || $value === '' || $value === '\'\'') {
+            } elseif ($value === '' || $value === '\'\'') {
                 $sets[] = $key . ' = NULL';
             } else {
                 $sets[] = $key . ' = ' . db_escape($value);
