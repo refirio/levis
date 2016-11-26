@@ -2391,11 +2391,11 @@ function db_sql($type, $table = null)
             ';
         } elseif ($type === 'table_create') {
             $sql = '
-                SHOW CREATE TABLE ' . $table . ';
+                SHOW CREATE TABLE `' . $table . '`;
             ';
         } elseif ($type === 'table_define') {
             $sql = '
-                SHOW FULL COLUMNS FROM ' . $table . ';
+                SHOW FULL COLUMNS FROM `' . $table . '`;
             ';
         }
     } elseif (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
