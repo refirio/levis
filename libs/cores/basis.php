@@ -300,41 +300,41 @@ function model($target = null)
             if (!function_exists('select_' . $name)) {
                 $php .= 'function select_' . $name . '($queries)';
                 $php .= '{';
-                $php .= '  $queries["from"] = "' . DATABASE_PREFIX . $name . '";';
-                $php .= '  return db_select($queries);';
+                $php .= '    $queries["from"] = "' . DATABASE_PREFIX . $name . '";';
+                $php .= '    return db_select($queries);';
                 $php .= '}';
             }
             if (!function_exists('insert_' . $name)) {
                 $php .= 'function insert_' . $name . '($queries)';
                 $php .= '{';
-                $php .= '  $queries["insert_into"] = "' . DATABASE_PREFIX . $name . '";';
-                $php .= '  return db_insert($queries);';
+                $php .= '    $queries["insert_into"] = "' . DATABASE_PREFIX . $name . '";';
+                $php .= '    return db_insert($queries);';
                 $php .= '}';
             }
             if (!function_exists('update_' . $name)) {
                 $php .= 'function update_' . $name . '($queries)';
                 $php .= '{';
-                $php .= '  $queries["update"] = "' . DATABASE_PREFIX . $name . '";';
-                $php .= '  return db_update($queries);';
+                $php .= '    $queries["update"] = "' . DATABASE_PREFIX . $name . '";';
+                $php .= '    return db_update($queries);';
                 $php .= '}';
             }
             if (!function_exists('delete_' . $name)) {
                 $php .= 'function delete_' . $name . '($queries)';
                 $php .= '{';
-                $php .= '  $queries["delete_from"] = "' . DATABASE_PREFIX . $name . '";';
-                $php .= '  return db_delete($queries);';
+                $php .= '    $queries["delete_from"] = "' . DATABASE_PREFIX . $name . '";';
+                $php .= '    return db_delete($queries);';
                 $php .= '}';
             }
             if (!function_exists('normalize_' . $name)) {
                 $php .= 'function normalize_' . $name . '($queries)';
                 $php .= '{';
-                $php .= '  return $queries;';
+                $php .= '    return $queries;';
                 $php .= '}';
             }
             if (!function_exists('validate_' . $name)) {
                 $php .= 'function validate_' . $name . '($queries)';
                 $php .= '{';
-                $php .= '  return array();';
+                $php .= '    return array();';
                 $php .= '}';
             }
         }
