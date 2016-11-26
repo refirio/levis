@@ -431,13 +431,13 @@ function view($target = null, $return = false)
     }
 
     if ($target) {
-        import('app/views/' . $target);
+        import('app/views/' . $target, false);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $directory . $file)) {
-        import($directory . $file);
+        import($directory . $file, false);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $directory . MAIN_DEFAULT_WORK . '.php')) {
-        import($directory . MAIN_DEFAULT_WORK . '.php');
+        import($directory . MAIN_DEFAULT_WORK . '.php', false);
     } elseif (is_file(PAGE_PATH . implode('/', $_params) . '.php')) {
-        import(PAGE_PATH . implode('/', $_params) . '.php');
+        import(PAGE_PATH . implode('/', $_params) . '.php', false);
     } elseif ($_REQUEST['_mode'] === MAIN_DEFAULT_MODE && $_REQUEST['_work'] === MAIN_DEFAULT_WORK) {
         about();
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/404.php')) {
