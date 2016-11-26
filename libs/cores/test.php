@@ -21,12 +21,12 @@ function test_index()
     }
 
     $results = array();
-    if (isset($_GET['test'])) {
-        if (!regexp_match('^[0-9\:\;]+$', $_GET['test'])) {
-            redirect('/?mode=test_index');
+    if (isset($_GET['_test'])) {
+        if (!regexp_match('^[0-9\:\;]+$', $_GET['_test'])) {
+            redirect('/?_mode=test_index');
         }
 
-        $tests = explode(';', $_GET['test']);
+        $tests = explode(';', $_GET['_test']);
 
         foreach ($tests as $test) {
             if ($test === '') {
@@ -39,9 +39,9 @@ function test_index()
         }
     }
 
-    $view['ok'] = 0;
-    $view['ng'] = 0;
-    $view['targets'] = array();
+    $_view['ok'] = 0;
+    $_view['ng'] = 0;
+    $_view['targets'] = array();
 
     $i = 0;
     if ($dh = opendir(MAIN_PATH . TEST_PATH)) {
@@ -64,15 +64,15 @@ function test_index()
                 if ($result) {
                     $result = 'OK';
 
-                    $view['ok']++;
+                    $_view['ok']++;
                 } else {
                     $result = 'NG';
 
-                    $view['ng']++;
+                    $_view['ng']++;
                 }
             }
 
-            $view['targets'][] = array(
+            $_view['targets'][] = array(
                 'name'   => $name,
                 'file'   => $entry,
                 'result' => $result,
@@ -100,19 +100,19 @@ function test_index()
     echo "<h1>Test</h1>\n";
     echo "<p>Test Index.</p>\n";
     echo "<ul>\n";
-    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=test_exec&amp;test=\"\">All Test.</a></li>\n";
+    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=test_exec&amp;_test=\"\">All Test.</a></li>\n";
     echo "</ul>\n";
     echo "<ol>\n";
 
-    foreach ($view['targets'] as $target) {
-        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=test_exec&amp;target=" . t($target['name'], true) . "\">" . t($target['file'], true) . "</a>" . ($target['result'] ? h(' (' . $target['result'] . ')', true) : '') . "</li>\n";
+    foreach ($_view['targets'] as $target) {
+        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=test_exec&amp;target=" . t($target['name'], true) . "\">" . t($target['file'], true) . "</a>" . ($target['result'] ? h(' (' . $target['result'] . ')', true) : '') . "</li>\n";
     }
 
     echo "</ol>\n";
 
-    if ($view['ok'] || $view['ng']) {
-        if ($view['ng']) {
-            echo "<p>" . $view['ng'] . " Test is NG!</p>\n";
+    if ($_view['ok'] || $_view['ng']) {
+        if ($_view['ng']) {
+            echo "<p>" . $_view['ng'] . " Test is NG!</p>\n";
         } else {
             echo "<p>All Test is OK!</p>\n";
         }
@@ -130,7 +130,7 @@ function test_index()
  */
 function test_exec()
 {
-    global $view;
+    global $_view;
 
     if (auth() === false) {
         return;
@@ -142,12 +142,12 @@ function test_exec()
 
     $index  = 0;
     $result = 0;
-    if (isset($_GET['test'])) {
-        if ($_GET['test'] !== '' && !regexp_match('^[0-9\:\;]+$', $_GET['test'])) {
-            redirect('/?mode=test_index');
+    if (isset($_GET['_test'])) {
+        if ($_GET['_test'] !== '' && !regexp_match('^[0-9\:\;]+$', $_GET['_test'])) {
+            redirect('/?_mode=test_index');
         }
 
-        $tests = explode(';', $_GET['test']);
+        $tests = explode(';', $_GET['_test']);
         $test  = $tests[count($tests) - 1];
 
         if ($test !== '') {
@@ -185,7 +185,7 @@ function test_exec()
         }
 
         if ($flag === false) {
-            redirect('/?mode=test_index&test=' . $_GET['test']);
+            redirect('/?_mode=test_index&_test=' . $_GET['test']);
         }
     }
 
@@ -193,8 +193,8 @@ function test_exec()
         error('test: ' . $_GET['target'] . ' is not found.');
     }
 
-    $view['ok'] = 0;
-    $view['ng'] = 0;
+    $_view['ok'] = 0;
+    $_view['ng'] = 0;
 
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
@@ -217,24 +217,24 @@ function test_exec()
     list($micro, $second) = explode(' ', microtime());
     $time_end = $micro + $second;
 
-    $view['time'] = ceil(($time_end - $time_start) * 10000) / 10000;
+    $_view['time'] = ceil(($time_end - $time_start) * 10000) / 10000;
 
     echo "\n";
-    echo "OK: " . $view['ok'] . "\n";
-    echo "NG: " . $view['ng'] . "\n";
-    echo "Time: " . $view['time'] . " sec.\n";
+    echo "OK: " . $_view['ok'] . "\n";
+    echo "NG: " . $_view['ng'] . "\n";
+    echo "Time: " . $_view['time'] . " sec.\n";
 
     echo "</pre>\n";
-    echo "<p><a href=\"" . t(MAIN_FILE, true) . "/?mode=test_index\">Back to Index</a></p>\n";
+    echo "<p><a href=\"" . t(MAIN_FILE, true) . "/?_mode=test_index\">Back to Index</a></p>\n";
 
-    if (isset($_GET['test'])) {
-        $view['url'] = MAIN_FILE . "/?mode=test_exec&test=" . $_GET['test'] . ';' . $index . ":" . ($view['ng'] ? 0 : 1);
+    if (isset($_GET['_test'])) {
+        $_view['url'] = MAIN_FILE . "/?_mode=test_exec&_test=" . $_GET['_test'] . ';' . $index . ":" . ($_view['ng'] ? 0 : 1);
 
         echo "<script>\n";
-        echo "setTimeout('window.location.href = \'" . $view['url'] . "\'', 1000);\n";
+        echo "setTimeout('window.location.href = \'" . $_view['url'] . "\'', 1000);\n";
         echo "</script>\n";
         echo "<noscript>\n";
-        echo "<p><a href=\"" . t($view['url'], true) . "\">next</a></p>\n";
+        echo "<p><a href=\"" . t($_view['url'], true) . "\">next</a></p>\n";
         echo "</noscript>\n";
     }
 
@@ -254,12 +254,12 @@ function test_exec()
  */
 function test_result($title, $result)
 {
-    global $view;
+    global $_view;
 
     if ($result === true) {
-        $view['ok']++;
+        $_view['ok']++;
     } else {
-        $view['ng']++;
+        $_view['ng']++;
 
         echo 'NG: ' . $title . "\n";
     }
@@ -276,7 +276,7 @@ function test_result($title, $result)
  */
 function test_import($file)
 {
-    global $params, $db, $view;
+    global $_params, $_db, $_view;
 
     require_once MAIN_PATH . TEST_PATH . $_GET['target'] . '.php';
 

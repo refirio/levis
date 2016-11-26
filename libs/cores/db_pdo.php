@@ -13,31 +13,31 @@
  */
 function db_driver_connect()
 {
-    global $db;
+    global $_db;
 
-    if ($db['resource'][$db['target']]['config']['type'] === 'pdo_mysql') {
-        $dsn = 'mysql:dbname=' . $db['resource'][$db['target']]['config']['name'] . ';host=' . $db['resource'][$db['target']]['config']['host'] . ($db['resource'][$db['target']]['config']['port'] ? ';port=' . $db['resource'][$db['target']]['config']['port'] : '');
-    } elseif ($db['resource'][$db['target']]['config']['type'] === 'pdo_pgsql') {
-        $dsn = 'pgsql:dbname=' . $db['resource'][$db['target']]['config']['name'] . ';host=' . $db['resource'][$db['target']]['config']['host'] . ($db['resource'][$db['target']]['config']['port'] ? ';port=' . $db['resource'][$db['target']]['config']['port'] : '');
-    } elseif ($db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite') {
-        $dsn = 'sqlite:' . $db['resource'][$db['target']]['config']['name'];
-    } elseif ($db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite2') {
-        $dsn = 'sqlite2:' . $db['resource'][$db['target']]['config']['name'];
+    if ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_mysql') {
+        $dsn = 'mysql:dbname=' . $_db['resource'][$_db['target']]['config']['name'] . ';host=' . $_db['resource'][$_db['target']]['config']['host'] . ($_db['resource'][$_db['target']]['config']['port'] ? ';port=' . $_db['resource'][$_db['target']]['config']['port'] : '');
+    } elseif ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_pgsql') {
+        $dsn = 'pgsql:dbname=' . $_db['resource'][$_db['target']]['config']['name'] . ';host=' . $_db['resource'][$_db['target']]['config']['host'] . ($_db['resource'][$_db['target']]['config']['port'] ? ';port=' . $_db['resource'][$_db['target']]['config']['port'] : '');
+    } elseif ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_sqlite') {
+        $dsn = 'sqlite:' . $_db['resource'][$_db['target']]['config']['name'];
+    } elseif ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_sqlite2') {
+        $dsn = 'sqlite2:' . $_db['resource'][$_db['target']]['config']['name'];
     }
 
-    if ($db['resource'][$db['target']]['config']['type'] === 'pdo_mysql') {
+    if ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_mysql') {
         $options = array(
             PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT,
             PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
         );
-    } elseif ($db['resource'][$db['target']]['config']['type'] === 'pdo_pgsql' or $db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite' or $db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite2') {
+    } elseif ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_pgsql' or $_db['resource'][$_db['target']]['config']['type'] === 'pdo_sqlite' or $_db['resource'][$_db['target']]['config']['type'] === 'pdo_sqlite2') {
         $options = array(
             PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT,
         );
     }
 
     try {
-        $db['resource'][$db['target']]['dbh'] = new PDO($dsn, $db['resource'][$db['target']]['config']['username'], $db['resource'][$db['target']]['config']['password'], $options);
+        $_db['resource'][$_db['target']]['dbh'] = new PDO($dsn, $_db['resource'][$_db['target']]['config']['username'], $_db['resource'][$_db['target']]['config']['password'], $options);
     } catch (PDOException $e) {
         if (LOGGING_MESSAGE) {
             logging('message', 'db: Connect error');
@@ -58,9 +58,9 @@ function db_driver_connect()
  */
 function db_driver_query($query)
 {
-    global $db;
+    global $_db;
 
-    return $db['resource'][$db['target']]['dbh']->query($query);
+    return $_db['resource'][$_db['target']]['dbh']->query($query);
 }
 
 /**
@@ -72,7 +72,7 @@ function db_driver_query($query)
  */
 function db_driver_result($resource)
 {
-    global $db;
+    global $_db;
 
     $results = array();
     while ($data = $resource->fetch(PDO::FETCH_ASSOC)) {
@@ -91,7 +91,7 @@ function db_driver_result($resource)
  */
 function db_driver_count($resource)
 {
-    global $db;
+    global $_db;
 
     return $resource->rowCount();
 }
@@ -105,7 +105,7 @@ function db_driver_count($resource)
  */
 function db_driver_affected_count($resource)
 {
-    global $db;
+    global $_db;
 
     return $resource->rowCount();
 }
@@ -119,11 +119,11 @@ function db_driver_affected_count($resource)
  */
 function db_driver_escape($data)
 {
-    global $db;
+    global $_db;
 
-    if ($db['resource'][$db['target']]['config']['type'] === 'pdo_mysql') {
+    if ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_mysql') {
         return '\'' . addslashes($data) . '\'';
-    } elseif ($db['resource'][$db['target']]['config']['type'] === 'pdo_pgsql' or $db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite' or $db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite2') {
+    } elseif ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_pgsql' or $_db['resource'][$_db['target']]['config']['type'] === 'pdo_sqlite' or $_db['resource'][$_db['target']]['config']['type'] === 'pdo_sqlite2') {
         return '\'' . str_replace('\'', '\'\'', $data) . '\'';
     }
 }
@@ -137,14 +137,14 @@ function db_driver_escape($data)
  */
 function db_driver_unescape($data)
 {
-    global $db;
+    global $_db;
 
-    if ($db['resource'][$db['target']]['config']['type'] === 'pdo_mysql') {
+    if ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_mysql') {
         $data = regexp_replace('(^\'|\'$)', '', $data);
         $data = stripslashes($data);
 
         return $data;
-    } elseif ($db['resource'][$db['target']]['config']['type'] === 'pdo_pgsql' or $db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite' or $db['resource'][$db['target']]['config']['type'] === 'pdo_sqlite2') {
+    } elseif ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_pgsql' or $_db['resource'][$_db['target']]['config']['type'] === 'pdo_sqlite' or $_db['resource'][$_db['target']]['config']['type'] === 'pdo_sqlite2') {
         $data = regexp_replace('(^\'|\'$)', '', $data);
         $data = str_replace('\'\'', '\'', $data);
 
@@ -159,9 +159,9 @@ function db_driver_unescape($data)
  */
 function db_driver_error()
 {
-    global $db;
+    global $_db;
 
-    $info = $db['resource'][$db['target']]['dbh']->errorInfo();
+    $info = $_db['resource'][$_db['target']]['dbh']->errorInfo();
     if (isset($info[2]) && $info[2] !== 'not an error') {
         $error = $info[2];
     }
@@ -176,9 +176,9 @@ function db_driver_error()
  */
 function db_driver_last_insert_id()
 {
-    global $db;
+    global $_db;
 
-    return $db['resource'][$db['target']]['dbh']->lastInsertId();
+    return $_db['resource'][$_db['target']]['dbh']->lastInsertId();
 }
 
 /**
@@ -188,9 +188,9 @@ function db_driver_last_insert_id()
  */
 function db_driver_transaction()
 {
-    global $db;
+    global $_db;
 
-    return $db['resource'][$db['target']]['dbh']->beginTransaction();
+    return $_db['resource'][$_db['target']]['dbh']->beginTransaction();
 }
 
 /**
@@ -200,9 +200,9 @@ function db_driver_transaction()
  */
 function db_driver_commit()
 {
-    global $db;
+    global $_db;
 
-    return $db['resource'][$db['target']]['dbh']->commit();
+    return $_db['resource'][$_db['target']]['dbh']->commit();
 }
 
 /**
@@ -212,7 +212,7 @@ function db_driver_commit()
  */
 function db_driver_rollback()
 {
-    global $db;
+    global $_db;
 
-    return $db['resource'][$db['target']]['dbh']->rollBack();
+    return $_db['resource'][$_db['target']]['dbh']->rollBack();
 }

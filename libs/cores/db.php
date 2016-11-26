@@ -15,7 +15,7 @@
  */
 function db_connect($info)
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return;
@@ -23,7 +23,7 @@ function db_connect($info)
 
     if (is_array($info)) {
         foreach ($info as $key => $confg) {
-            $db['resource'][$key] = array(
+            $_db['resource'][$key] = array(
                 'config' => array(
                     'type'                => isset($confg['type'])                ? $confg['type']                : DATABASE_TYPE,
                     'host'                => isset($confg['host'])                ? $confg['host']                : DATABASE_HOST,
@@ -42,12 +42,12 @@ function db_connect($info)
             );
         }
     } elseif ($info === 'default') {
-        $db['target'] = 'default';
+        $_db['target'] = 'default';
 
-        if (isset($db['resource'][$db['target']])) {
+        if (isset($_db['resource'][$_db['target']])) {
             return;
         } else {
-            $db['resource'][$db['target']] = array(
+            $_db['resource'][$_db['target']] = array(
                 'config' => array(
                     'type'                => DATABASE_TYPE,
                     'host'                => DATABASE_HOST,
@@ -66,15 +66,15 @@ function db_connect($info)
             );
         }
     } else {
-        $db['target'] = $info;
+        $_db['target'] = $info;
 
         return;
     }
 
-    foreach ($db['resource'] as $key => $data) {
-        $db['target'] = $key;
+    foreach ($_db['resource'] as $key => $data) {
+        $_db['target'] = $key;
 
-        if (!empty($db['resource'][$db['target']]['dbh'])) {
+        if (!empty($_db['resource'][$_db['target']]['dbh'])) {
             continue;
         }
 
@@ -116,7 +116,7 @@ function db_connect($info)
  */
 function db_query($query, $return = false, $error = true)
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return false;
@@ -130,8 +130,8 @@ function db_query($query, $return = false, $error = true)
         $query = $queries['query'];
     }
 
-    if ($db['resource'][$db['target']]['config']['charset_input_to'] !== $db['resource'][$db['target']]['config']['charset_input_from']) {
-        $query = convert($query, $db['resource'][$db['target']]['config']['charset_input_to'], $db['resource'][$db['target']]['config']['charset_input_from']);
+    if ($_db['resource'][$_db['target']]['config']['charset_input_to'] !== $_db['resource'][$_db['target']]['config']['charset_input_from']) {
+        $query = convert($query, $_db['resource'][$_db['target']]['config']['charset_input_to'], $_db['resource'][$_db['target']]['config']['charset_input_from']);
     }
 
     if ($return) {
@@ -164,7 +164,7 @@ function db_query($query, $return = false, $error = true)
  */
 function db_result($resource)
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return array();
@@ -172,8 +172,8 @@ function db_result($resource)
 
     $results = db_driver_result($resource);
 
-    if ($db['resource'][$db['target']]['config']['charset_output_to'] !== $db['resource'][$db['target']]['config']['charset_output_from']) {
-        $results = convert($results, $db['resource'][$db['target']]['config']['charset_output_to'], $db['resource'][$db['target']]['config']['charset_output_from']);
+    if ($_db['resource'][$_db['target']]['config']['charset_output_to'] !== $_db['resource'][$_db['target']]['config']['charset_output_from']) {
+        $results = convert($results, $_db['resource'][$_db['target']]['config']['charset_output_to'], $_db['resource'][$_db['target']]['config']['charset_output_from']);
     }
 
     return $results;
@@ -188,7 +188,7 @@ function db_result($resource)
  */
 function db_count($resource)
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return -1;
@@ -206,7 +206,7 @@ function db_count($resource)
  */
 function db_affected_count($resource)
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return -1;
@@ -224,7 +224,7 @@ function db_affected_count($resource)
  */
 function db_escape($data)
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return $data;
@@ -246,7 +246,7 @@ function db_escape($data)
  */
 function db_unescape($data)
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return $data;
@@ -308,7 +308,7 @@ function db_placeholder($data)
  */
 function db_error()
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return '';
@@ -327,7 +327,7 @@ function db_error()
  */
 function db_select($queries, $return = false)
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return array();
@@ -403,7 +403,7 @@ function db_select($queries, $return = false)
  */
 function db_insert($queries, $return = false)
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return false;
@@ -464,7 +464,7 @@ function db_insert($queries, $return = false)
  */
 function db_update($queries, $return = false)
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return false;
@@ -538,7 +538,7 @@ function db_update($queries, $return = false)
  */
 function db_delete($queries, $return = false)
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return false;
@@ -591,7 +591,7 @@ function db_delete($queries, $return = false)
  */
 function db_last_insert_id()
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return -1;
@@ -607,13 +607,13 @@ function db_last_insert_id()
  */
 function db_transaction()
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return false;
     }
 
-    $db['transaction'][$db['target']] = true;
+    $_db['transaction'][$_db['target']] = true;
 
     return db_driver_transaction();
 }
@@ -625,14 +625,14 @@ function db_transaction()
  */
 function db_commit()
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return false;
     }
 
-    if (isset($db['transaction'][$db['target']]) && $db['transaction'][$db['target']] === true) {
-        $db['transaction'][$db['target']] = false;
+    if (isset($_db['transaction'][$_db['target']]) && $_db['transaction'][$_db['target']] === true) {
+        $_db['transaction'][$_db['target']] = false;
     } else {
         return false;
     }
@@ -647,14 +647,14 @@ function db_commit()
  */
 function db_rollback()
 {
-    global $db;
+    global $_db;
 
     if (DATABASE_TYPE === '') {
         return false;
     }
 
-    if (isset($db['transaction'][$db['target']]) && $db['transaction'][$db['target']] === true) {
-        $db['transaction'][$db['target']] = false;
+    if (isset($_db['transaction'][$_db['target']]) && $_db['transaction'][$_db['target']] === true) {
+        $_db['transaction'][$_db['target']] = false;
     } else {
         return false;
     }
@@ -675,11 +675,11 @@ function db_admin()
         return;
     }
 
-    if ($_REQUEST['work'] === 'import') {
+    if ($_REQUEST['_work'] === 'import') {
         db_admin_import();
-    } elseif ($_REQUEST['work'] === 'export') {
+    } elseif ($_REQUEST['_work'] === 'export') {
         db_admin_export();
-    } elseif ($_REQUEST['work'] === 'backup') {
+    } elseif ($_REQUEST['_work'] === 'backup') {
         db_admin_backup();
     } else {
         db_admin_sql();
@@ -711,9 +711,9 @@ function db_admin_import()
 
         $count = db_import($target);
 
-        $view['message'] = $count . ' sql executed.';
+        $_view['message'] = $count . ' sql executed.';
     } else {
-        $view['message'] = '';
+        $_view['message'] = '';
     }
 
     echo "<!DOCTYPE html>\n";
@@ -726,25 +726,25 @@ function db_admin_import()
 
     echo "</head>\n";
     echo "<body>\n";
-    echo "<h1><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin\">DB</a></h1>\n";
+    echo "<h1><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin\">DB</a></h1>\n";
 
     echo "<h2>Menu</h2>\n";
     echo "<ul>\n";
-    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=sql\">SQL</a></li>\n";
+    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=sql\">SQL</a></li>\n";
     echo "<li>Import</li>\n";
-    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=export\">Export</a></li>\n";
+    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=export\">Export</a></li>\n";
 
     if (file_exists(DATABASE_BACKUP_PATH)) {
-        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=backup\">Backup</a></li>\n";
+        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=backup\">Backup</a></li>\n";
     }
 
     echo "</ul>\n";
 
     echo "<h2>Import</h2>\n";
 
-    if ($view['message']) {
+    if ($_view['message']) {
         echo "<ul>\n";
-        echo "<li>" . $view['message'] . "</li>\n";
+        echo "<li>" . $_view['message'] . "</li>\n";
         echo "</ul>\n";
     } else {
         echo "<ul>\n";
@@ -752,7 +752,7 @@ function db_admin_import()
         echo "</ul>\n";
     }
 
-    echo "<form action=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=import\" method=\"post\" enctype=\"multipart/form-data\">\n";
+    echo "<form action=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=import\" method=\"post\" enctype=\"multipart/form-data\">\n";
     echo "<fieldset>\n";
     echo "<legend>import</legend>\n";
     echo "<dl>\n";
@@ -787,9 +787,9 @@ function db_admin_export()
     $resource = db_query(db_sql('table_list'));
     $results  = db_result($resource);
 
-    $view['tables'] = array();
+    $_view['tables'] = array();
     foreach ($results as $result) {
-        $view['tables'][] = array_shift($result);
+        $_view['tables'][] = array_shift($result);
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -801,7 +801,7 @@ function db_admin_export()
         } else {
             db_export(DATABASE_NAME . '.sql', $table, $combined);
 
-            $view['message'] = 'Exported.';
+            $_view['message'] = 'Exported.';
         }
     }
 
@@ -815,25 +815,25 @@ function db_admin_export()
 
     echo "</head>\n";
     echo "<body>\n";
-    echo "<h1><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin\">DB</a></h1>\n";
+    echo "<h1><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin\">DB</a></h1>\n";
 
     echo "<h2>Menu</h2>\n";
     echo "<ul>\n";
-    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=sql\">SQL</a></li>\n";
-    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=import\">Import</a></li>\n";
+    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=sql\">SQL</a></li>\n";
+    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=import\">Import</a></li>\n";
     echo "<li>Export</li>\n";
 
     if (file_exists(DATABASE_BACKUP_PATH)) {
-        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=backup\">Backup</a></li>\n";
+        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=backup\">Backup</a></li>\n";
     }
 
     echo "</ul>\n";
 
     echo "<h2>Export</h2>\n";
 
-    if (isset($view['message'])) {
+    if (isset($_view['message'])) {
         echo "<ul>\n";
-        echo "<li>" . $view['message'] . "</li>\n";
+        echo "<li>" . $_view['message'] . "</li>\n";
         echo "</ul>\n";
     } else {
         echo "<ul>\n";
@@ -841,7 +841,7 @@ function db_admin_export()
         echo "</ul>\n";
     }
 
-    echo "<form action=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=export\" method=\"post\" enctype=\"multipart/form-data\">\n";
+    echo "<form action=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=export\" method=\"post\" enctype=\"multipart/form-data\">\n";
     echo "<fieldset>\n";
     echo "<legend>export</legend>\n";
 
@@ -851,7 +851,7 @@ function db_admin_export()
     echo "<select name=\"table\">\n";
     echo "<option value=\"\">(all)</option>\n";
 
-    foreach ($view['tables'] as $table) {
+    foreach ($_view['tables'] as $table) {
         echo "<option value=\"" . $table . "\">" . $table . "</option>\n";
     }
 
@@ -900,7 +900,7 @@ function db_admin_backup()
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         db_export(DATABASE_BACKUP_PATH . localdate('YmdHis') . '.sql');
 
-        $view['message'] = 'completed.';
+        $_view['message'] = 'completed.';
     }
 
     echo "<!DOCTYPE html>\n";
@@ -913,21 +913,21 @@ function db_admin_backup()
 
     echo "</head>\n";
     echo "<body>\n";
-    echo "<h1><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin\">DB</a></h1>\n";
+    echo "<h1><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin\">DB</a></h1>\n";
 
     echo "<h2>Menu</h2>\n";
     echo "<ul>\n";
-    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=sql\">SQL</a></li>\n";
-    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=import\">Import</a></li>\n";
-    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=export\">Export</a></li>\n";
+    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=sql\">SQL</a></li>\n";
+    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=import\">Import</a></li>\n";
+    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=export\">Export</a></li>\n";
     echo "<li>Backup</li>\n";
     echo "</ul>\n";
 
     echo "<h2>Backup</h2>\n";
 
-    if (isset($view['message'])) {
+    if (isset($_view['message'])) {
         echo "<ul>\n";
-        echo "<li>" . $view['message'] . "</li>\n";
+        echo "<li>" . $_view['message'] . "</li>\n";
         echo "</ul>\n";
     } else {
         echo "<ul>\n";
@@ -935,7 +935,7 @@ function db_admin_backup()
         echo "</ul>\n";
     }
 
-    echo "<form action=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=backup\" method=\"post\">\n";
+    echo "<form action=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=backup\" method=\"post\">\n";
     echo "<fieldset>\n";
     echo "<legend>backup</legend>\n";
     echo "<p><input type=\"submit\" value=\"backup\" /></p>\n";
@@ -1003,9 +1003,9 @@ function db_admin_sql()
     list($micro, $second) = explode(' ', microtime());
     $time_end = $micro + $second;
 
-    $view['time'] = ceil(($time_end - $time_start) * 10000) / 10000;
+    $_view['time'] = ceil(($time_end - $time_start) * 10000) / 10000;
 
-    $view['sql'] = $sql;
+    $_view['sql'] = $sql;
 
     if ($sql === db_sql('table_list')) {
         $head = '';
@@ -1098,8 +1098,8 @@ function db_admin_sql()
             $body .= '</tr>';
         }
 
-        $view['result'] = '<table summary="result">' . $head . $body . '</table>';
-        $view['count']  = db_count($resource);
+        $_view['result'] = '<table summary="result">' . $head . $body . '</table>';
+        $_view['count']  = db_count($resource);
     } elseif (regexp_match('^(SELECT|SHOW|EXPLAIN|DESC|PRAGMA)', $sql)) {
         $head = '';
         $body = '';
@@ -1182,11 +1182,11 @@ function db_admin_sql()
             $flag = true;
         }
 
-        $view['result'] = '<table summary="result"><tr>' . $head . '</tr>' . $body . '</table>';
-        $view['count']  = db_count($resource);
+        $_view['result'] = '<table summary="result"><tr>' . $head . '</tr>' . $body . '</table>';
+        $_view['count']  = db_count($resource);
     } else {
-        $view['result'] = '<p>OK</p>';
-        $view['count']  = db_affected_count($resource);
+        $_view['result'] = '<p>OK</p>';
+        $_view['count']  = db_affected_count($resource);
     }
 
     echo "<!DOCTYPE html>\n";
@@ -1205,39 +1205,39 @@ function db_admin_sql()
     echo "</script>\n";
     echo "</head>\n";
     echo "<body>\n";
-    echo "<h1><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin\">DB</a></h1>\n";
+    echo "<h1><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin\">DB</a></h1>\n";
 
     echo "<h2>Menu</h2>\n";
     echo "<ul>\n";
     echo "<li>SQL</li>\n";
-    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=import\">Import</a></li>\n";
-    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=export\">Export</a></li>\n";
+    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=import\">Import</a></li>\n";
+    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=export\">Export</a></li>\n";
 
     if (file_exists(DATABASE_BACKUP_PATH)) {
-        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin&amp;work=backup\">Backup</a></li>\n";
+        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=backup\">Backup</a></li>\n";
     }
 
     echo "</ul>\n";
 
     echo "<h2>SQL</h2>\n";
-    echo "<form action=\"" . t(MAIN_FILE, true) . "/?mode=db_admin\" method=\"post\" id=\"exec_form\">\n";
+    echo "<form action=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin\" method=\"post\" id=\"exec_form\">\n";
     echo "<fieldset>\n";
     echo "<legend>execute</legend>\n";
     echo "<dl>\n";
     echo "<dt>SQL</dt>\n";
-    echo "<dd><textarea name=\"sql\" cols=\"50\" rows=\"5\">" . t($view['sql'], true) . "</textarea></dd>\n";
+    echo "<dd><textarea name=\"sql\" cols=\"50\" rows=\"5\">" . t($_view['sql'], true) . "</textarea></dd>\n";
     echo "</dl>\n";
     echo "<p><input type=\"submit\" value=\"execute\" /></p>\n";
     echo "</fieldset>\n";
     echo "</form>\n";
 
-    if ($view['result']) {
+    if ($_view['result']) {
         echo "<h2>Result</h2>\n";
-        echo $view['result'];
+        echo $_view['result'];
     }
 
-    echo "<pre><code>Rows: " . $view['count'] . " rows.\n";
-    echo "Time: " . $view['time'] . " sec.</code></pre>\n";
+    echo "<pre><code>Rows: " . $_view['count'] . " rows.\n";
+    echo "Time: " . $_view['time'] . " sec.</code></pre>\n";
 
     echo "</body>\n";
     echo "</html>\n";
@@ -1648,11 +1648,11 @@ function db_scaffold()
             }
 
             if (regexp_match('(BLOB|TEXT)', $type)) {
-                $input = '<textarea name="' . $field . '" rows="10" cols="50"><?php t($view[\'data\'][\'' . $field . '\']) ?></textarea>';
+                $input = '<textarea name="' . $field . '" rows="10" cols="50"><?php t($_view[\'data\'][\'' . $field . '\']) ?></textarea>';
             } elseif (regexp_match('(CHAR)', $type)) {
-                $input = '<input type="text" name="' . $field . '" size="30" value="<?php t($view[\'data\'][\'' . $field . '\']) ?>" />';
+                $input = '<input type="text" name="' . $field . '" size="30" value="<?php t($_view[\'data\'][\'' . $field . '\']) ?>" />';
             } else {
-                $input = '<input type="text" name="' . $field . '" size="10" value="<?php t($view[\'data\'][\'' . $field . '\']) ?>" />';
+                $input = '<input type="text" name="' . $field . '" size="10" value="<?php t($_view[\'data\'][\'' . $field . '\']) ?>" />';
             }
 
             if ($field === $primary_key) {
@@ -1661,7 +1661,7 @@ function db_scaffold()
                 $view_form .= '                            <?php if (empty($_GET[\'' . $primary_key . '\'])) : ?>' . "\n";
                 $view_form .= '                            ' . $input . "\n";
                 $view_form .= '                            <?php else : ?>' . "\n";
-                $view_form .= '                            <em><?php h($view[\'data\'][\'' . $field . '\']) ?></em><input type="hidden" name="' . $field . '" value="<?php t($view[\'data\'][\'' . $field . '\']) ?>" />' . "\n";
+                $view_form .= '                            <em><?php h($_view[\'data\'][\'' . $field . '\']) ?></em><input type="hidden" name="' . $field . '" value="<?php t($_view[\'data\'][\'' . $field . '\']) ?>" />' . "\n";
                 $view_form .= '                            <?php endif ?>' . "\n";
                 $view_form .= '                        </dd>' . "\n";
             } else {
@@ -1737,7 +1737,7 @@ function db_scaffold()
         $buffer .= '            <tr>' . "\n";
         $buffer .= $view_head;
         $buffer .= '            </tr>' . "\n";
-        $buffer .= '            <?php foreach ($view[\'' . $table . '\'] as $data) : ?>' . "\n";
+        $buffer .= '            <?php foreach ($_view[\'' . $table . '\'] as $data) : ?>' . "\n";
         $buffer .= '            <tr>' . "\n";
         $buffer .= $view_data;
         $buffer .= '            </tr>' . "\n";
@@ -1751,7 +1751,7 @@ function db_scaffold()
         $buffer  = '<?php import(\'app/views/header.php\') ?>' . "\n";
         $buffer .= "\n";
         $buffer .= '        <h2>' . ($table_comment ? $table_comment : $table) . '</h2>' . "\n";
-        $buffer .= '        <form action="<?php t(MAIN_FILE) ?>/' . $table . '/post' . ($primary_flag ? '<?php $view[\'data\'][\'' . $primary_key . '\'] ? t(\'?' . $primary_key . '=\' . $view[\'data\'][\'' . $primary_key . '\']) : \'\' ?>' : '') . '" method="post">' . "\n";
+        $buffer .= '        <form action="<?php t(MAIN_FILE) ?>/' . $table . '/post' . ($primary_flag ? '<?php $_view[\'data\'][\'' . $primary_key . '\'] ? t(\'?' . $primary_key . '=\' . $_view[\'data\'][\'' . $primary_key . '\']) : \'\' ?>' : '') . '" method="post">' . "\n";
         $buffer .= '            <fieldset>' . "\n";
         $buffer .= '                <legend>' . ($table_comment ? $table_comment : $table) . '</legend>' . "\n";
         $buffer .= '                <dl>' . "\n";
@@ -1764,10 +1764,10 @@ function db_scaffold()
         if ($primary_flag) {
             $buffer .= '        <?php if (!empty($_GET[\'' . $primary_key . '\'])) : ?>' . "\n";
             $buffer .= '        <h2>delete</h2>' . "\n";
-            $buffer .= '        <form action="<?php t(MAIN_FILE) ?>/' . $table . '/delete?' . $primary_key . '=\' . t($view[\'data\'][\'' . $primary_key . '\']) ?>" method="post">' . "\n";
+            $buffer .= '        <form action="<?php t(MAIN_FILE) ?>/' . $table . '/delete?' . $primary_key . '=\' . t($_view[\'data\'][\'' . $primary_key . '\']) ?>" method="post">' . "\n";
             $buffer .= '            <fieldset>' . "\n";
             $buffer .= '                <legend>' . ($table_comment ? $table_comment : $table) . '</legend>' . "\n";
-            $buffer .= '                <input type="hidden" name="' . $primary_key . '" value="<?php t($view[\'data\'][\'' . $primary_key . '\']) ?>" /></dd>' . "\n";
+            $buffer .= '                <input type="hidden" name="' . $primary_key . '" value="<?php t($_view[\'data\'][\'' . $primary_key . '\']) ?>" /></dd>' . "\n";
             $buffer .= '                <p><input type="submit" value="delete" /></p>' . "\n";
             $buffer .= '            </fieldset>' . "\n";
             $buffer .= '        </form>' . "\n";
@@ -1782,7 +1782,7 @@ function db_scaffold()
         // controller
         $buffer  = '<?php' . "\n";
         $buffer .= "\n";
-        $buffer .= '$view[\'' . $table . '\'] = select_' . $table . '(array(' . "\n";
+        $buffer .= '$_view[\'' . $table . '\'] = select_' . $table . '(array(' . "\n";
         $buffer .= '    \'limit\' => array(' . "\n";
         $buffer .= '        \':limit\',' . "\n";
         $buffer .= '        array(' . "\n";
@@ -1848,12 +1848,12 @@ function db_scaffold()
             $buffer .= '        if (empty($' . $table . ')) {' . "\n";
             $buffer .= '            error(\'Data not found.\');' . "\n";
             $buffer .= '        } else {' . "\n";
-            $buffer .= '            $view[\'data\'] = $' . $table . '[0];' . "\n";
+            $buffer .= '            $_view[\'data\'] = $' . $table . '[0];' . "\n";
             $buffer .= '        }' . "\n";
         }
 
         $buffer .= '    } else {' . "\n";
-        $buffer .= '        $view[\'data\'] = default_' . $table . '();' . "\n";
+        $buffer .= '        $_view[\'data\'] = default_' . $table . '();' . "\n";
         $buffer .= '    }' . "\n";
         $buffer .= '}' . "\n";
 
@@ -2000,7 +2000,7 @@ function db_scaffold()
         $buffer .= $test_insert;
         $buffer .= "\n";
         $buffer .= '    // assign' . "\n";
-        $buffer .= '    $view[\'' . $table . '\'] = $insert_' . $table . ';' . "\n";
+        $buffer .= '    $_view[\'' . $table . '\'] = $insert_' . $table . ';' . "\n";
         $buffer .= "\n";
         $buffer .= '    // test' . "\n";
         $buffer .= '    $html = view(\'' . $table . '/index.php\', true);' . "\n";
@@ -2013,7 +2013,7 @@ function db_scaffold()
         $buffer .= '// post' . "\n";
         $buffer .= '{' . "\n";
         $buffer .= '    // test' . "\n";
-        $buffer .= '    $view[\'data\'] = $insert_' . $table . '[1];' . "\n";
+        $buffer .= '    $_view[\'data\'] = $insert_' . $table . '[1];' . "\n";
         $buffer .= "\n";
         $buffer .= '    $html = view(\'' . $table . '/post.php\', true);' . "\n";
         $buffer .= "\n";
@@ -2047,7 +2047,7 @@ function db_scaffold()
         $buffer .= '    }' . "\n";
         $buffer .= "\n";
         $buffer .= '    // test' . "\n";
-        $buffer .= '    $params = array(\'' . $table . '\', \'index\');' . "\n";
+        $buffer .= '    $_params = array(\'' . $table . '\', \'index\');' . "\n";
         $buffer .= '    controller(\'' . $table . '/index.php\');' . "\n";
         $buffer .= '    $html = view(\'' . $table . '/index.php\', true);' . "\n";
         $buffer .= "\n";
@@ -2059,7 +2059,7 @@ function db_scaffold()
         $buffer .= '// post' . "\n";
         $buffer .= '{' . "\n";
         $buffer .= '    // test' . "\n";
-        $buffer .= '    $params = array(\'' . $table . '\', \'post\');' . "\n";
+        $buffer .= '    $_params = array(\'' . $table . '\', \'post\');' . "\n";
         $buffer .= '    $_GET[\'' . $primary_key . '\'] = 3;' . "\n";
         $buffer .= '    controller(\'' . $table . '/post.php\');' . "\n";
         $buffer .= '    $html = view(\'' . $table . '/post.php\', true);' . "\n";

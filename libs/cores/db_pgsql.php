@@ -13,10 +13,10 @@
  */
 function db_driver_connect()
 {
-    global $db;
+    global $_db;
 
-    $db['resource'][$db['target']]['dbh'] = pg_connect('host=' . $db['resource'][$db['target']]['config']['host'] . ($db['resource'][$db['target']]['config']['port'] ? ' port=' . $db['resource'][$db['target']]['config']['port'] : '') . ' dbname=' . $db['resource'][$db['target']]['config']['name'] . ' user=' . $db['resource'][$db['target']]['config']['username'] . ' password=' . $db['resource'][$db['target']]['config']['password'], true);
-    if (!$db['resource'][$db['target']]['dbh']) {
+    $_db['resource'][$_db['target']]['dbh'] = pg_connect('host=' . $_db['resource'][$_db['target']]['config']['host'] . ($_db['resource'][$_db['target']]['config']['port'] ? ' port=' . $_db['resource'][$_db['target']]['config']['port'] : '') . ' dbname=' . $_db['resource'][$_db['target']]['config']['name'] . ' user=' . $_db['resource'][$_db['target']]['config']['username'] . ' password=' . $_db['resource'][$_db['target']]['config']['password'], true);
+    if (!$_db['resource'][$_db['target']]['dbh']) {
         if (LOGGING_MESSAGE) {
             logging('message', 'db: Connect error');
         }
@@ -36,9 +36,9 @@ function db_driver_connect()
  */
 function db_driver_query($query)
 {
-    global $db;
+    global $_db;
 
-    return pg_query($db['resource'][$db['target']]['dbh'], $query);
+    return pg_query($_db['resource'][$_db['target']]['dbh'], $query);
 }
 
 /**
@@ -50,7 +50,7 @@ function db_driver_query($query)
  */
 function db_driver_result($resource)
 {
-    global $db;
+    global $_db;
 
     $results = array();
     while ($data = pg_fetch_array($resource, null, PGSQL_ASSOC)) {
@@ -69,7 +69,7 @@ function db_driver_result($resource)
  */
 function db_driver_count($resource)
 {
-    global $db;
+    global $_db;
 
     return pg_num_rows($resource);
 }
@@ -83,7 +83,7 @@ function db_driver_count($resource)
  */
 function db_driver_affected_count($resource)
 {
-    global $db;
+    global $_db;
 
     return pg_affected_rows($resource);
 }
@@ -97,7 +97,7 @@ function db_driver_affected_count($resource)
  */
 function db_driver_escape($data)
 {
-    global $db;
+    global $_db;
 
     return '\'' . str_replace('\'', '\'\'', $data) . '\'';
 }
@@ -111,7 +111,7 @@ function db_driver_escape($data)
  */
 function db_driver_unescape($data)
 {
-    global $db;
+    global $_db;
 
     $data = regexp_replace('(^\'|\'$)', '', $data);
     $data = str_replace('\'\'', '\'', $data);
@@ -126,9 +126,9 @@ function db_driver_unescape($data)
  */
 function db_driver_error()
 {
-    global $db;
+    global $_db;
 
-    return pg_result_error($db['resource'][$db['target']]['dbh']);
+    return pg_result_error($_db['resource'][$_db['target']]['dbh']);
 }
 
 /**
@@ -138,9 +138,9 @@ function db_driver_error()
  */
 function db_driver_transaction()
 {
-    global $db;
+    global $_db;
 
-    return pg_query($db['resource'][$db['target']]['dbh'], 'START TRANSACTION');
+    return pg_query($_db['resource'][$_db['target']]['dbh'], 'START TRANSACTION');
 }
 
 /**
@@ -150,9 +150,9 @@ function db_driver_transaction()
  */
 function db_driver_commit()
 {
-    global $db;
+    global $_db;
 
-    return pg_query($db['resource'][$db['target']]['dbh'], 'COMMIT');
+    return pg_query($_db['resource'][$_db['target']]['dbh'], 'COMMIT');
 }
 
 /**
@@ -162,7 +162,7 @@ function db_driver_commit()
  */
 function db_driver_rollback()
 {
-    global $db;
+    global $_db;
 
-    return pg_query($db['resource'][$db['target']]['dbh'], 'ROLLBACK');
+    return pg_query($_db['resource'][$_db['target']]['dbh'], 'ROLLBACK');
 }

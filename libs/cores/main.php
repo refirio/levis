@@ -33,7 +33,7 @@ if (LOGGING_FILES && !empty($_FILES)) {
     logging('files');
 }
 
-switch ($_REQUEST['mode']) {
+switch ($_REQUEST['_mode']) {
     case 'info_php':
         info_php();
         break;

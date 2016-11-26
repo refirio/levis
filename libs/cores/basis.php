@@ -10,9 +10,9 @@ if (!defined('MAIN_PATH')) {
     define('MAIN_PATH', '');
 }
 
-$params = array();
-$db     = array();
-$view   = array();
+$_params = array();
+$_db     = array();
+$_view   = array();
 
 /**
  * Load the given file.
@@ -25,12 +25,12 @@ $view   = array();
  */
 function import($file, $once = true, $ignore = false)
 {
-    global $params, $db, $view;
+    global $_params, $_db, $_view;
 
-    if (!empty($GLOBALS['core']['target'])) {
+    if (!empty($GLOBALS['_target'])) {
         foreach (array(MAIN_PATH . MAIN_APPLICATION_PATH, MAIN_PATH . MAIN_LIBRARY_PATH) as $dir) {
-            if (is_file($dir . $GLOBALS['core']['target'] . '/' . $file)) {
-                $file = $GLOBALS['core']['target'] . '/' . $file;
+            if (is_file($dir . $GLOBALS['_target'] . '/' . $file)) {
+                $file = $GLOBALS['_target'] . '/' . $file;
 
                 break;
             }
@@ -169,7 +169,7 @@ function normalize()
  */
 function routing()
 {
-    global $params;
+    global $_params;
 
     if (!isset($_SERVER['REQUEST_URI'])) {
         $_SERVER['REQUEST_URI'] = '/';
@@ -184,35 +184,35 @@ function routing()
             unset($request_uri[$i]);
         }
     }
-    $params = array_values(array_map('urldecode', $request_uri));
+    $_params = array_values(array_map('urldecode', $request_uri));
 
-    if (count($params)) {
-        if ($regexp = regexp_match('(.+)\.([_a-zA-Z0-9\-]*)$', $params[count($params) - 1])) {
-            $params[count($params) - 1] = $regexp[1];
-            $params[count($params)]     = $regexp[2];
+    if (count($_params)) {
+        if ($regexp = regexp_match('(.+)\.([_a-zA-Z0-9\-]*)$', $_params[count($_params) - 1])) {
+            $_params[count($_params) - 1] = $regexp[1];
+            $_params[count($_params)]     = $regexp[2];
         }
     }
 
     $_REQUEST = array(
-        'mode'  => isset($_POST['mode'])  ? $_POST['mode']  : (isset($_GET['mode'])  ? $_GET['mode']  : null),
-        'work'  => isset($_POST['work'])  ? $_POST['work']  : (isset($_GET['work'])  ? $_GET['work']  : null),
-        'type'  => isset($_POST['type'])  ? $_POST['type']  : (isset($_GET['type'])  ? $_GET['type']  : null),
-        'token' => isset($_POST['token']) ? $_POST['token'] : (isset($_GET['token']) ? $_GET['token'] : null),
-        'test'  => isset($_POST['test'])  ? $_POST['test']  : (isset($_GET['test'])  ? $_GET['test']  : null),
+        '_mode'  => isset($_POST['_mode'])  ? $_POST['_mode']  : (isset($_GET['_mode'])  ? $_GET['_mode']  : null),
+        '_work'  => isset($_POST['_work'])  ? $_POST['_work']  : (isset($_GET['_work'])  ? $_GET['_work']  : null),
+        '_type'  => isset($_POST['_type'])  ? $_POST['_type']  : (isset($_GET['_type'])  ? $_GET['_type']  : null),
+        '_token' => isset($_POST['_token']) ? $_POST['_token'] : (isset($_GET['_token']) ? $_GET['_token'] : null),
+        '_test'  => isset($_POST['_test'])  ? $_POST['_test']  : (isset($_GET['_test'])  ? $_GET['_test']  : null),
     );
 
-    if (isset($params[0]) && empty($_REQUEST['mode'])) {
-        $_REQUEST['mode'] = $params[0];
+    if (isset($_params[0]) && empty($_REQUEST['_mode'])) {
+        $_REQUEST['_mode'] = $_params[0];
     }
-    if (isset($params[1]) && empty($_REQUEST['work'])) {
-        $_REQUEST['work'] = $params[1];
+    if (isset($_params[1]) && empty($_REQUEST['_work'])) {
+        $_REQUEST['_work'] = $_params[1];
     }
 
-    if ($_REQUEST['mode'] === '' || !regexp_match('^[_a-zA-Z0-9\-]+$', $_REQUEST['mode'])) {
-        $_REQUEST['mode'] = MAIN_DEFAULT_MODE;
+    if ($_REQUEST['_mode'] === '' || !regexp_match('^[_a-zA-Z0-9\-]+$', $_REQUEST['_mode'])) {
+        $_REQUEST['_mode'] = MAIN_DEFAULT_MODE;
     }
-    if ($_REQUEST['work'] === '' || !regexp_match('^[_a-zA-Z0-9\-]+$', $_REQUEST['work'])) {
-        $_REQUEST['work'] = MAIN_DEFAULT_WORK;
+    if ($_REQUEST['_work'] === '' || !regexp_match('^[_a-zA-Z0-9\-]+$', $_REQUEST['_work'])) {
+        $_REQUEST['_work'] = MAIN_DEFAULT_WORK;
     }
 
     if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/routing.php')) {
@@ -361,23 +361,23 @@ function model($target = null)
  */
 function controller($target = null)
 {
-    global $params, $db, $view;
+    global $_params, $_db, $_view;
 
     if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/before.php')) {
         import('app/controllers/before.php');
     }
-    if (isset($params[0]) && is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/before_' . $params[0] . '.php')) {
-        import('app/controllers/before_' . $params[0] . '.php');
+    if (isset($_params[0]) && is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/before_' . $_params[0] . '.php')) {
+        import('app/controllers/before_' . $_params[0] . '.php');
     }
 
-    if (empty($GLOBALS['core']['routing'])) {
+    if (empty($GLOBALS['_routing'])) {
         $routing = '';
     } else {
-        $routing = $GLOBALS['core']['routing'] . '/';
+        $routing = $GLOBALS['_routing'] . '/';
     }
 
-    $directory = 'app/controllers/' . $routing . $_REQUEST['mode'] . '/';
-    $file      = $_REQUEST['work'] . '.php';
+    $directory = 'app/controllers/' . $routing . $_REQUEST['_mode'] . '/';
+    $file      = $_REQUEST['_work'] . '.php';
 
     if ($target) {
         import('app/controllers/' . $target);
@@ -389,8 +389,8 @@ function controller($target = null)
         import('app/controllers/' . PAGE_CONTROLLER . '.php');
     }
 
-    if (isset($params[0]) && is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/after_' . $params[0] . '.php')) {
-        import('app/controllers/after_' . $params[0] . '.php');
+    if (isset($_params[0]) && is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/after_' . $_params[0] . '.php')) {
+        import('app/controllers/after_' . $_params[0] . '.php');
     }
     if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/after.php')) {
         import('app/controllers/after.php');
@@ -409,22 +409,22 @@ function controller($target = null)
  */
 function view($target = null, $return = false)
 {
-    global $params, $view;
+    global $_params, $_view;
 
     static $complete = false;
 
-    if ($_REQUEST['mode'] !== 'test_exec' && $complete) {
+    if ($_REQUEST['_mode'] !== 'test_exec' && $complete) {
         return;
     }
 
-    if (empty($GLOBALS['core']['routing'])) {
+    if (empty($GLOBALS['_routing'])) {
         $routing = '';
     } else {
-        $routing = $GLOBALS['core']['routing'] . '/';
+        $routing = $GLOBALS['_routing'] . '/';
     }
 
-    $directory = 'app/views/' . $routing . $_REQUEST['mode'] . '/';
-    $file      = $_REQUEST['work'] . '.php';
+    $directory = 'app/views/' . $routing . $_REQUEST['_mode'] . '/';
+    $file      = $_REQUEST['_work'] . '.php';
 
     if ($return) {
         ob_start();
@@ -436,9 +436,9 @@ function view($target = null, $return = false)
         import($directory . $file);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $directory . MAIN_DEFAULT_WORK . '.php')) {
         import($directory . MAIN_DEFAULT_WORK . '.php');
-    } elseif (is_file(PAGE_PATH . implode('/', $params) . '.php')) {
-        import(PAGE_PATH . implode('/', $params) . '.php');
-    } elseif ($_REQUEST['mode'] === MAIN_DEFAULT_MODE && $_REQUEST['work'] === MAIN_DEFAULT_WORK) {
+    } elseif (is_file(PAGE_PATH . implode('/', $_params) . '.php')) {
+        import(PAGE_PATH . implode('/', $_params) . '.php');
+    } elseif ($_REQUEST['_mode'] === MAIN_DEFAULT_MODE && $_REQUEST['_work'] === MAIN_DEFAULT_WORK) {
         about();
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/404.php')) {
         import('app/views/404.php');
@@ -719,27 +719,27 @@ function ssl($proxy = false)
 function token($type, $name = 'default')
 {
     if ($type === 'check') {
-        if ($_REQUEST['token'] && isset($_SESSION['core']['token'][$name]['value']) && $_REQUEST['token'] === $_SESSION['core']['token'][$name]['value']) {
+        if ($_REQUEST['_token'] && isset($_SESSION['_token'][$name]['value']) && $_REQUEST['_token'] === $_SESSION['_token'][$name]['value']) {
             $flag = true;
         } else {
             $flag = false;
         }
 
-        if (empty($_SESSION['core']['token'][$name]) || time() - $_SESSION['core']['token'][$name]['time'] > TOKEN_SPAN) {
-            $_SESSION['core']['token'][$name] = array();
+        if (empty($_SESSION['_token'][$name]) || time() - $_SESSION['_token'][$name]['time'] > TOKEN_SPAN) {
+            $_SESSION['_token'][$name] = array();
         }
 
         return $flag;
     } else {
-        if (empty($_SESSION['core']['token'][$name]) || time() - $_SESSION['core']['token'][$name]['time'] > TOKEN_SPAN) {
+        if (empty($_SESSION['_token'][$name]) || time() - $_SESSION['_token'][$name]['time'] > TOKEN_SPAN) {
             $token = rand_string();
 
-            $_SESSION['core']['token'][$name] = array(
+            $_SESSION['_token'][$name] = array(
                 'value' => $token,
                 'time'  => time(),
             );
         } else {
-            $token = $_SESSION['core']['token'][$name]['value'];
+            $token = $_SESSION['_token'][$name]['value'];
         }
 
         return $token;
@@ -773,7 +773,7 @@ function redirect($url)
  */
 function forward($target = null)
 {
-    global $params, $view;
+    global $_params, $_view;
 
     static $forwarded = null;
 
@@ -783,10 +783,10 @@ function forward($target = null)
         $forwarded = $target;
 
         if ($regexp = regexp_match('^\/([_a-zA-Z0-9\-]+)\/([_a-zA-Z0-9\-]+)$', $target)) {
-            $_REQUEST['mode'] = $regexp[1];
-            $_REQUEST['work'] = $regexp[2];
+            $_REQUEST['_mode'] = $regexp[1];
+            $_REQUEST['_work'] = $regexp[2];
 
-            $params = array($regexp[1], $regexp[2]);
+            $_params = array($regexp[1], $regexp[2]);
 
             controller($regexp[1] . '/' . $regexp[2] . '.php');
 
@@ -881,7 +881,7 @@ function logging($type = 'message', $message = null)
 function auth()
 {
     if (!DEBUG_LEVEL) {
-        if (DEBUG_PASSWORD && empty($_SESSION['core']['auth'])) {
+        if (DEBUG_PASSWORD && empty($_SESSION['_auth'])) {
             password();
         } elseif (DEBUG_ADDR && !in_array(clientip(), explode(',', DEBUG_ADDR))) {
             return false;
@@ -908,8 +908,8 @@ function ok($message = null, $values = array(), $type = null)
     if (empty($values)) {
         $values = array('token' => token('create'));
     }
-    if ($type === null && isset($_REQUEST['type'])) {
-        $type = $_REQUEST['type'];
+    if ($type === null && isset($_REQUEST['_type'])) {
+        $type = $_REQUEST['_type'];
     }
 
     db_commit();
@@ -937,14 +937,14 @@ function ok($message = null, $values = array(), $type = null)
 
         echo "</values>\n";
         echo "</response>\n";
-    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/ok_' . $_REQUEST['mode'] . '.php')) {
-        $view['message'] = $message;
-        $view['values']  = $values;
+    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/ok_' . $_REQUEST['_mode'] . '.php')) {
+        $_view['message'] = $message;
+        $_view['values']  = $values;
 
-        import('app/views/ok_' . $_REQUEST['mode'] . '.php', false, true);
+        import('app/views/ok_' . $_REQUEST['_mode'] . '.php', false, true);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/ok.php')) {
-        $view['message'] = $message;
-        $view['values']  = $values;
+        $_view['message'] = $message;
+        $_view['values']  = $values;
 
         import('app/views/ok.php', false, true);
     } else {
@@ -976,7 +976,7 @@ function ok($message = null, $values = array(), $type = null)
  */
 function warning($messages, $values = array(), $type = null)
 {
-    global $view;
+    global $_view;
 
     if (!is_array($messages)) {
         $messages = array($messages);
@@ -984,8 +984,8 @@ function warning($messages, $values = array(), $type = null)
     if (empty($values)) {
         $values = array('token' => token('create'));
     }
-    if ($type === null && isset($_REQUEST['type'])) {
-        $type = $_REQUEST['type'];
+    if ($type === null && isset($_REQUEST['_type'])) {
+        $type = $_REQUEST['_type'];
     }
 
     db_rollback();
@@ -1019,14 +1019,14 @@ function warning($messages, $values = array(), $type = null)
 
         echo "</values>\n";
         echo "</response>\n";
-    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/warning_' . $_REQUEST['mode'] . '.php')) {
-        $view['messages'] = $messages;
-        $view['values']   = $values;
+    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/warning_' . $_REQUEST['_mode'] . '.php')) {
+        $_view['messages'] = $messages;
+        $_view['values']   = $values;
 
-        import('app/views/warning_' . $_REQUEST['mode'] . '.php', false, true);
+        import('app/views/warning_' . $_REQUEST['_mode'] . '.php', false, true);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/warning.php')) {
-        $view['messages'] = $messages;
-        $view['values']   = $values;
+        $_view['messages'] = $messages;
+        $_view['values']   = $values;
 
         import('app/views/warning.php', false, true);
     } else {
@@ -1064,13 +1064,13 @@ function warning($messages, $values = array(), $type = null)
  */
 function error($message, $values = array(), $type = null)
 {
-    global $view;
+    global $_view;
 
     if (empty($values)) {
         $values = array('token' => token('create'));
     }
-    if ($type === null && isset($_REQUEST['type'])) {
-        $type = $_REQUEST['type'];
+    if ($type === null && isset($_REQUEST['_type'])) {
+        $type = $_REQUEST['_type'];
     }
 
     db_rollback();
@@ -1098,14 +1098,14 @@ function error($message, $values = array(), $type = null)
 
         echo "</values>\n";
         echo "</response>\n";
-    } elseif (isset($_REQUEST['mode']) && is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/error_' . $_REQUEST['mode'] . '.php')) {
-        $view['message'] = $message;
-        $view['values']  = $values;
+    } elseif (isset($_REQUEST['_mode']) && is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/error_' . $_REQUEST['_mode'] . '.php')) {
+        $_view['message'] = $message;
+        $_view['values']  = $values;
 
-        import('app/views/error_' . $_REQUEST['mode'] . '.php', false, true);
+        import('app/views/error_' . $_REQUEST['_mode'] . '.php', false, true);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/error.php')) {
-        $view['message'] = $message;
-        $view['values']  = $values;
+        $_view['message'] = $message;
+        $_view['values']  = $values;
 
         import('app/views/error.php', false, true);
     } else {
@@ -1136,14 +1136,14 @@ function password()
 {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($_POST['password'] === DEBUG_PASSWORD) {
-            $_SESSION['core']['auth'] = true;
+            $_SESSION['_auth'] = true;
 
-            redirect('/?mode=' . $_REQUEST['mode']);
+            redirect('/?_mode=' . $_REQUEST['_mode']);
         }
 
-        $view['message'] = 'Password is incorrect.';
+        $_view['message'] = 'Password is incorrect.';
     } else {
-        $view['message'] = '';
+        $_view['message'] = '';
     }
 
     echo "<!DOCTYPE html>\n";
@@ -1158,13 +1158,13 @@ function password()
     echo "<body>\n";
     echo "<h1>Authorization</h1>\n";
 
-    if ($view['message'] !== '') {
+    if ($_view['message'] !== '') {
         echo "<ul>\n";
-        echo "<li>" . $view['message'] . "</li>\n";
+        echo "<li>" . $_view['message'] . "</li>\n";
         echo "</ul>\n";
     }
 
-    echo "<form action=\"" . t(MAIN_FILE, true) . "/?mode=" . t($_REQUEST['mode'], true) . "\" method=\"post\">\n";
+    echo "<form action=\"" . t(MAIN_FILE, true) . "/?_mode=" . t($_REQUEST['_mode'], true) . "\" method=\"post\">\n";
     echo "<fieldset>\n";
     echo "<legend>authorise</legend>\n";
     echo "<dl>\n";
@@ -1202,19 +1202,19 @@ function about()
 
     echo "<h2>Menu</h2>\n";
     echo "<ul>\n";
-    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=info_php\">phpinfo</a></li>\n";
+    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=info_php\">phpinfo</a></li>\n";
 
     if (DATABASE_TYPE) {
-        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_admin\">database</a></li>\n";
+        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin\">database</a></li>\n";
     }
     if (file_exists(DATABASE_MIGRATE_PATH)) {
-        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_migrate\">migrate</a></li>\n";
+        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_migrate\">migrate</a></li>\n";
     }
     if (file_exists(DATABASE_SCAFFOLD_PATH)) {
-        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=db_scaffold\">scaffold</a></li>\n";
+        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_scaffold\">scaffold</a></li>\n";
     }
     if (file_exists(TEST_PATH)) {
-        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?mode=test_index\">test</a></li>\n";
+        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=test_index\">test</a></li>\n";
     }
 
     echo "</ul>\n";

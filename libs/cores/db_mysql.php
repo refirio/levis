@@ -13,10 +13,10 @@
  */
 function db_driver_connect()
 {
-    global $db;
+    global $_db;
 
-    $db['resource'][$db['target']]['dbh'] = mysql_connect($db['resource'][$db['target']]['config']['host'] . ($db['resource'][$db['target']]['config']['port'] ? ':' . $db['resource'][$db['target']]['config']['port'] : ''), $db['resource'][$db['target']]['config']['username'], $db['resource'][$db['target']]['config']['password'], true);
-    if (!$db['resource'][$db['target']]['dbh']) {
+    $_db['resource'][$_db['target']]['dbh'] = mysql_connect($_db['resource'][$_db['target']]['config']['host'] . ($_db['resource'][$_db['target']]['config']['port'] ? ':' . $_db['resource'][$_db['target']]['config']['port'] : ''), $_db['resource'][$_db['target']]['config']['username'], $_db['resource'][$_db['target']]['config']['password'], true);
+    if (!$_db['resource'][$_db['target']]['dbh']) {
         if (LOGGING_MESSAGE) {
             logging('message', 'db: Connect error');
         }
@@ -24,7 +24,7 @@ function db_driver_connect()
         error('db: Connect error');
     }
 
-    $resource = mysql_select_db($db['resource'][$db['target']]['config']['name'], $db['resource'][$db['target']]['dbh']);
+    $resource = mysql_select_db($_db['resource'][$_db['target']]['config']['name'], $_db['resource'][$_db['target']]['dbh']);
     if (!$resource) {
         if (LOGGING_MESSAGE) {
             logging('message', 'db: Connect error');
@@ -45,9 +45,9 @@ function db_driver_connect()
  */
 function db_driver_query($query)
 {
-    global $db;
+    global $_db;
 
-    return mysql_query($query, $db['resource'][$db['target']]['dbh']);
+    return mysql_query($query, $_db['resource'][$_db['target']]['dbh']);
 }
 
 /**
@@ -59,7 +59,7 @@ function db_driver_query($query)
  */
 function db_driver_result($resource)
 {
-    global $db;
+    global $_db;
 
     $results = array();
     while ($data = mysql_fetch_array($resource, MYSQL_ASSOC)) {
@@ -78,7 +78,7 @@ function db_driver_result($resource)
  */
 function db_driver_count($resource)
 {
-    global $db;
+    global $_db;
 
     return mysql_num_rows($resource);
 }
@@ -92,7 +92,7 @@ function db_driver_count($resource)
  */
 function db_driver_affected_count($resource)
 {
-    global $db;
+    global $_db;
 
     return mysql_affected_rows();
 }
@@ -106,7 +106,7 @@ function db_driver_affected_count($resource)
  */
 function db_driver_escape($data)
 {
-    global $db;
+    global $_db;
 
     return '\'' . addslashes($data) . '\'';
 }
@@ -120,7 +120,7 @@ function db_driver_escape($data)
  */
 function db_driver_unescape($data)
 {
-    global $db;
+    global $_db;
 
     $data = regexp_replace('(^\'|\'$)', '', $data);
     $data = stripslashes($data);
@@ -135,9 +135,9 @@ function db_driver_unescape($data)
  */
 function db_driver_error()
 {
-    global $db;
+    global $_db;
 
-    return mysql_error($db['resource'][$db['target']]['dbh']);
+    return mysql_error($_db['resource'][$_db['target']]['dbh']);
 }
 
 /**
@@ -147,9 +147,9 @@ function db_driver_error()
  */
 function db_driver_transaction()
 {
-    global $db;
+    global $_db;
 
-    return mysql_query('START TRANSACTION', $db['resource'][$db['target']]['dbh']);
+    return mysql_query('START TRANSACTION', $_db['resource'][$_db['target']]['dbh']);
 }
 
 /**
@@ -159,9 +159,9 @@ function db_driver_transaction()
  */
 function db_driver_commit()
 {
-    global $db;
+    global $_db;
 
-    return mysql_query('COMMIT', $db['resource'][$db['target']]['dbh']);
+    return mysql_query('COMMIT', $_db['resource'][$_db['target']]['dbh']);
 }
 
 /**
@@ -171,7 +171,7 @@ function db_driver_commit()
  */
 function db_driver_rollback()
 {
-    global $db;
+    global $_db;
 
-    return mysql_query('ROLLBACK', $db['resource'][$db['target']]['dbh']);
+    return mysql_query('ROLLBACK', $_db['resource'][$_db['target']]['dbh']);
 }

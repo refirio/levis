@@ -13,10 +13,10 @@
  */
 function db_driver_connect()
 {
-    global $db;
+    global $_db;
 
-    $db['resource'][$db['target']]['dbh'] = sqlite_open($db['resource'][$db['target']]['config']['name'], 0666, $error);
-    if (!$db['resource'][$db['target']]['dbh']) {
+    $_db['resource'][$_db['target']]['dbh'] = sqlite_open($_db['resource'][$_db['target']]['config']['name'], 0666, $error);
+    if (!$_db['resource'][$_db['target']]['dbh']) {
         if (LOGGING_MESSAGE) {
             logging('message', 'db: Connect error');
         }
@@ -36,9 +36,9 @@ function db_driver_connect()
  */
 function db_driver_query($query)
 {
-    global $db;
+    global $_db;
 
-    return sqlite_query($db['resource'][$db['target']]['dbh'], $query);
+    return sqlite_query($_db['resource'][$_db['target']]['dbh'], $query);
 }
 
 /**
@@ -50,7 +50,7 @@ function db_driver_query($query)
  */
 function db_driver_result($resource)
 {
-    global $db;
+    global $_db;
 
     $results = array();
     while ($data = sqlite_fetch_array($resource, SQLITE_ASSOC)) {
@@ -69,7 +69,7 @@ function db_driver_result($resource)
  */
 function db_driver_count($resource)
 {
-    global $db;
+    global $_db;
 
     return sqlite_num_rows($resource);
 }
@@ -83,9 +83,9 @@ function db_driver_count($resource)
  */
 function db_driver_affected_count($resource)
 {
-    global $db;
+    global $_db;
 
-    return sqlite_changes($db['resource'][$db['target']]['dbh']);
+    return sqlite_changes($_db['resource'][$_db['target']]['dbh']);
 }
 
 /**
@@ -97,7 +97,7 @@ function db_driver_affected_count($resource)
  */
 function db_driver_escape($data)
 {
-    global $db;
+    global $_db;
 
     return '\'' . str_replace('\'', '\'\'', $data) . '\'';
 }
@@ -111,7 +111,7 @@ function db_driver_escape($data)
  */
 function db_driver_unescape($data)
 {
-    global $db;
+    global $_db;
 
     $data = regexp_replace('(^\'|\'$)', '', $data);
     $data = str_replace('\'\'', '\'', $data);
@@ -126,9 +126,9 @@ function db_driver_unescape($data)
  */
 function db_driver_error()
 {
-    global $db;
+    global $_db;
 
-    return sqlite_last_error($db['resource'][$db['target']]['dbh']);
+    return sqlite_last_error($_db['resource'][$_db['target']]['dbh']);
 }
 
 /**
@@ -138,9 +138,9 @@ function db_driver_error()
  */
 function db_driver_transaction()
 {
-    global $db;
+    global $_db;
 
-    return mysql_query('EXCLUSIVE', $db['resource'][$db['target']]['dbh']);
+    return mysql_query('EXCLUSIVE', $_db['resource'][$_db['target']]['dbh']);
 }
 
 /**
@@ -150,9 +150,9 @@ function db_driver_transaction()
  */
 function db_driver_commit()
 {
-    global $db;
+    global $_db;
 
-    return mysql_query('COMMIT', $db['resource'][$db['target']]['dbh']);
+    return mysql_query('COMMIT', $_db['resource'][$_db['target']]['dbh']);
 }
 
 /**
@@ -162,7 +162,7 @@ function db_driver_commit()
  */
 function db_driver_rollback()
 {
-    global $db;
+    global $_db;
 
-    return mysql_query('ROLLBACK', $db['resource'][$db['target']]['dbh']);
+    return mysql_query('ROLLBACK', $_db['resource'][$_db['target']]['dbh']);
 }
