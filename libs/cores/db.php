@@ -326,10 +326,11 @@ function db_error()
  *
  * @param array $queries
  * @param bool  $return
+ * @param bool  $error
  *
  * @return mixed
  */
-function db_select($queries, $return = false)
+function db_select($queries, $return = false, $error = true)
 {
     global $_db;
 
@@ -391,9 +392,13 @@ function db_select($queries, $return = false)
     if ($return) {
         return $query;
     } else {
-        $resource = db_query($query);
+        $resource = db_query($query, false, $error);
 
-        return db_result($resource);
+        if ($resource) {
+            return db_result($resource);
+        } else {
+            return $resource;
+        }
     }
 }
 
@@ -402,10 +407,11 @@ function db_select($queries, $return = false)
  *
  * @param array $queries
  * @param bool  $return
+ * @param bool  $error
  *
  * @return mixed
  */
-function db_insert($queries, $return = false)
+function db_insert($queries, $return = false, $error = true)
 {
     global $_db;
 
@@ -454,7 +460,7 @@ function db_insert($queries, $return = false)
     if ($return) {
         return $query;
     } else {
-        return db_query($query);
+        return db_query($query, false, $error);
     }
 }
 
@@ -463,10 +469,11 @@ function db_insert($queries, $return = false)
  *
  * @param array $queries
  * @param bool  $return
+ * @param bool  $error
  *
  * @return mixed
  */
-function db_update($queries, $return = false)
+function db_update($queries, $return = false, $error = true)
 {
     global $_db;
 
@@ -528,7 +535,7 @@ function db_update($queries, $return = false)
     if ($return) {
         return $query;
     } else {
-        return db_query($query);
+        return db_query($query, false, $error);
     }
 }
 
@@ -537,10 +544,11 @@ function db_update($queries, $return = false)
  *
  * @param array $queries
  * @param bool  $return
+ * @param bool  $error
  *
  * @return mixed
  */
-function db_delete($queries, $return = false)
+function db_delete($queries, $return = false, $error = true)
 {
     global $_db;
 
@@ -582,7 +590,7 @@ function db_delete($queries, $return = false)
     if ($return) {
         return $query;
     } else {
-        return db_query($query);
+        return db_query($query, false, $error);
     }
 }
 
