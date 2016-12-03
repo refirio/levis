@@ -145,7 +145,7 @@ function db_query($query, $return = false, $error = true)
 
         if (!$resource && $error) {
             if (LOGGING_MESSAGE) {
-                logging('message', 'db: Query error: ' . db_error());
+                logging('message', 'db: Query error: ' . db_error() . ': ' . $query);
             }
 
             error('db: Query error' . (DEBUG_LEVEL ? ': ' . db_error(): ''));
