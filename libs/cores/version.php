@@ -6,5 +6,5 @@
 
 *******************************************************************************/
 
-define('VERSION_NUMBER', '8.1.0');
-define('VERSION_UPDATE', '2016-12-03');
+define('VERSION_NUMBER', '8.1.1');
+define('VERSION_UPDATE', '2016-12-11');
