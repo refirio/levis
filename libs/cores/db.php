@@ -91,7 +91,7 @@ function db_connect($info)
         db_driver_connect();
 
         if (($data['config']['type'] === 'pdo_mysql' || $data['config']['type'] === 'mysql' || $data['config']['type'] === 'pdo_pgsql' || $data['config']['type'] === 'pgsql') && $data['config']['charset']) {
-            $resource = db_query('SET NAMES \'' . $data['config']['charset'] . '\'');
+            $resource = db_query('SET NAMES ' . db_escape($data['config']['charset']) . ';');
             if (!$resource) {
                 if (LOGGING_MESSAGE) {
                     logging('message', 'db: Set names error: ' . db_error());
@@ -387,7 +387,7 @@ function db_select($queries, $return = false, $error = true)
         $queries['option'] = '';
     }
 
-    $query = $queries['select'] . $queries['from'] . $queries['where'] . $queries['group_by'] . $queries['having'] . $queries['order_by'] . $queries['offset'] . $queries['limit'] . $queries['option'];
+    $query = trim($queries['select'] . $queries['from'] . $queries['where'] . $queries['group_by'] . $queries['having'] . $queries['order_by'] . $queries['offset'] . $queries['limit'] . $queries['option']) . ';';
 
     if ($return) {
         return $query;
@@ -455,7 +455,7 @@ function db_insert($queries, $return = false, $error = true)
         $queries['option'] = '';
     }
 
-    $query = $queries['insert_into'] . $queries['values'] . $queries['option'];
+    $query = trim($queries['insert_into'] . $queries['values'] . $queries['option']) . ';';
 
     if ($return) {
         return $query;
@@ -530,7 +530,7 @@ function db_update($queries, $return = false, $error = true)
         $queries['option'] = '';
     }
 
-    $query = $queries['update'] . $queries['set'] . $queries['where'] . $queries['offset'] . $queries['limit'] . $queries['option'];
+    $query = trim($queries['update'] . $queries['set'] . $queries['where'] . $queries['offset'] . $queries['limit'] . $queries['option']) . ';';
 
     if ($return) {
         return $query;
@@ -585,7 +585,7 @@ function db_delete($queries, $return = false, $error = true)
         $queries['option'] = '';
     }
 
-    $query = $queries['delete_from'] . $queries['where'] . $queries['offset'] . $queries['limit'] . $queries['option'];
+    $query = trim($queries['delete_from'] . $queries['where'] . $queries['offset'] . $queries['limit'] . $queries['option']) . ';';
 
     if ($return) {
         return $query;
@@ -1308,7 +1308,7 @@ function db_migrate()
     }
 
     // succeeded
-    $resource = db_query('SELECT * FROM ' . DATABASE_PREFIX . 'levis_migrations WHERE status = \'success\'');
+    $resource = db_query('SELECT * FROM ' . DATABASE_PREFIX . 'levis_migrations WHERE status = ' . db_escape('success') . ';');
     $results  = db_result($resource);
 
     $succeeded = array();
@@ -1441,7 +1441,7 @@ function db_migrate()
         }
     }
 
-    $resource = db_query('SELECT version FROM ' . DATABASE_PREFIX . 'levis_migrations WHERE status = \'success\' ORDER BY version DESC LIMIT 1');
+    $resource = db_query('SELECT version FROM ' . DATABASE_PREFIX . 'levis_migrations WHERE status = ' . db_escape('success') . ' ORDER BY version DESC LIMIT 1;');
     $results  = db_result($resource);
 
     if (empty($results)) {
@@ -1457,7 +1457,7 @@ function db_migrate()
     $migrate .= "Version: " . $version . "\n";
 
     // history
-    $resource   = db_query('SELECT * FROM ' . DATABASE_PREFIX . 'levis_migrations ORDER BY version');
+    $resource   = db_query('SELECT * FROM ' . DATABASE_PREFIX . 'levis_migrations ORDER BY version;');
     $migrations = db_result($resource);
 
     // result
@@ -2326,7 +2326,7 @@ function db_export($file = null, $target = null, $combined = true)
                 $text .= "\n";
             }
 
-            $resource = db_query('SELECT * FROM ' . $table . ';');
+            $resource = db_query('SELECT * FROM ' . db_escape($table) . ';');
             $results  = db_result($resource);
 
             $values = array();
