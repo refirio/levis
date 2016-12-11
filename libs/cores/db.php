@@ -298,6 +298,8 @@ function db_placeholder($data)
                 }
             }
 
+            $query = str_replace($holder, ':', $query);
+
             $data[$index] = $query;
         }
     }
