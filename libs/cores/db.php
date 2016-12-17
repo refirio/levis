@@ -2328,7 +2328,7 @@ function db_export($file = null, $target = null, $combined = true)
                 $text .= "\n";
             }
 
-            $resource = db_query('SELECT * FROM ' . db_escape($table) . ';');
+            $resource = db_query('SELECT * FROM ' . $table . ';');
             $results  = db_result($resource);
 
             $values = array();
