@@ -441,6 +441,13 @@ function view($target = null, $return = false)
     } elseif ($_REQUEST['_mode'] === MAIN_DEFAULT_MODE && $_REQUEST['_work'] === MAIN_DEFAULT_WORK) {
         about();
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/404.php')) {
+        if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/404.php')) {
+            import('app/controllers/404.php');
+        } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/error.php')) {
+            import('app/controllers/error.php');
+        }
+
+        header('HTTP/1.0 404 Not Found');
         import('app/views/404.php');
     } else {
         header('HTTP/1.0 404 Not Found');
@@ -914,6 +921,10 @@ function ok($message = null, $values = array(), $type = null)
 
     db_commit();
 
+    if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/ok.php')) {
+        import('app/controllers/ok.php');
+    }
+
     if ($type === 'json') {
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
 
@@ -989,6 +1000,10 @@ function warning($messages, $values = array(), $type = null)
     }
 
     db_rollback();
+
+    if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/warning.php')) {
+        import('app/controllers/warning.php');
+    }
 
     if ($type === 'json') {
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
@@ -1074,6 +1089,10 @@ function error($message, $values = array(), $type = null)
     }
 
     db_rollback();
+
+    if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/error.php')) {
+        import('app/controllers/error.php');
+    }
 
     if ($type === 'json') {
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
