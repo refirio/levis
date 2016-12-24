@@ -67,7 +67,7 @@ define('DEBUG_ADDR', '');
 
 /********* Logging ************************************************************/
 
-define('LOGGING_PATH', 'logs/');
+define('LOGGING_PATH', 'log/');
 define('LOGGING_MESSAGE', false);
 define('LOGGING_GET', false);
 define('LOGGING_POST', false);
