@@ -2311,24 +2311,30 @@ function db_export($file = null, $target = null, $combined = true)
 
     foreach ($tables as $table) {
         if ($target === null || $target === $table) {
+            if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
+                $table_escaped = '`' . $table . '`';
+            } else {
+                $table_escaped = '"' . $table . '"';
+            }
+
             $resource = db_query(db_sql('table_create', $table));
             $results  = db_result($resource);
 
             if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
-                $text .= "DROP TABLE IF EXISTS " . $table . ";\n";
+                $text .= "DROP TABLE IF EXISTS " . $table_escaped . ";\n";
                 $text .= $results[0]['Create Table'] . ";\n";
                 $text .= "\n";
             } elseif (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
-                $text .= "DROP TABLE IF EXISTS " . $table . ";\n";
+                $text .= "DROP TABLE IF EXISTS " . $table_escaped . ";\n";
                 $text .= $results[0]['case'] . ";\n";
                 $text .= "\n";
             } elseif (DATABASE_TYPE === 'pdo_sqlite' || DATABASE_TYPE === 'pdo_sqlite2' || DATABASE_TYPE === 'sqlite') {
-                $text .= "DROP TABLE IF EXISTS " . $table . ";\n";
+                $text .= "DROP TABLE IF EXISTS " . $table_escaped . ";\n";
                 $text .= $results[0]['sql'] . ";\n";
                 $text .= "\n";
             }
 
-            $resource = db_query('SELECT * FROM ' . $table . ';');
+            $resource = db_query('SELECT * FROM ' . $table_escaped . ';');
             $results  = db_result($resource);
 
             $values = array();
@@ -2346,7 +2352,7 @@ function db_export($file = null, $target = null, $combined = true)
                 if ($combined === true) {
                     $values[intval($i / 50)][] = '(' . implode(', ', $inserts) . ')';
                 } else {
-                    $text .= "INSERT INTO " . $table . " VALUES(" . implode(', ', $inserts) . ");\n";
+                    $text .= "INSERT INTO " . $table_escaped . " VALUES(" . implode(', ', $inserts) . ");\n";
                 }
 
                 $i++;
@@ -2354,7 +2360,7 @@ function db_export($file = null, $target = null, $combined = true)
 
             if ($combined === true && !empty($values)) {
                 foreach ($values as $value) {
-                    $text .= "INSERT INTO " . $table . " VALUES\n";
+                    $text .= "INSERT INTO " . $table_escaped . " VALUES\n";
                     $text .= implode(",\n", $value);
                     $text .= ";\n";
                 }
