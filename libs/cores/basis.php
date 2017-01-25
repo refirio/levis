@@ -1081,6 +1081,18 @@ function error($message, $values = array(), $type = null)
 {
     global $_view;
 
+    if (DEBUG_LEVEL === 2 || LOGGING_MESSAGE) {
+        $backtraces = debug_backtrace();
+        $backtrace  = 'Application error: ' . $backtraces[0]['function'] . '(): ' . $backtraces[0]['args'][0] . ' in ' . $backtraces[0]['file'] . ' on line ' . $backtraces[0]['line'];
+
+        if (DEBUG_LEVEL === 2) {
+            echo '<pre><code>' . $backtrace . '</code></pre>';
+        }
+        if (LOGGING_MESSAGE) {
+            logging('message', $backtrace);
+        }
+    }
+
     if (empty($values)) {
         $values = array('token' => token('create'));
     }
