@@ -633,6 +633,68 @@ function h($data, $return = false)
 }
 
 /**
+ * Get a traslated data.
+ *
+ * @param string      $key
+ * @param string|null $language
+ *
+ * @return string|null
+ */
+function __($key, $language = null)
+{
+    static $default_language = null;
+
+    if (empty($_SESSION['_language'])) {
+        $accept_languages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+
+        $languages = array();
+        foreach ($accept_languages as $accept_language) {
+            if ($regexp = regexp_match('^(\w\w)[^;]*;q=([\d\.]+)$', $accept_language)) {
+                if (empty($languages[$regexp[1]])) {
+                    $languages[$regexp[1]] = $regexp[2];
+                }
+            } elseif ($regexp = regexp_match('^(\w\w)', $accept_language)) {
+                $languages[$regexp[1]] = 1;
+            }
+        }
+
+        arsort($languages);
+
+        $language_keys = array_keys($languages);
+
+        if (isset($language_keys[0])) {
+            $_SESSION['_language'] = $language_keys[0];
+        }
+    }
+
+    $dir = 'app/languages/';
+
+    if ($language === null) {
+        $language = $_SESSION['_language'];
+    }
+
+    if (file_exists(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . 'default.php')) {
+        import($dir . 'default.php');
+    }
+    if (!empty($_SESSION['_language']) && file_exists(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . $language . '.php')) {
+        import($dir . $language . '.php');
+    }
+
+    if ($default_language === null) {
+        $default_languages = array_keys($GLOBALS['_language']);
+        $default_language  = $default_languages[0];
+    }
+
+    if (isset($GLOBALS['_language'][$language][$key])) {
+        return $GLOBALS['_language'][$language][$key];
+    } elseif (isset($GLOBALS['_language'][$default_language][$key])) {
+        return $GLOBALS['_language'][$default_language][$key];
+    } else {
+        return null;
+    }
+}
+
+/**
  * Format a local time/date.
  *
  * @param string|null $format
