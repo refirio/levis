@@ -708,6 +708,10 @@ function localdate($format = null, $timestamp = null)
 
     if ($time === 0) {
         $time = time() + MAIN_TIME;
+
+        if (isset($GLOBALS['_time'])) {
+            $time += $GLOBALS['_time'];
+        }
     }
 
     if ($regexp = regexp_match('^(\d\d\d\d)\-(\d\d)\-(\d\d)', $timestamp)) {
