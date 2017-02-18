@@ -91,7 +91,7 @@ function bootstrap()
  */
 function session()
 {
-    if (SESSION_AUTOSTART === false) {
+    if (isset($_SERVER['SHELL']) || SESSION_AUTOSTART === false) {
         return;
     }
 
@@ -991,7 +991,9 @@ function ok($message = null, $values = array(), $type = null)
         import('app/controllers/ok.php');
     }
 
-    if ($type === 'json') {
+    if (isset($_SERVER['SHELL'])) {
+        echo "OK: " . $message . "\n";
+    } elseif ($type === 'json') {
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
 
         echo json_encode(array(
@@ -1071,7 +1073,9 @@ function warning($messages, $values = array(), $type = null)
         import('app/controllers/warning.php');
     }
 
-    if ($type === 'json') {
+    if (isset($_SERVER['SHELL'])) {
+        echo "WARNING: " . implode(', ', $messages) . "\n";
+    } elseif ($type === 'json') {
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
 
         echo json_encode(array(
@@ -1172,7 +1176,9 @@ function error($message, $values = array(), $type = null)
         import('app/controllers/error.php');
     }
 
-    if ($type === 'json') {
+    if (isset($_SERVER['SHELL'])) {
+        echo "ERROR: " . $message . "\n";
+    } elseif ($type === 'json') {
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
 
         echo json_encode(array(
