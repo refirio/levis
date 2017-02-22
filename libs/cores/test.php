@@ -185,7 +185,7 @@ function test_exec()
         }
 
         if ($flag === false) {
-            redirect('/?_mode=test_index&_test=' . $_GET['test']);
+            redirect('/?_mode=test_index&_test=' . $_GET['_test']);
         }
     }
 
