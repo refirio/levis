@@ -903,7 +903,7 @@ function debug($data, $return = false)
  */
 function benchmark($label = null, $forcing = false)
 {
-    if (DEBUG_LEVEL !== 2 && $forcing === false) {
+    if ((DEBUG_LEVEL !== 2 && $forcing === false) || isset($_SERVER['SHELL']) || (isset($_REQUEST['_type']) && $_REQUEST['_type'] !== 'html')) {
         return;
     }
 

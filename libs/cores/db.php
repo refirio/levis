@@ -137,7 +137,7 @@ function db_query($query, $return = false, $error = true)
     if ($return) {
         return $query;
     } else {
-        if (DEBUG_LEVEL === 2) {
+        if (DEBUG_LEVEL === 2 && !isset($_SERVER['SHELL']) && (!isset($_REQUEST['_type']) || $_REQUEST['_type'] === 'html')) {
             echo '<pre><code>' . $query . '</code></pre>';
         }
 
