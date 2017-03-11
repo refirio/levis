@@ -100,7 +100,7 @@ function test_index()
     echo "<h1>Test</h1>\n";
     echo "<p>Test Index.</p>\n";
     echo "<ul>\n";
-    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=test_exec&amp;_test=\"\">All Test.</a></li>\n";
+    echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=test_exec&amp;_test=\">All Test.</a></li>\n";
     echo "</ul>\n";
     echo "<ol>\n";
 
