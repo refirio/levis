@@ -1274,39 +1274,55 @@ function db_migrate()
     }
 
     // initialize
-    if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
-        db_query('
-            CREATE TABLE IF NOT EXISTS ' . DATABASE_PREFIX . 'levis_migrations(
-                id          INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT \'id\',
-                version     VARCHAR(14)  NOT NULL UNIQUE         COMMENT \'version\',
-                description VARCHAR(255) NOT NULL                COMMENT \'description\',
-                status      VARCHAR(80)  NOT NULL                COMMENT \'status\',
-                installed   DATETIME                             COMMENT \'installed\',
-                PRIMARY KEY(id)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT \'migration\';
-        ');
-    } elseif (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
-        db_query('
-            CREATE TABLE IF NOT EXISTS ' . DATABASE_PREFIX . 'levis_migrations(
-                id          SERIAL       NOT NULL,
-                version     VARCHAR(14)  NOT NULL UNIQUE,
-                description VARCHAR(255) NOT NULL,
-                status      VARCHAR(80)  NOT NULL,
-                installed   TIMESTAMP,
-                PRIMARY KEY(id)
-            );
-        ');
-    } else {
-        db_query('
-            CREATE TABLE IF NOT EXISTS ' . DATABASE_PREFIX . 'levis_migrations(
-                id          INTEGER,
-                version     VARCHAR  NOT NULL UNIQUE,
-                description VARCHAR  NOT NULL,
-                status      VARCHAR  NOT NULL,
-                installed   DATETIME,
-                PRIMARY KEY(id)
-            );
-        ');
+    $resource = db_query(db_sql('table_list'));
+    $results  = db_result($resource);
+
+    $flag = false;
+    foreach ($results as $result) {
+        $table = array_shift($result);
+
+        if ($table === DATABASE_PREFIX . 'levis_migrations') {
+            $flag = true;
+
+            break;
+        }
+    }
+
+    if ($flag === false) {
+        if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
+            db_query('
+                CREATE TABLE ' . DATABASE_PREFIX . 'levis_migrations(
+                    id          INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT \'id\',
+                    version     VARCHAR(14)  NOT NULL UNIQUE         COMMENT \'version\',
+                    description VARCHAR(255) NOT NULL                COMMENT \'description\',
+                    status      VARCHAR(80)  NOT NULL                COMMENT \'status\',
+                    installed   DATETIME                             COMMENT \'installed\',
+                    PRIMARY KEY(id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT \'migration\';
+            ');
+        } elseif (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
+            db_query('
+                CREATE TABLE ' . DATABASE_PREFIX . 'levis_migrations(
+                    id          SERIAL       NOT NULL,
+                    version     VARCHAR(14)  NOT NULL UNIQUE,
+                    description VARCHAR(255) NOT NULL,
+                    status      VARCHAR(80)  NOT NULL,
+                    installed   TIMESTAMP,
+                    PRIMARY KEY(id)
+                );
+            ');
+        } else {
+            db_query('
+                CREATE TABLE ' . DATABASE_PREFIX . 'levis_migrations(
+                    id          INTEGER,
+                    version     VARCHAR  NOT NULL UNIQUE,
+                    description VARCHAR  NOT NULL,
+                    status      VARCHAR  NOT NULL,
+                    installed   DATETIME,
+                    PRIMARY KEY(id)
+                );
+            ');
+        }
     }
 
     // succeeded
