@@ -894,6 +894,51 @@ function debug($data, $return = false)
 }
 
 /**
+ * Output the data for benchmark.
+ *
+ * @param string|null $label
+ * @param bool        $forcing
+ *
+ * @return void
+ */
+function benchmark($label = null, $forcing = false)
+{
+    if (DEBUG_LEVEL !== 2 && $forcing === false) {
+        return;
+    }
+
+    static $now = 0, $start = 0, $count = 0;
+
+    $prev = $now - $start;
+    $now  = microtime(true);
+
+    if ($start === 0) {
+        $start = $now;
+
+        return;
+    }
+
+    $count++;
+    if ($label === null) {
+        $label = sprintf('%03d', $count);
+    }
+
+    print('<pre>');
+    printf('%s: ', $label);
+    printf('total_time %s ms, ', number_format(($now - $start) * 1000, 5));
+    if ($count !== 1) {
+        printf('lap_time %s ms, ', number_format(($now - $start - $prev) * 1000, 5));
+    }
+    if (version_compare(phpversion(), '5.2.1') >= 0) {
+        printf('memory_peak_usage %s kb, ', number_format(memory_get_peak_usage() / 1024));
+    }
+    printf('memory_usage %s kb', number_format(memory_get_usage() / 1024));
+    print('</pre>');
+
+    return;
+}
+
+/**
  * Log the message to a logs.
  *
  * @param string      $type

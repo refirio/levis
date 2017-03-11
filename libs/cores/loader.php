@@ -9,6 +9,8 @@
 require_once MAIN_PATH . 'config.php';
 require_once MAIN_PATH . MAIN_LIBRARY_PATH . 'libs/cores/basis.php';
 
+benchmark();
+
 import('libs/cores/version.php');
 import('libs/cores/rand.php');
 import('libs/cores/regexp.php');

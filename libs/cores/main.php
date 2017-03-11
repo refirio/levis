@@ -6,6 +6,8 @@
 
 *******************************************************************************/
 
+benchmark();
+
 import('libs/cores/version.php');
 import('libs/cores/rand.php');
 import('libs/cores/regexp.php');
@@ -64,5 +66,7 @@ model();
 controller();
 
 view();
+
+benchmark('Complete');
 
 exit;
