@@ -855,15 +855,19 @@ function forward($target = null)
     } else {
         $forwarded = $target;
 
-        if ($regexp = regexp_match('^\/([_a-zA-Z0-9\-]+)\/([_a-zA-Z0-9\-]+)$', $target)) {
-            $_REQUEST['_mode'] = $regexp[1];
-            $_REQUEST['_work'] = $regexp[2];
+        if ($regexp = regexp_match('^\/[^\/]+\/.+$', $target)) {
+            $_params = array_slice(explode('/', $target), 1);
 
-            $_params = array($regexp[1], $regexp[2]);
+            $_REQUEST['_mode'] = $_params[0];
+            $_REQUEST['_work'] = $_params[1];
 
-            controller($regexp[1] . '/' . $regexp[2] . '.php');
+            if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/routing.php')) {
+                import('app/routing.php', false);
+            }
 
-            view($regexp[1] . '/' . $regexp[2] . '.php');
+            controller($_REQUEST['_mode'] . '/' . $_REQUEST['_work'] . '.php');
+
+            view($_REQUEST['_mode'] . '/' . $_REQUEST['_work'] . '.php');
 
             exit;
         } else {
