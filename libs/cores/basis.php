@@ -742,7 +742,7 @@ function localdate($format = null, $timestamp = null)
  *
  * @param bool $proxy
  *
- * @return string
+ * @return string|null
  */
 function clientip($proxy = false)
 {
@@ -756,7 +756,11 @@ function clientip($proxy = false)
         }
     }
 
-    return $_SERVER['REMOTE_ADDR'];
+    if (isset($_SERVER['REMOTE_ADDR'])) {
+        return $_SERVER['REMOTE_ADDR'];
+    } else {
+        return null;
+    }
 }
 
 /**
