@@ -1423,6 +1423,8 @@ function db_migrate()
                         $error = true;
 
                         $migrate .= $target . " ... NG\n";
+                        $migrate .= "\n";
+                        $migrate .= db_error() . "\n";
 
                         break;
                     }
