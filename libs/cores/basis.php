@@ -1360,7 +1360,54 @@ function about()
         echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin\">database</a></li>\n";
     }
     if (file_exists(DATABASE_MIGRATE_PATH)) {
-        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_migrate\">migrate</a></li>\n";
+        $resource = db_query(db_sql('table_list'));
+        $results  = db_result($resource);
+
+        $flag = false;
+        foreach ($results as $result) {
+            $table = array_shift($result);
+
+            if ($table === DATABASE_PREFIX . 'levis_migrations') {
+                $flag = true;
+
+                break;
+            }
+        }
+
+        $succeeded = 0;
+        if ($flag === true) {
+            $resource = db_query('SELECT COUNT(*) as count FROM ' . DATABASE_PREFIX . 'levis_migrations WHERE status = ' . db_escape('success') . ';');
+            $results  = db_result($resource);
+
+            if ($results[0]['count']) {
+                $succeeded = $results[0]['count'];
+            }
+        }
+
+        $target = 0;
+        if ($dh = opendir(DATABASE_MIGRATE_PATH)) {
+            while (($entry = readdir($dh)) !== false) {
+                if (!is_file(DATABASE_MIGRATE_PATH  . $entry)) {
+                    continue;
+                }
+
+                if (!regexp_match('^([0-9\-]{14})-[_a-zA-Z0-9\-]+\.sql$', $entry)) {
+                    continue;
+                }
+
+                $target++;
+            }
+            closedir($dh);
+        }
+
+        $unexecuted = $target - $succeeded;
+        if ($unexecuted > 0) {
+            $unexecuted = ' (<em>' . $unexecuted . '</em>)';
+        } else {
+            $unexecuted = '';
+        }
+
+        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_migrate\">migrate</a>" . $unexecuted . "</li>\n";
     }
     if (file_exists(DATABASE_SCAFFOLD_PATH)) {
         echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_scaffold\">scaffold</a></li>\n";
@@ -1531,6 +1578,10 @@ function style()
     echo "}\n";
     echo "h4, h5, h6 {\n";
     echo "    font-size: 100%;\n";
+    echo "}\n";
+    echo "em {\n";
+    echo "    font-style: normal;\n";
+    echo "    font-weight: bold;\n";
     echo "}\n";
     echo "code {\n";
     echo "    color: #333366;\n";
