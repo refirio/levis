@@ -90,7 +90,7 @@ function test_index()
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
-    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\">\n";
     echo "<title>Test</title>\n";
 
     style();
@@ -199,7 +199,7 @@ function test_exec()
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
-    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\">\n";
     echo "<title>Test</title>\n";
 
     style();

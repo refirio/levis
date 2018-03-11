@@ -733,7 +733,7 @@ function db_admin_import()
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
-    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\">\n";
     echo "<title>DB</title>\n";
 
     style();
@@ -770,9 +770,9 @@ function db_admin_import()
     echo "<fieldset>\n";
     echo "<legend>import</legend>\n";
     echo "<dl>\n";
-    echo "<dt><label><input type=\"radio\" name=\"means\" value=\"upload\" checked=\"checked\" /> upload</label></dt>\n";
-    echo "<dd><input type=\"file\" name=\"target\" size=\"30\" /></dd>\n";
-    echo "<dt><label><input type=\"radio\" name=\"means\" value=\"file\" /> read</label></dt>\n";
+    echo "<dt><label><input type=\"radio\" name=\"means\" value=\"upload\" checked=\"checked\"> upload</label></dt>\n";
+    echo "<dd><input type=\"file\" name=\"target\" size=\"30\"></dd>\n";
+    echo "<dt><label><input type=\"radio\" name=\"means\" value=\"file\"> read</label></dt>\n";
     echo "<dd>\n";
     echo "<code title=\"" . dirname($_SERVER['SCRIPT_FILENAME']) . '/' . DATABASE_NAME . ".sql\">" . DATABASE_NAME . ".sql</code>\n";
 
@@ -782,7 +782,7 @@ function db_admin_import()
 
     echo "</dd>\n";
     echo "</dl>\n";
-    echo "<p><input type=\"submit\" value=\"import\" /></p>\n";
+    echo "<p><input type=\"submit\" value=\"import\"></p>\n";
     echo "</fieldset>\n";
     echo "</form>\n";
 
@@ -822,7 +822,7 @@ function db_admin_export()
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
-    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\">\n";
     echo "<title>DB</title>\n";
 
     style();
@@ -873,13 +873,13 @@ function db_admin_export()
     echo "</dd>\n";
     echo "<dt>format</dt>\n";
     echo "<dd>\n";
-    echo "<label><input type=\"radio\" name=\"format\" value=\"combined\" checked=\"checked\" /> combined</label><br />\n";
-    echo "<label><input type=\"radio\" name=\"format\" value=\"separated\" /> separated</label>\n";
+    echo "<label><input type=\"radio\" name=\"format\" value=\"combined\" checked=\"checked\"> combined</label><br>\n";
+    echo "<label><input type=\"radio\" name=\"format\" value=\"separated\"> separated</label>\n";
     echo "</dd>\n";
     echo "<dt>means</dt>\n";
     echo "<dd>\n";
-    echo "<label><input type=\"radio\" name=\"means\" value=\"download\" checked=\"checked\" /> download</label><br />\n";
-    echo "<label><input type=\"radio\" name=\"means\" value=\"write\" /> write to <code title=\"" . dirname($_SERVER['SCRIPT_FILENAME']) . '/' . DATABASE_NAME . ".sql\">" . DATABASE_NAME . ".sql</code></label>\n";
+    echo "<label><input type=\"radio\" name=\"means\" value=\"download\" checked=\"checked\"> download</label><br>\n";
+    echo "<label><input type=\"radio\" name=\"means\" value=\"write\"> write to <code title=\"" . dirname($_SERVER['SCRIPT_FILENAME']) . '/' . DATABASE_NAME . ".sql\">" . DATABASE_NAME . ".sql</code></label>\n";
 
     if (is_file(DATABASE_NAME . '.sql')) {
         echo "(Already exists.)\n";
@@ -887,7 +887,7 @@ function db_admin_export()
 
     echo "</dd>\n";
     echo "</dl>\n";
-    echo "<p><input type=\"submit\" value=\"export\" /></p>\n";
+    echo "<p><input type=\"submit\" value=\"export\"></p>\n";
     echo "</fieldset>\n";
     echo "</form>\n";
 
@@ -920,7 +920,7 @@ function db_admin_backup()
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
-    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\">\n";
     echo "<title>DB</title>\n";
 
     style();
@@ -952,7 +952,7 @@ function db_admin_backup()
     echo "<form action=\"" . t(MAIN_FILE, true) . "/?_mode=db_admin&amp;_work=backup\" method=\"post\">\n";
     echo "<fieldset>\n";
     echo "<legend>backup</legend>\n";
-    echo "<p><input type=\"submit\" value=\"backup\" /></p>\n";
+    echo "<p><input type=\"submit\" value=\"backup\"></p>\n";
     echo "</fieldset>\n";
     echo "</form>\n";
 
@@ -1206,7 +1206,7 @@ function db_admin_sql()
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
-    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\">\n";
     echo "<title>DB</title>\n";
 
     style();
@@ -1241,7 +1241,7 @@ function db_admin_sql()
     echo "<dt>SQL</dt>\n";
     echo "<dd><textarea name=\"sql\" cols=\"50\" rows=\"5\">" . t($_view['sql'], true) . "</textarea></dd>\n";
     echo "</dl>\n";
-    echo "<p><input type=\"submit\" value=\"execute\" /></p>\n";
+    echo "<p><input type=\"submit\" value=\"execute\"></p>\n";
     echo "</fieldset>\n";
     echo "</form>\n";
 
@@ -1484,7 +1484,7 @@ function db_migrate()
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
-    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\">\n";
     echo "<title>DB Migrate</title>\n";
 
     style();
@@ -1682,9 +1682,9 @@ function db_scaffold()
             if (regexp_match('(BLOB|TEXT)', $type)) {
                 $input = '<textarea name="' . $field . '" rows="10" cols="50"><?php t($_view[\'data\'][\'' . $field . '\']) ?></textarea>';
             } elseif (regexp_match('(CHAR)', $type)) {
-                $input = '<input type="text" name="' . $field . '" size="30" value="<?php t($_view[\'data\'][\'' . $field . '\']) ?>" />';
+                $input = '<input type="text" name="' . $field . '" size="30" value="<?php t($_view[\'data\'][\'' . $field . '\']) ?>">';
             } else {
-                $input = '<input type="text" name="' . $field . '" size="10" value="<?php t($_view[\'data\'][\'' . $field . '\']) ?>" />';
+                $input = '<input type="text" name="' . $field . '" size="10" value="<?php t($_view[\'data\'][\'' . $field . '\']) ?>">';
             }
 
             if ($field === $primary_key) {
@@ -1693,7 +1693,7 @@ function db_scaffold()
                 $view_form .= '                            <?php if (empty($_GET[\'' . $primary_key . '\'])) : ?>' . "\n";
                 $view_form .= '                            ' . $input . "\n";
                 $view_form .= '                            <?php else : ?>' . "\n";
-                $view_form .= '                            <em><?php h($_view[\'data\'][\'' . $field . '\']) ?></em><input type="hidden" name="' . $field . '" value="<?php t($_view[\'data\'][\'' . $field . '\']) ?>" />' . "\n";
+                $view_form .= '                            <em><?php h($_view[\'data\'][\'' . $field . '\']) ?></em><input type="hidden" name="' . $field . '" value="<?php t($_view[\'data\'][\'' . $field . '\']) ?>">' . "\n";
                 $view_form .= '                            <?php endif ?>' . "\n";
                 $view_form .= '                        </dd>' . "\n";
             } else {
@@ -1789,7 +1789,7 @@ function db_scaffold()
         $buffer .= '                <dl>' . "\n";
         $buffer .= $view_form;
         $buffer .= '                </dl>' . "\n";
-        $buffer .= '                <p><input type="submit" value="post" /></p>' . "\n";
+        $buffer .= '                <p><input type="submit" value="post"></p>' . "\n";
         $buffer .= '            </fieldset>' . "\n";
         $buffer .= '        </form>' . "\n";
 
@@ -1799,8 +1799,8 @@ function db_scaffold()
             $buffer .= '        <form action="<?php t(MAIN_FILE) ?>/' . $table . '/delete?' . $primary_key . '=\' . t($_view[\'data\'][\'' . $primary_key . '\']) ?>" method="post">' . "\n";
             $buffer .= '            <fieldset>' . "\n";
             $buffer .= '                <legend>' . ($table_comment ? $table_comment : $table) . '</legend>' . "\n";
-            $buffer .= '                <input type="hidden" name="' . $primary_key . '" value="<?php t($_view[\'data\'][\'' . $primary_key . '\']) ?>" /></dd>' . "\n";
-            $buffer .= '                <p><input type="submit" value="delete" /></p>' . "\n";
+            $buffer .= '                <input type="hidden" name="' . $primary_key . '" value="<?php t($_view[\'data\'][\'' . $primary_key . '\']) ?>"></dd>' . "\n";
+            $buffer .= '                <p><input type="submit" value="delete"></p>' . "\n";
             $buffer .= '            </fieldset>' . "\n";
             $buffer .= '        </form>' . "\n";
             $buffer .= '        <?php endif ?>' . "\n";
@@ -2147,7 +2147,7 @@ function db_scaffold()
     $buffer  = '<!DOCTYPE html>' . "\n";
     $buffer .= '<html>' . "\n";
     $buffer .= '    <head>' . "\n";
-    $buffer .= '        <meta charset="<?php t(MAIN_CHARSET) ?>" />' . "\n";
+    $buffer .= '        <meta charset="<?php t(MAIN_CHARSET) ?>">' . "\n";
     $buffer .= '        <title>scaffold</title>' . "\n";
     $buffer .= '    </head>' . "\n";
     $buffer .= '    <body>' . "\n";
@@ -2207,7 +2207,7 @@ function db_scaffold()
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
-    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\">\n";
     echo "<title>DB Scaffold</title>\n";
 
     style();

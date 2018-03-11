@@ -623,7 +623,12 @@ function t($data, $return = false)
 function h($data, $return = false)
 {
     $data = htmlspecialchars($data, ENT_QUOTES, MAIN_INTERNAL_ENCODING);
-    $data = nl2br($data);
+
+    if (version_compare(phpversion(), '5.3.0') >= 0) {
+        $data = nl2br($data, false);
+    } else {
+        $data = nl2br($data);
+    }
 
     if ($return) {
         return $data;
@@ -1083,7 +1088,7 @@ function ok($message = null, $values = array(), $type = null)
         echo "<!DOCTYPE html>\n";
         echo "<html>\n";
         echo "<head>\n";
-        echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+        echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\">\n";
         echo "<title>OK</title>\n";
 
         style();
@@ -1171,7 +1176,7 @@ function warning($messages, $values = array(), $type = null)
         echo "<!DOCTYPE html>\n";
         echo "<html>\n";
         echo "<head>\n";
-        echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+        echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\">\n";
         echo "<title>WARNING</title>\n";
 
         style();
@@ -1268,7 +1273,7 @@ function error($message, $values = array(), $type = null)
         echo "<!DOCTYPE html>\n";
         echo "<html>\n";
         echo "<head>\n";
-        echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+        echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\">\n";
         echo "<title>ERROR</title>\n";
 
         style();
@@ -1305,7 +1310,7 @@ function password()
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
-    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\">\n";
     echo "<title>Authorization</title>\n";
 
     style();
@@ -1325,9 +1330,9 @@ function password()
     echo "<legend>authorise</legend>\n";
     echo "<dl>\n";
     echo "<dt>password</dt>\n";
-    echo "<dd><input type=\"password\" name=\"password\" size=\"20\" value=\"\" /></dd>\n";
+    echo "<dd><input type=\"password\" name=\"password\" size=\"20\" value=\"\"></dd>\n";
     echo "</dl>\n";
-    echo "<p><input type=\"submit\" value=\"authorise\" /></p>\n";
+    echo "<p><input type=\"submit\" value=\"authorise\"></p>\n";
     echo "</fieldset>\n";
     echo "</form>\n";
 
@@ -1346,7 +1351,7 @@ function about()
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
-    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\" />\n";
+    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\">\n";
     echo "<title>levis: PHP Framework</title>\n";
 
     style();
