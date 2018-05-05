@@ -376,15 +376,15 @@ function controller($target = null)
         $routing = $GLOBALS['_routing'] . '/';
     }
 
-    $directory = 'app/controllers/' . $routing . $_REQUEST['_mode'] . '/';
-    $file      = $_REQUEST['_work'] . '.php';
+    $dir  = 'app/controllers/' . $routing . $_REQUEST['_mode'] . '/';
+    $file = $_REQUEST['_work'] . '.php';
 
     if ($target) {
         import('app/controllers/' . $target);
-    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $directory . $file)) {
-        import($directory . $file);
-    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $directory . MAIN_DEFAULT_WORK . '.php')) {
-        import($directory . MAIN_DEFAULT_WORK . '.php');
+    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . $file)) {
+        import($dir . $file);
+    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . MAIN_DEFAULT_WORK . '.php')) {
+        import($dir . MAIN_DEFAULT_WORK . '.php');
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/' . PAGE_CONTROLLER . '.php')) {
         import('app/controllers/' . PAGE_CONTROLLER . '.php');
     }
@@ -423,8 +423,8 @@ function view($target = null, $return = false)
         $routing = $GLOBALS['_routing'] . '/';
     }
 
-    $directory = 'app/views/' . $routing . $_REQUEST['_mode'] . '/';
-    $file      = $_REQUEST['_work'] . '.php';
+    $dir  = 'app/views/' . $routing . $_REQUEST['_mode'] . '/';
+    $file = $_REQUEST['_work'] . '.php';
 
     if ($return) {
         ob_start();
@@ -432,10 +432,10 @@ function view($target = null, $return = false)
 
     if ($target) {
         import('app/views/' . $target, false);
-    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $directory . $file)) {
-        import($directory . $file, false);
-    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $directory . MAIN_DEFAULT_WORK . '.php')) {
-        import($directory . MAIN_DEFAULT_WORK . '.php', false);
+    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . $file)) {
+        import($dir . $file, false);
+    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . MAIN_DEFAULT_WORK . '.php')) {
+        import($dir . MAIN_DEFAULT_WORK . '.php', false);
     } elseif (is_file(PAGE_PATH . implode('/', $_params) . '.php')) {
         import(PAGE_PATH . implode('/', $_params) . '.php', false);
     } elseif ($_REQUEST['_mode'] === MAIN_DEFAULT_MODE && $_REQUEST['_work'] === MAIN_DEFAULT_WORK) {
@@ -969,11 +969,11 @@ function logging($type = 'message', $message = null)
             fclose($fp);
         }
     } elseif ($type === 'post' || $type === 'files') {
-        $directory = LOGGING_PATH . $type . '/' . localdate('Ymd') . '/';
+        $dir = LOGGING_PATH . $type . '/' . localdate('Ymd') . '/';
 
-        if (!is_dir($directory)) {
-            if (mkdir($directory, 0707)) {
-                chmod($directory, 0707);
+        if (!is_dir($dir)) {
+            if (mkdir($dir, 0707)) {
+                chmod($dir, 0707);
             }
         }
 
@@ -983,7 +983,7 @@ function logging($type = 'message', $message = null)
             $data = $_FILES;
         }
 
-        if ($fp = fopen($directory . localdate('His') . '.log', 'a')) {
+        if ($fp = fopen($dir . localdate('His') . '.log', 'a')) {
             fwrite($fp, $log . "\n" . print_r($data, true) . "\n");
             fclose($fp);
         }
