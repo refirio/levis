@@ -297,6 +297,23 @@ function model($target = null)
 
             import($dir . $entry);
 
+            if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/model.php')) {
+                $model = '';
+                if ($fp = fopen(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/model.php', 'r')) {
+                    while ($line = fgets($fp)) {
+                        if ($model == '') {
+                            $model .= "\n";
+                        } else {
+                            $model .= $line;
+                        }
+                    }
+                    fclose($fp);
+                }
+                $model = str_replace('APP_MODEL', $name, $model);
+
+                eval($model);
+            }
+
             if (!function_exists('select_' . $name)) {
                 $php .= 'function select_' . $name . '($queries)';
                 $php .= '{';
