@@ -298,6 +298,8 @@ function model($target = null)
             import($dir . $entry);
 
             if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/model.php')) {
+                import('app/model.php');
+
                 $model = '';
                 if ($fp = fopen(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/model.php', 'r')) {
                     while ($line = fgets($fp)) {
