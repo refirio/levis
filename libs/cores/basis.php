@@ -454,7 +454,7 @@ function view($target = null, $return = false)
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . MAIN_DEFAULT_WORK . '.php')) {
         import($dir . MAIN_DEFAULT_WORK . '.php', false);
     } elseif (is_file(PAGE_PATH . implode('/', $_params) . '.php')) {
-        import(PAGE_PATH . implode('/', $_params) . '.php', false);
+        import(str_replace(MAIN_APPLICATION_PATH, '', PAGE_PATH) . implode('/', $_params) . '.php', false);
     } elseif ($_REQUEST['_mode'] === MAIN_DEFAULT_MODE && $_REQUEST['_work'] === MAIN_DEFAULT_WORK) {
         about();
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/views/404.php')) {
