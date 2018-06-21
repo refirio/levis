@@ -664,7 +664,7 @@ function h($data, $return = false)
  *
  * @return string|null
  */
-function __($key, $language = null)
+function translate($key, $language = null)
 {
     static $default_language = null;
 
