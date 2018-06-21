@@ -714,7 +714,7 @@ function translate($key, $language = null)
     } elseif (isset($GLOBALS['_language'][$default_language][$key])) {
         return $GLOBALS['_language'][$default_language][$key];
     } else {
-        return null;
+        return $key;
     }
 }
 
