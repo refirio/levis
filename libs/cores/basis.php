@@ -657,14 +657,14 @@ function h($data, $return = false)
 }
 
 /**
- * Get a traslated data.
+ * Get a language data.
  *
  * @param string      $key
  * @param string|null $language
  *
  * @return string|null
  */
-function translate($key, $language = null)
+function language($key, $language = null)
 {
     static $default_language = null;
 
