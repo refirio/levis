@@ -1418,8 +1418,10 @@ function db_migrate()
             error('db: Query error' . (DEBUG_LEVEL ? ': ' . db_error(): ''));
         }
 
-        $error = false;
-        if ($fp = fopen(DATABASE_MIGRATE_PATH  . $target, 'r')) {
+        $migrations = array();
+        $error      = false;
+        $i          = 0;
+        if ($fp = fopen(DATABASE_MIGRATE_PATH . $target, 'r')) {
             $sql  = '';
             $flag = true;
 
@@ -1436,15 +1438,48 @@ function db_migrate()
                 $sql .= $line;
 
                 if (preg_match('/;$/', trim($line)) && $flag) {
+                    $i++;
+
+                    $migrations[$target][$i]['sql'] = trim($sql);
+
+                    list($micro, $second) = explode(' ', microtime());
+                    $time_start = $micro + $second;
+
                     $resource = db_query($sql, false, false);
-                    if (!$resource) {
+
+                    list($micro, $second) = explode(' ', microtime());
+                    $time_end = $micro + $second;
+
+                    $migrations[$target][$i]['time'] = ceil(($time_end - $time_start) * 10000) / 10000;
+
+                    if ($resource) {
+                        $migrations[$target][$i]['result']   = 'OK';
+                        $migrations[$target][$i]['affected'] = db_affected_count($resource);
+                    } else {
+                        $migrations[$target][$i]['result']   = 'NG';
+                        $migrations[$target][$i]['affected'] = 0;
+
                         db_rollback();
 
                         $error = true;
 
-                        $migrate .= $target . " ... NG\n";
+
+                        $migrate .= '<em>' . $target . '</em>' . "\n";
+                        foreach ($migrations[$target] as $migration) {
+                            $migration['sql'] = regexp_replace("(\r|\n)", '', $migration['sql']);
+                            $migration['sql'] = regexp_replace("\s+", ' ', $migration['sql']);
+
+                            $migrate .= truncate($migration['sql'], 80, '') . ' ... <em>' . $migration['result'] . '</em>';
+                            if ($migration['result'] == 'OK') {
+                                $migrate .= ' (';
+                                $migrate .= $migration['affected'] ? $migration['affected'] . ' rows affected. ' : '';
+                                $migrate .= $migration['time'] . ' sec.)';
+                            }
+                            $migrate .= "\n";
+                        }
                         $migrate .= "\n";
                         $migrate .= db_error() . "\n";
+                        $migrate .= "\n";
 
                         break;
                     }
@@ -1477,7 +1512,18 @@ function db_migrate()
                 error('db: Query error' . (DEBUG_LEVEL ? ': ' . db_error(): ''));
             }
 
-            $migrate .= $target . " ... OK\n";
+            $migrate .= '<em>' . $target . '</em>' . "\n";
+            foreach ($migrations[$target] as $migration) {
+                $migration['sql'] = regexp_replace("\s+", ' ', $migration['sql']);
+                $migration['sql'] = regexp_replace("(\r|\n)", '', $migration['sql']);
+
+                $migrate .= truncate($migration['sql'], 80, '') . ' ... <em>' . $migration['result'] . '</em>';
+                $migrate .= ' (';
+                $migrate .= $migration['affected'] ? $migration['affected'] . ' rows affected. ' : '';
+                $migrate .= $migration['time'] . ' sec.)';
+                $migrate .= "\n";
+            }
+            $migrate .= "\n";
         }
     }
 
@@ -1490,9 +1536,6 @@ function db_migrate()
         $version = $results[0]['version'];
     }
 
-    if ($migrate) {
-        $migrate .= "\n";
-    }
     $migrate .= "Database: " . DATABASE_NAME . "\n";
     $migrate .= "Version: " . $version . "\n";
 
@@ -1513,7 +1556,7 @@ function db_migrate()
     echo "<body>\n";
 
     echo "<h1>DB Migrate</h1>\n";
-    echo "<pre><code>" . t($migrate, true) . "</code></pre>\n";
+    echo "<pre><code>" . e($migrate, true) . "</code></pre>\n";
 
     if ($limit) {
         echo "<p><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_migrate&amp;limit=1\">reload</a></p>\n";
