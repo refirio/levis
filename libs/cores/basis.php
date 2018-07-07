@@ -1429,7 +1429,9 @@ function about()
         }
 
         $unexecuted = $target - $succeeded;
-        if ($unexecuted > 0) {
+        if ($unexecuted > 1) {
+            $unexecuted = ' (<em>' . $unexecuted . '</em> / <a href="' . t(MAIN_FILE, true) . '/?_mode=db_migrate&amp;limit=1">single step execution</a>)';
+        } elseif ($unexecuted > 0) {
             $unexecuted = ' (<em>' . $unexecuted . '</em>)';
         } else {
             $unexecuted = '';

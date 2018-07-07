@@ -1340,8 +1340,16 @@ function db_migrate()
         $succeeded[$result['version']] = true;
     }
 
+    // limit
+    if (isset($_GET['limit'])) {
+        $limit = $_GET['limit'];
+    } else {
+        $limit = null;
+    }
+
     // target
-    $targets = array();
+    $targets  = array();
+    $executed = 0;
     if ($dh = opendir(DATABASE_MIGRATE_PATH)) {
         while (($entry = readdir($dh)) !== false) {
             if (!is_file(DATABASE_MIGRATE_PATH  . $entry)) {
@@ -1356,6 +1364,12 @@ function db_migrate()
 
             if (isset($succeeded[$version])) {
                 continue;
+            }
+
+            if ($limit && $executed >= $limit) {
+                continue;
+            } else {
+                $executed++;
             }
 
             $targets[] = $entry;
@@ -1500,6 +1514,11 @@ function db_migrate()
 
     echo "<h1>DB Migrate</h1>\n";
     echo "<pre><code>" . t($migrate, true) . "</code></pre>\n";
+
+    if ($limit) {
+        echo "<p><a href=\"" . t(MAIN_FILE, true) . "/?_mode=db_migrate&amp;limit=1\">reload</a></p>\n";
+    }
+
     echo "<table summary=\"migrations\">\n";
     echo "<tr>\n";
     echo "<th>version</th>\n";
