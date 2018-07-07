@@ -1265,6 +1265,12 @@ function db_admin_sql()
  */
 function db_migrate()
 {
+    if (function_exists('my_db_migrate')) {
+        my_db_migrate();
+
+        return;
+    }
+
     if (auth() === false) {
         return;
     }
@@ -1524,6 +1530,12 @@ function db_migrate()
  */
 function db_scaffold()
 {
+    if (function_exists('my_db_scaffold')) {
+        my_db_scaffold();
+
+        return;
+    }
+
     if (auth() === false) {
         return;
     }
@@ -2228,6 +2240,12 @@ function db_scaffold()
  */
 function db_scaffold_output($file, $data)
 {
+    if (function_exists('my_db_scaffold_output')) {
+        my_db_scaffold_output($file, $data);
+
+        return;
+    }
+
     $file = DATABASE_SCAFFOLD_PATH . $file;
     $info = pathinfo($file);
 
@@ -2262,6 +2280,12 @@ function db_scaffold_output($file, $data)
  */
 function db_import($file)
 {
+    if (function_exists('my_db_import')) {
+        $count = my_db_import($file);
+
+        return $count;
+    }
+
     if ($fp = fopen($file, 'r')) {
         $sql  = '';
         $i    = 0;
@@ -2314,6 +2338,12 @@ function db_import($file)
  */
 function db_export($file = null, $target = null, $combined = true)
 {
+    if (function_exists('my_db_export')) {
+        my_db_export($file, $target, $combined);
+
+        return;
+    }
+
     $resource = db_query(db_sql('table_list'));
     $results  = db_result($resource);
 
@@ -2418,6 +2448,12 @@ function db_export($file = null, $target = null, $combined = true)
  */
 function db_sql($type, $table = null)
 {
+    if (function_exists('my_db_sql')) {
+        my_db_sql($type, $table);
+
+        return;
+    }
+
     if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
         if ($type === 'table_list') {
             $sql = '
