@@ -2385,7 +2385,7 @@ function db_import($file)
 
         db_commit();
     } else {
-        error('db: Import file can\'t read');
+        error('db: Can\'t open the import file');
     }
 
     return $i;
@@ -2493,7 +2493,7 @@ function db_export($file = null, $target = null, $combined = true)
         exit;
     } else {
         if (file_put_contents($file, $text) === false) {
-            error('db: Export file can\'t write');
+            error('db: Can\'t output to the export file');
         }
     }
 
