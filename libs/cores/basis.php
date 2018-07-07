@@ -613,6 +613,29 @@ function e($data, $return = false)
 }
 
 /**
+ * Output the data with new line.
+ *
+ * @param string $data
+ * @param bool   $return
+ *
+ * @return void|string
+ */
+function n($data, $return = false)
+{
+    if (version_compare(phpversion(), '5.3.0') >= 0) {
+        $data = nl2br($data, false);
+    } else {
+        $data = nl2br($data);
+    }
+
+    if ($return) {
+        return $data;
+    } else {
+        echo $data;
+    }
+}
+
+/**
  * Output the data for text.
  *
  * @param string $data
@@ -642,12 +665,7 @@ function t($data, $return = false)
 function h($data, $return = false)
 {
     $data = htmlspecialchars($data, ENT_QUOTES, MAIN_INTERNAL_ENCODING);
-
-    if (version_compare(phpversion(), '5.3.0') >= 0) {
-        $data = nl2br($data, false);
-    } else {
-        $data = nl2br($data);
-    }
+    $data = n($data, true);
 
     if ($return) {
         return $data;
