@@ -287,7 +287,7 @@ function db_placeholder($data)
                     }
                 }
             } else {
-                uksort($holders, create_function('$a,$b', 'return strlen($b) - strlen($a);'));
+                array_multisort(array_map('strlen', array_keys($holders)), SORT_DESC, $holders);
 
                 foreach ($holders as $key => $value) {
                     if (regexp_match($holder . $key, $query)) {
