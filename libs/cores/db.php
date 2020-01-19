@@ -1340,16 +1340,8 @@ function db_migrate()
         $succeeded[$result['version']] = true;
     }
 
-    // limit
-    if (isset($_GET['limit'])) {
-        $limit = $_GET['limit'];
-    } else {
-        $limit = null;
-    }
-
     // target
-    $targets  = array();
-    $executed = 0;
+    $targets = array();
     if ($dh = opendir(DATABASE_MIGRATE_PATH)) {
         while (($entry = readdir($dh)) !== false) {
             if (!is_file(DATABASE_MIGRATE_PATH  . $entry)) {
@@ -1366,12 +1358,6 @@ function db_migrate()
                 continue;
             }
 
-            if ($limit && $executed >= $limit) {
-                continue;
-            } else {
-                $executed++;
-            }
-
             $targets[] = $entry;
         }
         closedir($dh);
@@ -1384,6 +1370,15 @@ function db_migrate()
     }
 
     sort($targets, SORT_STRING);
+
+    // limit
+    if (isset($_GET['limit'])) {
+        $limit = $_GET['limit'];
+
+        array_splice($targets, $limit);
+    } else {
+        $limit = null;
+    }
 
     // backup
     if (!empty($targets) && file_exists(DATABASE_BACKUP_PATH)) {
