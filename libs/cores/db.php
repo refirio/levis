@@ -1498,7 +1498,7 @@ function db_migrate()
         }
 
         if ($error === false) {
-            $resource = db_query('UPDATE ' . DATABASE_PREFIX . 'levis_migrations SET status = ' . db_escape('success') . ', installed = ' . db_escape(localdate('Y-m-d H:i:s')) . ' WHERE version = ' . db_escape($version) . ';');
+            $resource = db_query('UPDATE ' . DATABASE_PREFIX . 'levis_migrations SET status = ' . db_escape('success') . ', installed = ' . db_escape(localdate('Y-m-d H:i:s')) . ' WHERE version = \'' . $version . '\';');
             if (!$resource) {
                 if (LOGGING_MESSAGE) {
                     logging('message', 'db: Query error: ' . db_error());
