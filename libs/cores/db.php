@@ -230,10 +230,14 @@ function db_escape($data)
         return $data;
     }
 
-    if ($data === 0 || regexp_match('^[1-9]+[0-9]*$', $data)) {
-        return $data;
-    } elseif ($data === null) {
+    if ($data === null) {
         return 'NULL';
+    } elseif ($data === true && (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql')) {
+        return 'TRUE';
+    } elseif ($data === false && (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql')) {
+        return 'FALSE';
+    } elseif ($data === 0 || regexp_match('^[1-9]+[0-9]*$', $data)) {
+        return $data;
     }
 
     return db_driver_escape($data);
@@ -254,10 +258,14 @@ function db_unescape($data)
         return $data;
     }
 
-    if ($data === 0 || regexp_match('^[1-9]+[0-9]*$', $data)) {
-        return $data;
-    } elseif ($data === null) {
+    if ($data === null) {
         return 'NULL';
+    } elseif ($data === true && (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql')) {
+        return 'TRUE';
+    } elseif ($data === false && (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql')) {
+        return 'FALSE';
+    } elseif ($data === 0 || regexp_match('^[1-9]+[0-9]*$', $data)) {
+        return $data;
     }
 
     return db_driver_unescape($data);
@@ -1148,6 +1156,12 @@ function db_admin_sql()
                     if ($value === null) {
                         $value_sql  = 'NULL';
                         $value_html = '<em>NULL</em>';
+                    } elseif ($value === true && (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql')) {
+                        $value_sql  = 'TRUE';
+                        $value_html = '<em>TRUE</em>';
+                    } elseif ($value === false && (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql')) {
+                        $value_sql  = 'FALSE';
+                        $value_html = '<em>FALSE</em>';
                     } else {
                         $value_sql = str_replace('\\', '\\\\\\\\', $value);
                         $value_sql = str_replace("\n", '\n', $value_sql);
