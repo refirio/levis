@@ -607,11 +607,11 @@ function db_delete($queries, $return = false, $error = true)
 /**
  * Get the last insert id from the database.
  *
- * @param string $data
+ * @param string|null $sequence
  *
  * @return string
  */
-function db_last_insert_id()
+function db_last_insert_id($sequence = null)
 {
     global $_db;
 
@@ -619,7 +619,7 @@ function db_last_insert_id()
         return -1;
     }
 
-    return db_driver_last_insert_id();
+    return db_driver_last_insert_id($sequence);
 }
 
 /**

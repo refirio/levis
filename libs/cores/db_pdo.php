@@ -172,13 +172,15 @@ function db_driver_error()
 /**
  * Get the last insert id from the database.
  *
+ * @param string|null $sequence
+ *
  * @return string
  */
-function db_driver_last_insert_id()
+function db_driver_last_insert_id($sequence = null)
 {
     global $_db;
 
-    return $_db['resource'][$_db['target']]['dbh']->lastInsertId();
+    return $_db['resource'][$_db['target']]['dbh']->lastInsertId($sequence);
 }
 
 /**
