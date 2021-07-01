@@ -402,6 +402,8 @@ function controller($target = null)
         import('app/controllers/' . $target);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . $file)) {
         import($dir . $file);
+    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . MAIN_DEFAULT_WORK . '.php')) {
+        import($dir . MAIN_DEFAULT_WORK . '.php');
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/' . PAGE_CONTROLLER . '.php')) {
         import('app/controllers/' . PAGE_CONTROLLER . '.php');
     }
@@ -451,6 +453,8 @@ function view($target = null, $return = false)
         import('app/views/' . $target, false);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . $file)) {
         import($dir . $file, false);
+    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . MAIN_DEFAULT_WORK . '.php')) {
+        import($dir . MAIN_DEFAULT_WORK . '.php', false);
     } elseif (is_file(PAGE_PATH . implode('/', $_params) . '.php')) {
         import(str_replace(MAIN_APPLICATION_PATH, '', PAGE_PATH) . implode('/', $_params) . '.php', false);
     } elseif ($_params[count($_params) - 1] === '' && is_file(PAGE_PATH . implode('/', array_slice($_params, 0, count($_params) - 1)) . '/index.php')) {
