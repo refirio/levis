@@ -298,9 +298,26 @@ function db_placeholder($data)
                 array_multisort(array_map('strlen', array_keys($holders)), SORT_DESC, $holders);
 
                 foreach ($holders as $key => $value) {
-                    if (regexp_match($holder . $key, $query)) {
-                        $value = is_array($value) ? $value[0] : db_escape($value);
+                    if (regexp_match(':', $key)) {
+                        list($key, $option) = explode(':', $key, 2);
+                    } else {
+                        $option = null;
+                    }
 
+                    if (regexp_match($holder . $key, $query)) {
+                        if ($option == 'bool') {
+                            if ((DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql')) {
+                                $value = $value ? 'TRUE' : 'FALSE';
+                            } else {
+                                $value = $value ? 1 : 0;
+                            }
+                        } elseif ($option == 'number') {
+                            $value = intval($value);
+                        } elseif ($option == 'string') {
+                            $value = '\'' . $value . '\'';
+                        } else {
+                            $value = is_array($value) ? $value[0] : db_escape($value);
+                        }
                         $query = regexp_replace($holder . $key, $value, $query);
                     }
                 }
