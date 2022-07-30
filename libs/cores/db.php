@@ -1451,8 +1451,6 @@ function db_migrate()
             $sql  = '';
             $flag = true;
 
-            db_transaction();
-
             while ($line = fgets($fp)) {
                 $line = str_replace("\r\n", "\n", $line);
                 $line = str_replace("\r", "\n", $line);
@@ -1485,8 +1483,6 @@ function db_migrate()
                         $migrations[$target][$i]['result']   = 'NG';
                         $migrations[$target][$i]['affected'] = 0;
 
-                        db_rollback();
-
                         $error = true;
 
 
@@ -1518,8 +1514,6 @@ function db_migrate()
             if ($error === true) {
                 break;
             }
-
-            db_commit();
         } else {
             if (LOGGING_MESSAGE) {
                 logging('message', 'db: File can\'t read: ' . db_error());
@@ -2379,8 +2373,6 @@ function db_import($file)
         $i    = 0;
         $flag = true;
 
-        db_transaction();
-
         while ($line = fgets($fp)) {
             $line = str_replace("\r\n", "\n", $line);
             $line = str_replace("\r", "\n", $line);
@@ -2394,8 +2386,6 @@ function db_import($file)
             if (preg_match('/;$/', trim($line)) && $flag) {
                 $resource = db_query($sql);
                 if (!$resource) {
-                    db_rollback();
-
                     if (LOGGING_MESSAGE) {
                         logging('message', 'db: Query error: ' . db_error());
                     }
@@ -2408,8 +2398,6 @@ function db_import($file)
             }
         }
         fclose($fp);
-
-        db_commit();
     } else {
         error('db: Can\'t open the import file');
     }
