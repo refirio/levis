@@ -20,7 +20,7 @@ import('libs/plugins/file.php');
  *
  * @return bool
  */
-function mail_send($to, $subject, $message, $headers = array(), $parameters = null, $files = array())
+function mail_send($to, $subject, $message, $headers = array(), $parameters = '', $files = array())
 {
     $subject = mb_convert_kana(unify($subject), 'KV', MAIN_INTERNAL_ENCODING);
     $message = mb_convert_kana(unify($message), 'KV', MAIN_INTERNAL_ENCODING);

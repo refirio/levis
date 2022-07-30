@@ -16,6 +16,10 @@
  */
 function regexp_match($pattern, $subject)
 {
+    if (is_null($subject)) {
+        $subject = '';
+    }
+
     $regexp = false;
 
     if (REGEXP_TYPE === 'ereg') {

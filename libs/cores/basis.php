@@ -647,6 +647,10 @@ function n($data, $return = false)
  */
 function t($data, $return = false)
 {
+    if (is_null($data)) {
+        $data = '';
+    }
+
     $data = htmlspecialchars($data, ENT_QUOTES, MAIN_INTERNAL_ENCODING);
 
     if ($return) {
@@ -666,6 +670,10 @@ function t($data, $return = false)
  */
 function h($data, $return = false)
 {
+    if (is_null($data)) {
+        $data = '';
+    }
+
     $data = htmlspecialchars($data, ENT_QUOTES, MAIN_INTERNAL_ENCODING);
     $data = n($data, true);
 
