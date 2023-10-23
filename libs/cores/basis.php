@@ -1019,16 +1019,20 @@ function logging($type = 'message', $message = null)
     $log = clientip() . ' ' . clientip(true) . ' [' . localdate('Y-m-d H:i:s') . '] ' . $_SERVER['REQUEST_URI'];
 
     if ($type === 'get') {
-        if ($fp = fopen(LOGGING_PATH . 'get/' . localdate('Ymd') . '.log', 'a')) {
+        $file = LOGGING_PATH . 'get/' . localdate('Ymd') . '.log';
+
+        if ($fp = fopen($file, 'a')) {
+            chmod($file, PERMISSION_FILE);
             fwrite($fp, $log . "\n");
             fclose($fp);
         }
     } elseif ($type === 'post' || $type === 'files') {
-        $dir = LOGGING_PATH . $type . '/' . localdate('Ymd') . '/';
+        $dir  = LOGGING_PATH . $type . '/' . localdate('Ymd') . '/';
+        $file = $dir . localdate('His') . '.log';
 
         if (!is_dir($dir)) {
-            if (mkdir($dir, 0707)) {
-                chmod($dir, 0707);
+            if (mkdir($dir, PERMISSION_DIRECTORY)) {
+                chmod($dir, PERMISSION_DIRECTORY);
             }
         }
 
@@ -1038,11 +1042,14 @@ function logging($type = 'message', $message = null)
             $data = $_FILES;
         }
 
-        if ($fp = fopen($dir . localdate('His') . '.log', 'a')) {
+        if ($fp = fopen($file, 'a')) {
+            chmod($file, PERMISSION_FILE);
             fwrite($fp, $log . "\n" . print_r($data, true) . "\n");
             fclose($fp);
         }
     } else {
+        $file = LOGGING_PATH . 'message/' . localdate('Ymd') . '.log';
+
         $message = regexp_replace("\r", '\r', $message);
         $message = regexp_replace("\n", '\n', $message);
 
@@ -1050,7 +1057,8 @@ function logging($type = 'message', $message = null)
             $message = '-';
         }
 
-        if ($fp = fopen(LOGGING_PATH . 'message/' . localdate('Ymd') . '.log', 'a')) {
+        if ($fp = fopen($file, 'a')) {
+            chmod($file, PERMISSION_FILE);
             fwrite($fp, $log . ' ' . $message . "\n");
             fclose($fp);
         }
@@ -1584,6 +1592,14 @@ function about()
     echo "<dd><code>" . alt(PAGE_PATH, '-') . "</code></dd>\n";
     echo "<dt>controller</dt>\n";
     echo "<dd><code>" . alt(PAGE_CONTROLLER, '-') . "</code></dd>\n";
+    echo "</dl>\n";
+
+    echo "<h3>Permission</h3>\n";
+    echo "<dl>\n";
+    echo "<dt>directory</dt>\n";
+    echo "<dd><code>" . alt('0' . decoct(PERMISSION_DIRECTORY), '-') . "</code></dd>\n";
+    echo "<dt>file</dt>\n";
+    echo "<dd><code>" . alt('0' . decoct(PERMISSION_FILE), '-') . "</code></dd>\n";
     echo "</dl>\n";
 
     echo "<h3>Test</h3>\n";

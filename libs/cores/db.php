@@ -2334,7 +2334,7 @@ function db_scaffold_output($file, $data)
     $result = '';
 
     if (!is_dir($info['dirname'])) {
-        if (mkdir($info['dirname'], 0755, true)) {
+        if (mkdir($info['dirname'], PERMISSION_DIRECTORY, true)) {
             $result .= 'OK: ' . $info['dirname'] . "\n";
         } else {
             $result .= 'NG: ' . $info['dirname'] . "\n";
@@ -2342,6 +2342,7 @@ function db_scaffold_output($file, $data)
     }
 
     if ($fp = fopen($file, 'w')) {
+        chmod($file, PERMISSION_FILE);
         fwrite($fp, $data);
         fclose($fp);
 
@@ -2509,6 +2510,7 @@ function db_export($file = null, $target = null, $combined = true)
         if (file_put_contents($file, $text) === false) {
             error('db: Can\'t output to the export file');
         }
+        chmod($file, PERMISSION_FILE);
     }
 
     return;

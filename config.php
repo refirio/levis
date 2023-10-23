@@ -60,6 +60,11 @@ define('AUTOLOAD_SERVICE', false);
 define('PAGE_PATH', 'page/');
 define('PAGE_CONTROLLER', 'page');
 
+/********* Permission *********************************************************/
+
+define('PERMISSION_DIRECTORY', 0707);
+define('PERMISSION_FILE', 0606);
+
 /********* Test ***************************************************************/
 
 define('TEST_PATH', 'test/');
