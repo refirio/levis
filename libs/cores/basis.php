@@ -231,6 +231,10 @@ function routing()
  */
 function service($target = null)
 {
+    if (!AUTOLOAD_SERVICE && $target === null) {
+        return;
+    }
+
     $dir = 'app/services/';
 
     if (!file_exists(MAIN_PATH . MAIN_APPLICATION_PATH . $dir)) {
@@ -239,7 +243,7 @@ function service($target = null)
 
     if ($dh = opendir(MAIN_PATH . MAIN_APPLICATION_PATH . $dir)) {
         while (($entry = readdir($dh)) !== false) {
-            if (!is_file(MAIN_PATH . MAIN_APPLICATION_PATH  . $dir . $entry)) {
+            if (!is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . $entry)) {
                 continue;
             }
 
@@ -276,12 +280,16 @@ function service($target = null)
  */
 function model($target = null)
 {
+    if (!AUTOLOAD_MODEL && $target === null) {
+        return;
+    }
+
     $dir = 'app/models/';
     $php = '';
 
     if ($dh = opendir(MAIN_PATH . MAIN_APPLICATION_PATH . $dir)) {
         while (($entry = readdir($dh)) !== false) {
-            if (!is_file(MAIN_PATH . MAIN_APPLICATION_PATH  . $dir . $entry)) {
+            if (!is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . $entry)) {
                 continue;
             }
 
@@ -1560,6 +1568,14 @@ function about()
     echo "<dl>\n";
     echo "<dt>type</dt>\n";
     echo "<dd><code>" . alt(REGEXP_TYPE, '-') . "</code></dd>\n";
+    echo "</dl>\n";
+
+    echo "<h3>Autoload</h3>\n";
+    echo "<dl>\n";
+    echo "<dt>model</dt>\n";
+    echo "<dd><code>" . (AUTOLOAD_MODEL ? 'true' : 'false') . "</code></dd>\n";
+    echo "<dt>service</dt>\n";
+    echo "<dd><code>" . (AUTOLOAD_SERVICE ? 'true' : 'false') . "</code></dd>\n";
     echo "</dl>\n";
 
     echo "<h3>Page</h3>\n";

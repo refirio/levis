@@ -50,6 +50,11 @@ define('TOKEN_SPAN', 60 * 60);
 
 define('REGEXP_TYPE', 'preg');
 
+/********* Autoload ***********************************************************/
+
+define('AUTOLOAD_MODEL', true);
+define('AUTOLOAD_SERVICE', false);
+
 /********* Page ***************************************************************/
 
 define('PAGE_PATH', 'page/');
