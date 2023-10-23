@@ -10,13 +10,18 @@
  * Get a linked string.
  *
  * @param string $string
+ * @param string|null $attribute
  *
  * @return string
  */
-function string_autolink($string)
+function string_autolink($string, $attribute = null)
 {
-    $string = preg_replace('/(^|[^\w\~\-\/\&\#\+\=\@\%])(https?\:\/\/[\w\.\~\-\/\?\&\#\+\=\:\;\@\%\!]+)/', '$1<a href="$2">$2</a>', $string);
-    $string = preg_replace('/(^|[^\w\~\-\/\&\#\+\=\@\%])([\w\.\+\-]+@[\w\.\+\-]+)/', '$1<a href="mailto:$2">$2</a>', $string);
+    if (!is_null($attribute)) {
+        $attribute = ' ' . $attribute;
+    }
+
+    $string = preg_replace('/(^|[^\w\~\-\/\&\#\+\=\@\%])(https?\:\/\/[\w\.\~\-\/\?\&\#\+\=\:\;\@\%\!]+)/', '$1<a href="$2"' . $attribute . '>$2</a>', $string);
+    $string = preg_replace('/(^|[^\w\~\-\/\&\#\+\=\@\%])([\w\.\+\-]+@[\w\.\+\-]+)/', '$1<a href="mailto:$2"' . $attribute . '>$2</a>', $string);
 
     return $string;
 }
