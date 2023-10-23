@@ -1411,6 +1411,13 @@ function password()
  */
 function about()
 {
+    if (php_sapi_name() === 'cli') {
+        echo "levis: PHP Framework\n";
+        echo "Version => " . VERSION_NUMBER . "\n";
+        echo "Update => " . VERSION_UPDATE . "\n";
+        exit;
+    }
+
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";

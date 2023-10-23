@@ -12,6 +12,12 @@
  */
 function test_index()
 {
+    if (php_sapi_name() === 'cli') {
+        echo "levis: PHP Framework\n";
+        echo "Please access via browser.\n";
+        exit;
+    }
+
     if (auth() === false) {
         return;
     }
@@ -131,6 +137,12 @@ function test_index()
 function test_exec()
 {
     global $_view;
+
+    if (php_sapi_name() === 'cli') {
+        echo "levis: PHP Framework\n";
+        echo "Please access via browser.\n";
+        exit;
+    }
 
     if (auth() === false) {
         return;

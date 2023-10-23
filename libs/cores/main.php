@@ -35,6 +35,14 @@ if (LOGGING_FILES && !empty($_FILES)) {
     logging('files');
 }
 
+if (php_sapi_name() === 'cli') {
+    if (isset($_SERVER['argv'][1])) {
+        $_REQUEST['_mode'] = $_SERVER['argv'][1];
+    } else {
+        $_REQUEST['_mode'] = 'info_levis';
+    }
+}
+
 switch ($_REQUEST['_mode']) {
     case 'info_php':
         info_php();
@@ -57,6 +65,10 @@ switch ($_REQUEST['_mode']) {
     case 'test_exec':
         test_exec();
         break;
+}
+
+if (php_sapi_name() === 'cli') {
+    exit;
 }
 
 service();

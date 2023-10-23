@@ -707,6 +707,12 @@ function db_rollback()
  */
 function db_admin()
 {
+    if (php_sapi_name() === 'cli') {
+        echo "levis: PHP Framework\n";
+        echo "Please access via browser.\n";
+        exit;
+    }
+
     if (DATABASE_TYPE === '') {
         return;
     }
@@ -1296,6 +1302,12 @@ function db_admin_sql()
  */
 function db_migrate()
 {
+    if (php_sapi_name() === 'cli') {
+        echo "levis: PHP Framework\n";
+        echo "Please access via browser.\n";
+        exit;
+    }
+
     if (function_exists('my_db_migrate')) {
         my_db_migrate();
 
@@ -1612,6 +1624,12 @@ function db_migrate()
  */
 function db_scaffold()
 {
+    if (php_sapi_name() === 'cli') {
+        echo "levis: PHP Framework\n";
+        echo "Please access via browser.\n";
+        exit;
+    }
+
     if (function_exists('my_db_scaffold')) {
         my_db_scaffold();
 
