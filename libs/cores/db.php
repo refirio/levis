@@ -2495,6 +2495,8 @@ function db_export($file = null, $target = null, $combined = true)
         }
     }
 
+    $text .= "-- Export Completed.\n";
+
     if ($file === null) {
         if ($target === null) {
             $filename = DATABASE_NAME . '.sql';
