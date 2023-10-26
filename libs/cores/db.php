@@ -137,7 +137,7 @@ function db_query($query, $return = false, $error = true)
     if ($return) {
         return $query;
     } else {
-        if (DEBUG_LEVEL === 2 && !isset($_SERVER['SHELL']) && (!isset($_REQUEST['_type']) || $_REQUEST['_type'] === 'html')) {
+        if (DEBUG_LEVEL === 2 && php_sapi_name() !== 'cli' && (!isset($_REQUEST['_type']) || $_REQUEST['_type'] === 'html')) {
             echo '<pre><code>' . $query . '</code></pre>';
         }
 
@@ -1302,14 +1302,8 @@ function db_admin_sql()
  */
 function db_migrate()
 {
-    if (php_sapi_name() === 'cli') {
-        echo "levis: PHP Framework\n";
-        echo "Please access via browser.\n";
-        exit;
-    }
-
     if (function_exists('my_db_migrate')) {
-        my_db_migrate();
+        eval('my_db_migrate();');
 
         return;
     }
@@ -1320,6 +1314,14 @@ function db_migrate()
 
     if (!file_exists(DATABASE_MIGRATE_PATH)) {
         error('db: ' . DATABASE_MIGRATE_PATH . ' is not found');
+    }
+
+    if (php_sapi_name() === 'cli') {
+        $em_begin = '';
+        $em_end   = '';
+    } else {
+        $em_begin = '<em>';
+        $em_end   = '</em>';
     }
 
     // initialize
@@ -1498,12 +1500,12 @@ function db_migrate()
                         $error = true;
 
 
-                        $migrate .= '<em>' . $target . '</em>' . "\n";
+                        $migrate .= $em_begin . $target . $em_end . "\n";
                         foreach ($migrations[$target] as $migration) {
                             $migration['sql'] = regexp_replace("(\r|\n)", '', $migration['sql']);
                             $migration['sql'] = regexp_replace("\s+", ' ', $migration['sql']);
 
-                            $migrate .= truncate($migration['sql'], 80, '') . ' ... <em>' . $migration['result'] . '</em>';
+                            $migrate .= truncate($migration['sql'], 80, '') . ' ... ' . $em_begin . $migration['result'] . $em_end;
                             if ($migration['result'] == 'OK') {
                                 $migrate .= ' (';
                                 $migrate .= $migration['affected'] ? $migration['affected'] . ' rows affected. ' : '';
@@ -1544,12 +1546,12 @@ function db_migrate()
                 error('db: Query error' . (DEBUG_LEVEL ? ': ' . db_error(): ''));
             }
 
-            $migrate .= '<em>' . $target . '</em>' . "\n";
+            $migrate .= $em_begin . $target . $em_end . "\n";
             foreach ($migrations[$target] as $migration) {
                 $migration['sql'] = regexp_replace("\s+", ' ', $migration['sql']);
                 $migration['sql'] = regexp_replace("(\r|\n)", '', $migration['sql']);
 
-                $migrate .= truncate($migration['sql'], 80, '') . ' ... <em>' . $migration['result'] . '</em>';
+                $migrate .= truncate($migration['sql'], 80, '') . ' ... ' . $em_begin . $migration['result'] . $em_end;
                 $migrate .= ' (';
                 $migrate .= $migration['affected'] ? $migration['affected'] . ' rows affected. ' : '';
                 $migrate .= $migration['time'] . ' sec.)';
@@ -1568,8 +1570,21 @@ function db_migrate()
         $version = $results[0]['version'];
     }
 
+    if (empty($migrate)) {
+        $migrate .= $em_begin . "Nothing to migrate." . $em_end . "\n";
+        $migrate .= "\n";
+    }
+
     $migrate .= "Database: " . DATABASE_NAME . "\n";
     $migrate .= "Version: " . $version . "\n";
+
+    if (php_sapi_name() === 'cli') {
+        echo "levis: PHP Framework\n";
+        echo "DB Migrate\n";
+        echo "\n";
+        echo $migrate;
+        exit;
+    }
 
     // history
     $resource   = db_query('SELECT * FROM ' . DATABASE_PREFIX . 'levis_migrations ORDER BY version;');
@@ -1624,14 +1639,8 @@ function db_migrate()
  */
 function db_scaffold()
 {
-    if (php_sapi_name() === 'cli') {
-        echo "levis: PHP Framework\n";
-        echo "Please access via browser.\n";
-        exit;
-    }
-
     if (function_exists('my_db_scaffold')) {
-        my_db_scaffold();
+        eval('my_db_scaffold();');
 
         return;
     }
@@ -1671,6 +1680,7 @@ function db_scaffold()
     }
 
     $scaffold = '';
+    $create   = 0;
 
     foreach ($results as $result) {
         if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
@@ -1869,6 +1879,7 @@ function db_scaffold()
         $buffer .= '}' . "\n";
 
         $scaffold .= db_scaffold_output($model_file, $buffer);
+        $create++;
 
         // view
         $buffer  = '<?php import(\'app/views/header.php\') ?>' . "\n";
@@ -1891,6 +1902,7 @@ function db_scaffold()
         $buffer .= '<?php import(\'app/views/footer.php\') ?>' . "\n";
 
         $scaffold .= db_scaffold_output($view_index_file, $buffer);
+        $create++;
 
         $buffer  = '<?php import(\'app/views/header.php\') ?>' . "\n";
         $buffer .= "\n";
@@ -1922,6 +1934,7 @@ function db_scaffold()
         $buffer .= '<?php import(\'app/views/footer.php\') ?>' . "\n";
 
         $scaffold .= db_scaffold_output($view_post_file, $buffer);
+        $create++;
 
         // controller
         $buffer  = '<?php' . "\n";
@@ -1936,6 +1949,7 @@ function db_scaffold()
         $buffer .= '));' . "\n";
 
         $scaffold .= db_scaffold_output($controller_index_file, $buffer);
+        $create++;
 
         $buffer  = '<?php' . "\n";
         $buffer .= "\n";
@@ -2002,6 +2016,7 @@ function db_scaffold()
         $buffer .= '}' . "\n";
 
         $scaffold .= db_scaffold_output($controller_post_file, $buffer);
+        $create++;
 
         if ($primary_flag) {
             $buffer  = '<?php' . "\n";
@@ -2025,6 +2040,7 @@ function db_scaffold()
             $buffer .= 'redirect(\'/' . $table . '/' . MAIN_DEFAULT_WORK . '\');' . "\n";
 
             $scaffold .= db_scaffold_output($controller_delete_file, $buffer);
+            $create++;
         }
 
         // test data
@@ -2134,6 +2150,7 @@ function db_scaffold()
         $buffer .= 'db_rollback();' . "\n";
 
         $scaffold .= db_scaffold_output($test_model_file, $buffer);
+        $create++;
 
         // test view
         $buffer  = '<?php' . "\n";
@@ -2165,6 +2182,7 @@ function db_scaffold()
         $buffer .= '}' . "\n";
 
         $scaffold .= db_scaffold_output($test_view_file, $buffer);
+        $create++;
 
         // test controller
         $buffer  = '<?php' . "\n";
@@ -2214,6 +2232,7 @@ function db_scaffold()
         $buffer .= 'db_rollback();' . "\n";
 
         $scaffold .= db_scaffold_output($test_controller_file, $buffer);
+        $create++;
 
         $scaffold .= "\n";
     }
@@ -2250,10 +2269,12 @@ function db_scaffold()
     $buffer .= '<?php import(\'app/views/footer.php\') ?>' . "\n";
 
     $scaffold .= db_scaffold_output($view_home_file, $buffer);
+    $create++;
 
     $buffer  = '<?php' . "\n";
 
     $scaffold .= db_scaffold_output($controller_home_file, $buffer);
+    $create++;
 
     // header
     $buffer  = '<!DOCTYPE html>' . "\n";
@@ -2266,12 +2287,14 @@ function db_scaffold()
     $buffer .= '        <h1>scaffold</h1>' . "\n";
 
     $scaffold .= db_scaffold_output($header_file, $buffer);
+    $create++;
 
     // footer
     $buffer  = '    </body>' . "\n";
     $buffer .= '</html>' . "\n";
 
     $scaffold .= db_scaffold_output($footer_file, $buffer);
+    $create++;
 
     // before
     $buffer  = '<?php' . "\n";
@@ -2279,6 +2302,7 @@ function db_scaffold()
     $buffer .= 'import(\'' . $config_file . '\');' . "\n";
 
     $scaffold .= db_scaffold_output($before_file, $buffer);
+    $create++;
 
     // config
     $buffer  = '<?php' . "\n";
@@ -2311,9 +2335,18 @@ function db_scaffold()
     $buffer .= ');' . "\n";
 
     $scaffold .= db_scaffold_output($config_file, $buffer);
+    $create++;
 
     $scaffold .= "\n";
-    $scaffold .= "Complete\n";
+    $scaffold .= "Created: " . $create . " files\n";
+
+    if (php_sapi_name() === 'cli') {
+        echo "levis: PHP Framework\n";
+        echo "DB Scaffold\n";
+        echo "\n";
+        echo $scaffold;
+        exit;
+    }
 
     // result
     echo "<!DOCTYPE html>\n";
@@ -2341,7 +2374,7 @@ function db_scaffold()
 function db_scaffold_output($file, $data)
 {
     if (function_exists('my_db_scaffold_output')) {
-        my_db_scaffold_output($file, $data);
+        eval('my_db_scaffold_output($file, $data);');
 
         return;
     }
@@ -2382,7 +2415,9 @@ function db_scaffold_output($file, $data)
 function db_import($file)
 {
     if (function_exists('my_db_import')) {
-        $count = my_db_import($file);
+        $count = null;
+
+        eval('$count = my_db_import($file);');
 
         return $count;
     }
@@ -2434,7 +2469,7 @@ function db_import($file)
 function db_export($file = null, $target = null, $combined = true)
 {
     if (function_exists('my_db_export')) {
-        my_db_export($file, $target, $combined);
+        eval('my_db_export($file, $target, $combined);');
 
         return;
     }
@@ -2547,7 +2582,7 @@ function db_export($file = null, $target = null, $combined = true)
 function db_sql($type, $table = null)
 {
     if (function_exists('my_db_sql')) {
-        my_db_sql($type, $table);
+        eval('my_db_sql($type, $table);');
 
         return;
     }

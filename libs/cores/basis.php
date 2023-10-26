@@ -91,7 +91,7 @@ function bootstrap()
  */
 function session()
 {
-    if (isset($_SERVER['SHELL']) || SESSION_AUTOSTART === false) {
+    if (php_sapi_name() === 'cli' || SESSION_AUTOSTART === false) {
         return;
     }
 
@@ -971,7 +971,7 @@ function debug($data, $return = false)
  */
 function benchmark($label = null, $forcing = false)
 {
-    if ((DEBUG_LEVEL !== 2 && $forcing === false) || isset($_SERVER['SHELL']) || (isset($_REQUEST['_type']) && $_REQUEST['_type'] !== 'html')) {
+    if ((DEBUG_LEVEL !== 2 && $forcing === false) || php_sapi_name() === 'cli' || (isset($_REQUEST['_type']) && $_REQUEST['_type'] !== 'html')) {
         return;
     }
 
@@ -1112,7 +1112,7 @@ function ok($message = null, $values = array(), $type = null)
         import('app/controllers/ok.php');
     }
 
-    if (isset($_SERVER['SHELL'])) {
+    if (php_sapi_name() === 'cli') {
         echo "OK: " . $message . "\n";
     } elseif ($type === 'json') {
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
@@ -1194,7 +1194,7 @@ function warning($messages, $values = array(), $type = null)
         import('app/controllers/warning.php');
     }
 
-    if (isset($_SERVER['SHELL'])) {
+    if (php_sapi_name() === 'cli') {
         echo "WARNING: " . implode(', ', $messages) . "\n";
     } elseif ($type === 'json') {
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
@@ -1297,7 +1297,7 @@ function error($message, $values = array(), $type = null)
         import('app/controllers/error.php');
     }
 
-    if (isset($_SERVER['SHELL'])) {
+    if (php_sapi_name() === 'cli') {
         echo "ERROR: " . $message . "\n";
     } elseif ($type === 'json') {
         header('Content-Type: application/json; charset=' . MAIN_CHARSET);
