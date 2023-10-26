@@ -53,7 +53,7 @@ function db_driver_query($query)
 /**
  * Get the result from the database.
  *
- * @param resource $resource
+ * @param mixed $resource
  *
  * @return array
  */
@@ -72,7 +72,7 @@ function db_driver_result($resource)
 /**
  * Get the count from the database.
  *
- * @param resource $resource
+ * @param mixed $resource
  *
  * @return int
  */
@@ -86,7 +86,7 @@ function db_driver_count($resource)
 /**
  * Get the affected count from the database.
  *
- * @param resource $resource
+ * @param mixed $resource
  *
  * @return int
  */

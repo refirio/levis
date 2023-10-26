@@ -158,7 +158,7 @@ function db_query($query, $return = false, $error = true)
 /**
  * Get the result from the database.
  *
- * @param resource $resource
+ * @param mixed $resource
  *
  * @return array
  */
@@ -182,7 +182,7 @@ function db_result($resource)
 /**
  * Get the count from the database.
  *
- * @param resource $resource
+ * @param mixed $resource
  *
  * @return int
  */
@@ -200,7 +200,7 @@ function db_count($resource)
 /**
  * Get the affected count from the database.
  *
- * @param resource $resource
+ * @param mixed $resource
  *
  * @return int
  */
@@ -274,7 +274,7 @@ function db_unescape($data)
 /**
  * Get the placeholder data for database.
  *
- * @param string $data
+ * @param array $data
  *
  * @return string
  */
@@ -458,7 +458,7 @@ function db_insert($queries, $return = false, $error = true)
         $keys   = array();
         $values = array();
 
-        foreach ($queries['values'] as $key => $value) {
+        foreach ((array)$queries['values'] as $key => $value) {
             $keys[] = $key;
 
             if (is_array($value)) {
@@ -519,7 +519,7 @@ function db_update($queries, $return = false, $error = true)
     if (isset($queries['set']) && is_array($queries['set'])) {
         $sets = array();
 
-        foreach ($queries['set'] as $key => $value) {
+        foreach ((array)$queries['set'] as $key => $value) {
             if (is_array($value)) {
                 $sets[] = $key . ' = ' . $value[0];
             } elseif ($value === '' || $value === '\'\'') {

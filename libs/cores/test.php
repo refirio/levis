@@ -81,10 +81,10 @@ function test_index()
         closedir($dh);
     } else {
         if (LOGGING_MESSAGE) {
-            logging('message', 'test: Opendir error: ' . $target);
+            logging('message', 'test: Opendir error: ' . MAIN_PATH . TEST_PATH);
         }
 
-        error('test: Opendir error' . (DEBUG_LEVEL ? ': ' . $target: ''));
+        error('test: Opendir error' . (DEBUG_LEVEL ? ': ' . MAIN_PATH . TEST_PATH : ''));
     }
 
     if (php_sapi_name() === 'cli') {
