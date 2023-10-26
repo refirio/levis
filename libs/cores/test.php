@@ -12,12 +12,6 @@
  */
 function test_index()
 {
-    if (php_sapi_name() === 'cli') {
-        echo "levis: PHP Framework\n";
-        echo "Please access via browser.\n";
-        exit;
-    }
-
     if (auth() === false) {
         return;
     }
@@ -93,6 +87,17 @@ function test_index()
         error('test: Opendir error' . (DEBUG_LEVEL ? ': ' . $target: ''));
     }
 
+    if (php_sapi_name() === 'cli') {
+        echo "levis: PHP Framework\n";
+        echo "Test\n";
+        echo "\n";
+        $i = 0;
+        foreach ($_view['targets'] as $target) {
+            echo (++$i) . ". " . $target['name'] . "\n";
+        }
+        exit;
+    }
+
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
@@ -111,7 +116,7 @@ function test_index()
     echo "<ol>\n";
 
     foreach ($_view['targets'] as $target) {
-        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=test_exec&amp;target=" . t($target['name'], true) . "\">" . t($target['file'], true) . "</a>" . ($target['result'] ? h(' (' . $target['result'] . ')', true) : '') . "</li>\n";
+        echo "<li><a href=\"" . t(MAIN_FILE, true) . "/?_mode=test_exec&amp;target=" . t($target['name'], true) . "\">" . t($target['name'], true) . "</a>" . ($target['result'] ? h(' (' . $target['result'] . ')', true) : '') . "</li>\n";
     }
 
     echo "</ol>\n";
@@ -139,9 +144,9 @@ function test_exec()
     global $_view;
 
     if (php_sapi_name() === 'cli') {
-        echo "levis: PHP Framework\n";
-        echo "Please access via browser.\n";
-        exit;
+        if (isset($_SERVER['argv'][2])) {
+            $_GET['target'] = $_SERVER['argv'][2];
+        }
     }
 
     if (auth() === false) {
@@ -190,10 +195,10 @@ function test_exec()
             closedir($dh);
         } else {
             if (LOGGING_MESSAGE) {
-                logging('message', 'test: Opendir error: ' . $target);
+                logging('message', 'test: Opendir error: ' . MAIN_PATH . TEST_PATH);
             }
 
-            error('test: Opendir error' . (DEBUG_LEVEL ? ': ' . $target: ''));
+            error('test: Opendir error' . (DEBUG_LEVEL ? ': ' . MAIN_PATH . TEST_PATH: ''));
         }
 
         if ($flag === false) {
@@ -201,25 +206,33 @@ function test_exec()
         }
     }
 
-    if (!regexp_match('^[_a-zA-Z0-9\-]+$', $_GET['target'])) {
+    if (empty($_GET['target'])) {
+        error('test: Target is not defined.');
+    } elseif (!regexp_match('^[_a-zA-Z0-9\-]+$', $_GET['target'])) {
         error('test: ' . $_GET['target'] . ' is not found.');
     }
 
     $_view['ok'] = 0;
     $_view['ng'] = 0;
 
-    echo "<!DOCTYPE html>\n";
-    echo "<html>\n";
-    echo "<head>\n";
-    echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\">\n";
-    echo "<title>Test</title>\n";
+    if (php_sapi_name() === 'cli') {
+        echo "levis: PHP Framework\n";
+        echo "Test\n";
+        echo "\n";
+    } else {
+        echo "<!DOCTYPE html>\n";
+        echo "<html>\n";
+        echo "<head>\n";
+        echo "<meta charset=\"" . t(MAIN_CHARSET, true) . "\">\n";
+        echo "<title>Test</title>\n";
 
-    style();
+        style();
 
-    echo "</head>\n";
-    echo "<body>\n";
-    echo "<h1>Test</h1>\n";
-    echo "<pre>";
+        echo "</head>\n";
+        echo "<body>\n";
+        echo "<h1>Test</h1>\n";
+        echo "<pre>";
+    }
 
     list($micro, $second) = explode(' ', microtime());
     $time_start = $micro + $second;
@@ -236,22 +249,24 @@ function test_exec()
     echo "NG: " . $_view['ng'] . "\n";
     echo "Time: " . $_view['time'] . " sec.\n";
 
-    echo "</pre>\n";
-    echo "<p><a href=\"" . t(MAIN_FILE, true) . "/?_mode=test_index\">Back to Index</a></p>\n";
+    if (php_sapi_name() !== 'cli') {
+        echo "</pre>\n";
+        echo "<p><a href=\"" . t(MAIN_FILE, true) . "/?_mode=test_index\">Back to Index</a></p>\n";
 
-    if (isset($_GET['_test'])) {
-        $_view['url'] = MAIN_FILE . "/?_mode=test_exec&_test=" . $_GET['_test'] . ';' . $index . ":" . ($_view['ng'] ? 0 : 1);
+        if (isset($_GET['_test'])) {
+            $_view['url'] = MAIN_FILE . "/?_mode=test_exec&_test=" . $_GET['_test'] . ';' . $index . ":" . ($_view['ng'] ? 0 : 1);
 
-        echo "<script>\n";
-        echo "setTimeout('window.location.href = \'" . $_view['url'] . "\'', 1000);\n";
-        echo "</script>\n";
-        echo "<noscript>\n";
-        echo "<p><a href=\"" . t($_view['url'], true) . "\">next</a></p>\n";
-        echo "</noscript>\n";
+            echo "<script>\n";
+            echo "setTimeout('window.location.href = \'" . $_view['url'] . "\'', 1000);\n";
+            echo "</script>\n";
+            echo "<noscript>\n";
+            echo "<p><a href=\"" . t($_view['url'], true) . "\">next</a></p>\n";
+            echo "</noscript>\n";
+        }
+
+        echo "</body>\n";
+        echo "</html>\n";
     }
-
-    echo "</body>\n";
-    echo "</html>\n";
 
     exit;
 }
