@@ -851,7 +851,7 @@ function ssl($proxy = false)
  * @param string $type
  * @param string $name
  *
- * @return bool
+ * @return string|bool|null
  */
 function token($type, $name = 'default')
 {
@@ -867,7 +867,9 @@ function token($type, $name = 'default')
         }
 
         return $flag;
-    } else {
+    } elseif ($type === 'drop') {
+        $_SESSION['_token'][$name] = array();
+    } elseif ($type === 'create') {
         if (empty($_SESSION['_token'][$name]) || time() - $_SESSION['_token'][$name]['time'] > TOKEN_SPAN) {
             $token = rand_string();
 
@@ -880,6 +882,8 @@ function token($type, $name = 'default')
         }
 
         return $token;
+    } else {
+        return null;
     }
 }
 
