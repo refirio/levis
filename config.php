@@ -34,13 +34,14 @@ define('DATABASE_CHARSET_OUTPUT_TO', 'UTF-8');
 define('DATABASE_MIGRATE_PATH', 'migrate/');
 define('DATABASE_SCAFFOLD_PATH', 'scaffold/');
 define('DATABASE_BACKUP_PATH', 'backup/');
+define('DATABASE_AUTOCONNECT', true);
 
 /********* Session ************************************************************/
 
-define('SESSION_AUTOSTART', true);
 define('SESSION_LIFETIME', 0);
 define('SESSION_PATH', dirname($_SERVER['SCRIPT_NAME']));
 define('SESSION_CACHE', 'none');
+define('SESSION_AUTOSTART', true);
 
 /********* Token **************************************************************/
 

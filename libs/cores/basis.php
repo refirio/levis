@@ -91,7 +91,7 @@ function bootstrap()
  */
 function session()
 {
-    if (php_sapi_name() === 'cli' || SESSION_AUTOSTART === false) {
+    if (php_sapi_name() === 'cli') {
         return;
     }
 

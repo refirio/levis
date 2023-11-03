@@ -17,9 +17,12 @@ import('libs/cores/test.php');
 
 bootstrap();
 
-session();
-
-database();
+if (SESSION_AUTOSTART === true) {
+    session();
+}
+if (DATABASE_AUTOCONNECT === true) {
+    database();
+}
 
 normalize();
 
