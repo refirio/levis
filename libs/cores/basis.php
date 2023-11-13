@@ -975,7 +975,7 @@ function debug($data, $return = false)
  */
 function benchmark($label = null, $forcing = false)
 {
-    if ((DEBUG_LEVEL !== 2 && $forcing === false) || php_sapi_name() === 'cli' || (isset($_REQUEST['_type']) && $_REQUEST['_type'] !== 'html')) {
+    if ((DEBUG_LEVEL < 2 && $forcing === false) || php_sapi_name() === 'cli' || (isset($_REQUEST['_type']) && $_REQUEST['_type'] !== 'html')) {
         return;
     }
 
@@ -1006,6 +1006,24 @@ function benchmark($label = null, $forcing = false)
     }
     printf('memory_usage %s kb', number_format(memory_get_usage() / 1024));
     print('</pre>');
+
+    return;
+}
+
+/**
+ * Output the debugbar.
+ *
+ * @return void
+ */
+function debugbar($label = null, $forcing = false)
+{
+    if (DEBUG_LEVEL !== 2 || empty($GLOBALS['_query']) || php_sapi_name() === 'cli' || (isset($_REQUEST['_type']) && $_REQUEST['_type'] !== 'html')) {
+        return;
+    }
+
+    foreach ($GLOBALS['_query'] as $query) {
+        print('<pre><code>' . $query . '</code></pre>');
+    }
 
     return;
 }
@@ -1078,7 +1096,7 @@ function logging($type = 'message', $message = null)
  */
 function auth()
 {
-    if (!DEBUG_LEVEL) {
+    if (DEBUG_LEVEL === 0) {
         if (DEBUG_PASSWORD && empty($_SESSION['_auth'])) {
             password();
         } elseif (DEBUG_ADDR && !in_array(clientip(), explode(',', DEBUG_ADDR))) {
@@ -1276,11 +1294,11 @@ function error($message, $values = array(), $type = null)
 {
     global $_view;
 
-    if (DEBUG_LEVEL === 2 || LOGGING_MESSAGE) {
+    if (DEBUG_LEVEL >= 2 || LOGGING_MESSAGE) {
         $backtraces = debug_backtrace();
         $backtrace  = 'Application error: ' . $backtraces[0]['function'] . '(): ' . $backtraces[0]['args'][0] . ' in ' . $backtraces[0]['file'] . ' on line ' . $backtraces[0]['line'];
 
-        if (DEBUG_LEVEL === 2) {
+        if (DEBUG_LEVEL >= 2) {
             echo '<pre><code>' . $backtrace . '</code></pre>';
         }
         if (LOGGING_MESSAGE) {
@@ -1562,19 +1580,21 @@ function about()
         echo "<dd><code>" . alt(DATABASE_SCAFFOLD_PATH, '-') . "</code></dd>\n";
         echo "<dt>backup path</dt>\n";
         echo "<dd><code>" . alt(DATABASE_BACKUP_PATH, '-') . "</code></dd>\n";
+        echo "<dt>autostart</dt>\n";
+        echo "<dd><code>" . (DATABASE_AUTOCONNECT ? 'true' : 'false') . "</code></dd>\n";
         echo "</dl>\n";
     }
 
     echo "<h3>Session</h3>\n";
     echo "<dl>\n";
-    echo "<dt>autostart</dt>\n";
-    echo "<dd><code>" . (SESSION_AUTOSTART ? 'true' : 'false') . "</code></dd>\n";
     echo "<dt>lifetime</dt>\n";
     echo "<dd><code>" . SESSION_LIFETIME . "</code></dd>\n";
     echo "<dt>path</dt>\n";
     echo "<dd><code>" . alt(SESSION_PATH, '-') . "</code></dd>\n";
     echo "<dt>cache</dt>\n";
     echo "<dd><code>" . alt(SESSION_CACHE, '-') . "</code></dd>\n";
+    echo "<dt>autostart</dt>\n";
+    echo "<dd><code>" . (SESSION_AUTOSTART ? 'true' : 'false') . "</code></dd>\n";
     echo "</dl>\n";
 
     echo "<h3>Token</h3>\n";

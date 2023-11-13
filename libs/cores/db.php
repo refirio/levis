@@ -137,8 +137,10 @@ function db_query($query, $return = false, $error = true)
     if ($return) {
         return $query;
     } else {
-        if (DEBUG_LEVEL === 2 && php_sapi_name() !== 'cli' && (!isset($_REQUEST['_type']) || $_REQUEST['_type'] === 'html')) {
+        if (DEBUG_LEVEL === 3 && php_sapi_name() !== 'cli' && (!isset($_REQUEST['_type']) || $_REQUEST['_type'] === 'html')) {
             echo '<pre><code>' . $query . '</code></pre>';
+        } elseif (DEBUG_LEVEL === 2) {
+            $GLOBALS['_query'][] = $query;
         }
 
         $resource = db_driver_query($query);

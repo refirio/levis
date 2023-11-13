@@ -84,4 +84,6 @@ view();
 
 benchmark('Complete');
 
+debugbar();
+
 exit;
