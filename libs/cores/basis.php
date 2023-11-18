@@ -407,13 +407,23 @@ function controller($target = null)
     $file = $_REQUEST['_work'] . '.php';
 
     if ($target) {
+        $GLOBALS['_import'] = 'target';
+
         import('app/controllers/' . $target);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . $file)) {
+        $GLOBALS['_import'] = 'normal';
+
         import($dir . $file);
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . MAIN_DEFAULT_WORK . '.php')) {
+        $GLOBALS['_import'] = 'normal';
+
         import($dir . MAIN_DEFAULT_WORK . '.php');
     } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/' . PAGE_CONTROLLER . '.php')) {
+        $GLOBALS['_import'] = 'page';
+
         import('app/controllers/' . PAGE_CONTROLLER . '.php');
+    } else {
+        $GLOBALS['_import'] = null;
     }
 
     if (isset($_params[0]) && is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/controllers/after_' . $_params[0] . '.php')) {
@@ -457,15 +467,15 @@ function view($target = null, $return = false)
         ob_start();
     }
 
-    if ($target) {
+    if ($target && $GLOBALS['_import'] == 'target') {
         import('app/views/' . $target, false);
-    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . $file)) {
+    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . $file) && $GLOBALS['_import'] == 'normal') {
         import($dir . $file, false);
-    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . MAIN_DEFAULT_WORK . '.php')) {
+    } elseif (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . MAIN_DEFAULT_WORK . '.php') && $GLOBALS['_import'] == 'normal') {
         import($dir . MAIN_DEFAULT_WORK . '.php', false);
-    } elseif (is_file(PAGE_PATH . implode('/', $_params) . '.php')) {
+    } elseif (is_file(PAGE_PATH . implode('/', $_params) . '.php') && $GLOBALS['_import'] == 'normal') {
         import(str_replace(MAIN_APPLICATION_PATH, '', PAGE_PATH) . implode('/', $_params) . '.php', false);
-    } elseif ($_params[count($_params) - 1] === '' && is_file(PAGE_PATH . implode('/', array_slice($_params, 0, count($_params) - 1)) . '/index.php')) {
+    } elseif ($_params[count($_params) - 1] === '' && is_file(PAGE_PATH . implode('/', array_slice($_params, 0, count($_params) - 1)) . '/index.php') && $GLOBALS['_import'] == 'page') {
         import(str_replace(MAIN_APPLICATION_PATH, '', PAGE_PATH) . implode('/', array_slice($_params, 0, count($_params) - 1)) . '/index.php', false);
     } elseif ($_REQUEST['_mode'] === MAIN_DEFAULT_MODE && $_REQUEST['_work'] === MAIN_DEFAULT_WORK) {
         about();
