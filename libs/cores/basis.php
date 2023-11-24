@@ -272,111 +272,117 @@ function service($target = null)
 }
 
 /**
- * Load the model files.
+ * Load the model files or execute the model functions.
  *
- * @param string|null $target
- *
- * @return void
+ * @return mixed
  */
-function model($target = null)
+function model()
 {
-    if (!AUTOLOAD_MODEL && $target === null) {
+    $args = func_get_args();
+
+    if (!empty($args) && !regexp_match('\.', $args[0])) {
+        $target = array_shift($args);
+
+        return $target(...$args);
+    } else {
+        if (!AUTOLOAD_MODEL && $args[0] === null) {
+            return;
+        }
+
+        $dir = 'app/models/';
+        $php = '';
+
+        if ($dh = opendir(MAIN_PATH . MAIN_APPLICATION_PATH . $dir)) {
+            while (($entry = readdir($dh)) !== false) {
+                if (!is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . $entry)) {
+                    continue;
+                }
+
+                if (!empty($args) && $args[0] !== $entry) {
+                    continue;
+                }
+
+                if ($regexp = regexp_match('^([_a-zA-Z0-9\-]+)\.php$', $entry)) {
+                    $name = $regexp[1];
+                } else {
+                    continue;
+                }
+
+                import($dir . $entry);
+
+                if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/model.php')) {
+                    import('app/model.php');
+
+                    $model = '';
+                    if ($fp = fopen(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/model.php', 'r')) {
+                        while ($line = fgets($fp)) {
+                            if ($model == '') {
+                                $model .= "\n";
+                            } else {
+                                $model .= $line;
+                            }
+                        }
+                        fclose($fp);
+                    }
+                    $model = str_replace('APP_MODEL', $name, $model);
+
+                    eval($model);
+                }
+
+                if (!function_exists('select_' . $name)) {
+                    $php .= 'function select_' . $name . '($queries)';
+                    $php .= '{';
+                    $php .= '    $queries["from"] = "' . DATABASE_PREFIX . $name . '";';
+                    $php .= '    return db_select($queries);';
+                    $php .= '}';
+                }
+                if (!function_exists('insert_' . $name)) {
+                    $php .= 'function insert_' . $name . '($queries)';
+                    $php .= '{';
+                    $php .= '    $queries["insert_into"] = "' . DATABASE_PREFIX . $name . '";';
+                    $php .= '    return db_insert($queries);';
+                    $php .= '}';
+                }
+                if (!function_exists('update_' . $name)) {
+                    $php .= 'function update_' . $name . '($queries)';
+                    $php .= '{';
+                    $php .= '    $queries["update"] = "' . DATABASE_PREFIX . $name . '";';
+                    $php .= '    return db_update($queries);';
+                    $php .= '}';
+                }
+                if (!function_exists('delete_' . $name)) {
+                    $php .= 'function delete_' . $name . '($queries)';
+                    $php .= '{';
+                    $php .= '    $queries["delete_from"] = "' . DATABASE_PREFIX . $name . '";';
+                    $php .= '    return db_delete($queries);';
+                    $php .= '}';
+                }
+                if (!function_exists('normalize_' . $name)) {
+                    $php .= 'function normalize_' . $name . '($queries)';
+                    $php .= '{';
+                    $php .= '    return $queries;';
+                    $php .= '}';
+                }
+                if (!function_exists('validate_' . $name)) {
+                    $php .= 'function validate_' . $name . '($queries)';
+                    $php .= '{';
+                    $php .= '    return array();';
+                    $php .= '}';
+                }
+            }
+            closedir($dh);
+        } else {
+            if (LOGGING_MESSAGE) {
+                logging('message', 'Opendir error: ' . $args[0]);
+            }
+
+            error('Opendir error' . (DEBUG_LEVEL ? ': ' . $args[0]: ''));
+        }
+
+        eval($php);
+
         return;
     }
-
-    $dir = 'app/models/';
-    $php = '';
-
-    if ($dh = opendir(MAIN_PATH . MAIN_APPLICATION_PATH . $dir)) {
-        while (($entry = readdir($dh)) !== false) {
-            if (!is_file(MAIN_PATH . MAIN_APPLICATION_PATH . $dir . $entry)) {
-                continue;
-            }
-
-            if ($target && $target !== $entry) {
-                continue;
-            }
-
-            if ($regexp = regexp_match('^([_a-zA-Z0-9\-]+)\.php$', $entry)) {
-                $name = $regexp[1];
-            } else {
-                continue;
-            }
-
-            import($dir . $entry);
-
-            if (is_file(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/model.php')) {
-                import('app/model.php');
-
-                $model = '';
-                if ($fp = fopen(MAIN_PATH . MAIN_APPLICATION_PATH . 'app/model.php', 'r')) {
-                    while ($line = fgets($fp)) {
-                        if ($model == '') {
-                            $model .= "\n";
-                        } else {
-                            $model .= $line;
-                        }
-                    }
-                    fclose($fp);
-                }
-                $model = str_replace('APP_MODEL', $name, $model);
-
-                eval($model);
-            }
-
-            if (!function_exists('select_' . $name)) {
-                $php .= 'function select_' . $name . '($queries)';
-                $php .= '{';
-                $php .= '    $queries["from"] = "' . DATABASE_PREFIX . $name . '";';
-                $php .= '    return db_select($queries);';
-                $php .= '}';
-            }
-            if (!function_exists('insert_' . $name)) {
-                $php .= 'function insert_' . $name . '($queries)';
-                $php .= '{';
-                $php .= '    $queries["insert_into"] = "' . DATABASE_PREFIX . $name . '";';
-                $php .= '    return db_insert($queries);';
-                $php .= '}';
-            }
-            if (!function_exists('update_' . $name)) {
-                $php .= 'function update_' . $name . '($queries)';
-                $php .= '{';
-                $php .= '    $queries["update"] = "' . DATABASE_PREFIX . $name . '";';
-                $php .= '    return db_update($queries);';
-                $php .= '}';
-            }
-            if (!function_exists('delete_' . $name)) {
-                $php .= 'function delete_' . $name . '($queries)';
-                $php .= '{';
-                $php .= '    $queries["delete_from"] = "' . DATABASE_PREFIX . $name . '";';
-                $php .= '    return db_delete($queries);';
-                $php .= '}';
-            }
-            if (!function_exists('normalize_' . $name)) {
-                $php .= 'function normalize_' . $name . '($queries)';
-                $php .= '{';
-                $php .= '    return $queries;';
-                $php .= '}';
-            }
-            if (!function_exists('validate_' . $name)) {
-                $php .= 'function validate_' . $name . '($queries)';
-                $php .= '{';
-                $php .= '    return array();';
-                $php .= '}';
-            }
-        }
-        closedir($dh);
-    } else {
-        if (LOGGING_MESSAGE) {
-            logging('message', 'Opendir error: ' . $target);
-        }
-
-        error('Opendir error' . (DEBUG_LEVEL ? ': ' . $target: ''));
-    }
-
-    eval($php);
-
-    return;
 }
 
 /**
