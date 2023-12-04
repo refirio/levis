@@ -840,7 +840,7 @@ function db_admin_export()
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $table    = empty($_POST['table']) ? null : $_POST['table'];
+        $table    = empty($_POST['table']) ? array() : $_POST['table'];
         $combined = $_POST['format'] === 'combined' ? true : false;
 
         if ($_POST['means'] === 'download') {
@@ -893,26 +893,23 @@ function db_admin_export()
     echo "<legend>export</legend>\n";
 
     echo "<dl>\n";
-    echo "<dt>table</dt>\n";
+    echo "<dt>tables</dt>\n";
     echo "<dd>\n";
-    echo "<select name=\"table\">\n";
-    echo "<option value=\"\">(all)</option>\n";
 
     foreach ($_view['tables'] as $table) {
-        echo "<option value=\"" . $table . "\">" . $table . "</option>\n";
+        echo "<label><input type=\"checkbox\" name=\"table[]\" value=\"" . $table . "\" checked=\"checked\"> " . $table . "</label><br>\n";
     }
 
-    echo "</select>\n";
     echo "</dd>\n";
     echo "<dt>format</dt>\n";
     echo "<dd>\n";
     echo "<label><input type=\"radio\" name=\"format\" value=\"combined\" checked=\"checked\"> combined</label><br>\n";
-    echo "<label><input type=\"radio\" name=\"format\" value=\"separated\"> separated</label>\n";
+    echo "<label><input type=\"radio\" name=\"format\" value=\"separated\"> separated</label><br>\n";
     echo "</dd>\n";
     echo "<dt>means</dt>\n";
     echo "<dd>\n";
     echo "<label><input type=\"radio\" name=\"means\" value=\"download\" checked=\"checked\"> download</label><br>\n";
-    echo "<label><input type=\"radio\" name=\"means\" value=\"write\"> write to <code title=\"" . dirname($_SERVER['SCRIPT_FILENAME']) . '/' . DATABASE_NAME . ".sql\">" . DATABASE_NAME . ".sql</code></label>\n";
+    echo "<label><input type=\"radio\" name=\"means\" value=\"write\"> write to <code title=\"" . dirname($_SERVER['SCRIPT_FILENAME']) . '/' . DATABASE_NAME . ".sql\">" . DATABASE_NAME . ".sql</code></label><br>\n";
 
     if (is_file(DATABASE_NAME . '.sql')) {
         echo "(Already exists.)\n";
@@ -1057,10 +1054,12 @@ function db_admin_sql()
     if ($sql === db_sql('table_list')) {
         $head = '';
         $body = '';
+        $bulk = '';
 
         $results = db_result($resource);
 
         $head .= '<tr>';
+        $head .= '<th><input type="checkbox" name="" value="" class="bulks" onchange="javascript:checkAll(this.checked);"></th>';
         $head .= '<th>name</th>';
 
         if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
@@ -1077,6 +1076,7 @@ function db_admin_sql()
             $head .= '<th>alter</th>';
         }
 
+        $head .= '<th>truncate</th>';
         $head .= '<th>drop</th>';
         $head .= '<th>insert</th>';
         $head .= '<th>delete</th>';
@@ -1085,6 +1085,12 @@ function db_admin_sql()
 
         foreach ($results as $result) {
             $table = array_shift($result);
+
+            if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
+                $table_escaped = '`' . $table . '`';
+            } else {
+                $table_escaped = '"' . $table . '"';
+            }
 
             if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
                 $create     = 'SHOW CREATE TABLE';
@@ -1122,6 +1128,7 @@ function db_admin_sql()
             }
 
             $body .= '<tr>';
+            $body .= '<td><input type="checkbox" name="table" value="' . $table . '" class="table" onchange="javascript:check(this.checked);"></td>';
             $body .= '<td><span style="font-family:monospace;">' . $table . '</span></td>';
 
             if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
@@ -1135,24 +1142,38 @@ function db_admin_sql()
             $body .= '<td><a href="javascript:insertSQL(\'' . str_replace('\'', '\\\'', $define_sql) . '\');">' . $define . '</a></td>';
 
             if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
-                $body .= '<td><a href="javascript:insertSQL(\'ALTER TABLE ' . $table . ' COMMENT \\\'\\\';\');">ALTER TABLE</a></td>';
+                $body .= '<td><a href="javascript:insertSQL(\'ALTER TABLE ' . $table_escaped . ' COMMENT \\\'\\\';\');">ALTER TABLE</a></td>';
             }
 
-            $body .= '<td><a href="javascript:insertSQL(\'DROP TABLE ' . $table . ';\');">DROP TABLE</a></td>';
-            $body .= '<td><a href="javascript:insertSQL(\'INSERT INTO ' . $table . '(' . implode(',', $insert_keys) . ') VALUES(' . implode(',', $insert_values) . ');\');">INSERT</a></td>';
-            $body .= '<td><a href="javascript:insertSQL(\'DELETE FROM ' . $table . ';\');">DELETE</a></td>';
-            $body .= '<td><a href="javascript:insertSQL(\'SELECT * FROM ' . $table . ' LIMIT 100;\');">SELECT</a></td>';
+            $body .= '<td><a href="javascript:insertSQL(\'TRUNCATE TABLE ' . $table_escaped . ';\');">TRUNCATE TABLE</a></td>';
+            $body .= '<td><a href="javascript:insertSQL(\'DROP TABLE ' . $table_escaped . ';\');">DROP TABLE</a></td>';
+            $body .= '<td><a href="javascript:insertSQL(\'INSERT INTO ' . $table_escaped . '(' . implode(',', $insert_keys) . ') VALUES(' . implode(',', $insert_values) . ');\');">INSERT</a></td>';
+            $body .= '<td><a href="javascript:insertSQL(\'DELETE FROM ' . $table_escaped . ';\');">DELETE</a></td>';
+            $body .= '<td><a href="javascript:insertSQL(\'SELECT * FROM ' . $table_escaped . ' LIMIT 100;\');">SELECT</a></td>';
             $body .= '</tr>';
         }
 
-        $_view['result'] = '<table summary="result">' . $head . $body . '</table>';
+        $bulk .= '<form action="" method="get">';
+        $bulk .= '<fieldset style="padding: 0; border: 0;">';
+        $bulk .= '<legend style="display: none;">bulk</legend>';
+        $bulk .= '<p>';
+        $bulk .= '<select name="" class="bulk" onchange="javascript:bulk(this.value);">';
+        $bulk .= '<option value="">With selected:</option>';
+        $bulk .= '<option value="truncate">TRUNCATE TABLE</option>';
+        $bulk .= '<option value="drop">DROP TABLE</option>';
+        $bulk .= '</select>';
+        $bulk .= '</p>';
+        $bulk .= '</fieldset>';
+        $bulk .= '</form>';
+
+        $_view['result'] = '<table summary="result">' . $head . $body . '</table>' . $bulk;
         $_view['count']  = db_count($resource);
     } elseif (regexp_match('^(SELECT|SHOW|EXPLAIN|DESC|PRAGMA)', $sql)) {
         $head = '';
         $body = '';
         $flag = false;
 
-        if ($regexp = regexp_match('^SELECT \* FROM ([_a-zA-Z0-9\-]+)', $sql)) {
+        if ($regexp = regexp_match('^SELECT \* FROM [`"]([_a-zA-Z0-9\-]+)[`"]', $sql)) {
             $table = $regexp[1];
             $link  = true;
         } elseif ($regexp = regexp_match('^' . db_sql('table_define', '([_a-zA-Z0-9\-]+)'), $sql)) {
@@ -1161,6 +1182,12 @@ function db_admin_sql()
         } else {
             $table = null;
             $link  = false;
+        }
+
+        if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
+            $table_escaped = '`' . $table . '`';
+        } else {
+            $table_escaped = '"' . $table . '"';
         }
 
         $results = db_result($resource);
@@ -1205,7 +1232,7 @@ function db_admin_sql()
                     if ($link === false) {
                         $value = $value_html;
                     } else {
-                        $value = '<a href="javascript:insertSQL(\'UPDATE ' . $table . ' SET ' . $key . ' = ' . $value_sql . ' WHERE ' . $first_key . ' = \\\'' . $first_value . '\\\';\');">' . truncate($value_html, 100) . '</a>';
+                        $value = '<a href="javascript:insertSQL(\'UPDATE ' . $table_escaped . ' SET ' . $key . ' = ' . $value_sql . ' WHERE ' . $first_key . ' = \\\'' . $first_value . '\\\';\');">' . truncate($value_html, 100) . '</a>';
                     }
 
                     $body .= '<td><span style="font-family:monospace;">' . $value . '</span></td>';
@@ -1218,9 +1245,9 @@ function db_admin_sql()
 
             if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
                 if (regexp_match('^' . db_sql('table_define', '([_a-zA-Z0-9\-]+)'), $sql)) {
-                    $add_value    = '<a href="javascript:insertSQL(\'ALTER TABLE ' . $table . ' ADD field INT(1) NOT NULL COMMENT \\\'\\\' AFTER ' . $result['Field'] . ';\');">ADD</a>';
-                    $change_value = '<a href="javascript:insertSQL(\'ALTER TABLE ' . $table . ' CHANGE ' . $result['Field'] . ' ' . $result['Field'] . ' INT(1) NOT NULL COMMENT \\\'\\\';\');">CHANGE</a>';
-                    $drop_value   = '<a href="javascript:insertSQL(\'ALTER TABLE ' . $table . ' DROP ' . $result['Field'] . ';\');">DROP</a>';
+                    $add_value    = '<a href="javascript:insertSQL(\'ALTER TABLE ' . $table_escaped . ' ADD field INT(1) NOT NULL COMMENT \\\'\\\' AFTER ' . $result['Field'] . ';\');">ADD</a>';
+                    $change_value = '<a href="javascript:insertSQL(\'ALTER TABLE ' . $table_escaped . ' CHANGE ' . $result['Field'] . ' ' . $result['Field'] . ' INT(1) NOT NULL COMMENT \\\'\\\';\');">CHANGE</a>';
+                    $drop_value   = '<a href="javascript:insertSQL(\'ALTER TABLE ' . $table_escaped . ' DROP ' . $result['Field'] . ';\');">DROP</a>';
 
                     $body .= '<td><span style="font-family:monospace;">' . $add_value . ' ' . $change_value . ' ' . $drop_value . '</span></td>';
 
@@ -1254,7 +1281,61 @@ function db_admin_sql()
     echo "function insertSQL(sql)\n";
     echo "{\n";
     echo "    document.getElementById('exec_form').sql.value = sql;\n";
-    echo "}";
+    echo "}\n";
+    echo "function checkAll(checked)\n";
+    echo "{\n";
+    echo "    var tables = document.getElementsByClassName('table');\n";
+    echo "    var bulks  = document.getElementsByClassName('bulks');\n";
+    echo "    var i;\n";
+    echo "    for (i = 0; i < tables.length; i++) {\n";
+    echo "        tables[i].checked = checked;\n";
+    echo "    }\n";
+    echo "    for (i = 0; i < bulks.length; i++) {\n";
+    echo "        bulks[i].checked = checked;\n";
+    echo "    }\n";
+    echo "}\n";
+    echo "function check(checked)\n";
+    echo "{\n";
+    echo "    var tables = document.getElementsByClassName('table');\n";
+    echo "    var bulks  = document.getElementsByClassName('bulks');\n";
+    echo "    var status = checked;\n";
+    echo "    var all    = true;\n";
+    echo "    var i;\n";
+    echo "    for (i = 0; i < tables.length; i++) {\n";
+    echo "        if (tables[i].checked == false) {\n";
+    echo "            all = false;\n";
+    echo "        }\n";
+    echo "    }\n";
+    echo "    for (i = 0; i < bulks.length; i++) {\n";
+    echo "        if (all == true) {\n";
+    echo "            bulks[i].checked = true;\n";
+    echo "        } else {\n";
+    echo "            bulks[i].checked = false;\n";
+    echo "        }\n";
+    echo "    }\n";
+    echo "}\n";
+    echo "function bulk(selected)\n";
+    echo "{\n";
+    echo "    var tables = document.getElementsByClassName('table');\n";
+    echo "    var bulk   = document.getElementsByClassName('bulk');\n";
+    echo "    var sql    = '';\n";
+    echo "    var exec   = '';\n";
+    echo "    if (selected == 'truncate') {\n";
+    echo "        exec = 'TRUNCATE TABLE';\n";
+    echo "    } else if (selected == 'drop') {\n";
+    echo "        exec = 'DROP TABLE';\n";
+    echo "    }\n";
+    echo "    var i;\n";
+    echo "    for (i = 0; i < tables.length; i++) {\n";
+    echo "        if (tables[i].checked == true) {\n";
+    echo "            sql += exec + ' ' + tables[i].value + ';\\n';\n";
+    echo "        }\n";
+    echo "    }\n";
+    echo "    for (i = 0; i < bulk.length; i++) {\n";
+    echo "        bulk[i].selectedIndex = 0;\n";
+    echo "    }\n";
+    echo "    insertSQL(sql);\n";
+    echo "}\n";
     echo "</script>\n";
     echo "</head>\n";
     echo "<body>\n";
@@ -2465,10 +2546,10 @@ function db_import($file)
  * Export SQL to the file.
  *
  * @param string|null $file
- * @param string|null $target
+ * @param array       $target
  * @param bool        $combined
  */
-function db_export($file = null, $target = null, $combined = true)
+function db_export($file = null, $target = array(), $combined = true)
 {
     if (function_exists('my_db_export')) {
         eval('my_db_export($file, $target, $combined);');
@@ -2490,7 +2571,7 @@ function db_export($file = null, $target = null, $combined = true)
     $text .= "\n";
 
     foreach ($tables as $table) {
-        if ($target === null || $target === $table) {
+        if (in_array($table, $target)) {
             if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
                 $table_escaped = '`' . $table . '`';
             } else {
@@ -2553,14 +2634,8 @@ function db_export($file = null, $target = null, $combined = true)
     $text .= "-- Export Completed.\n";
 
     if ($file === null) {
-        if ($target === null) {
-            $filename = DATABASE_NAME . '.sql';
-        } else {
-            $filename = DATABASE_NAME . '-' . $target . '.sql';
-        }
-
         header('Content-Type: text/plain');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Content-Disposition: attachment; filename="' . DATABASE_NAME . '.sql"');
         echo $text;
         exit;
     } else {
