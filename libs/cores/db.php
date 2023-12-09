@@ -694,7 +694,7 @@ function db_rollback()
         return false;
     }
 
-    if (isset($_db['transaction'][$_db['target']]) && $_db['transaction'][$_db['target']] === true) {
+    if (isset($_db['target']) && isset($_db['transaction'][$_db['target']]) && $_db['transaction'][$_db['target']] === true) {
         $_db['transaction'][$_db['target']] = false;
     } else {
         return false;
@@ -1059,7 +1059,11 @@ function db_admin_sql()
         $results = db_result($resource);
 
         $head .= '<tr>';
-        $head .= '<th><input type="checkbox" name="" value="" class="bulks" onchange="javascript:checkAll(this.checked);"></th>';
+
+        if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
+            $head .= '<th><input type="checkbox" name="" value="" class="bulks" onchange="javascript:checkAll(this.checked);"></th>';
+        }
+
         $head .= '<th>name</th>';
 
         if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
@@ -1075,8 +1079,10 @@ function db_admin_sql()
         if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
             $head .= '<th>alter</th>';
         }
+        if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql' || DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
+            $head .= '<th>truncate</th>';
+        }
 
-        $head .= '<th>truncate</th>';
         $head .= '<th>drop</th>';
         $head .= '<th>insert</th>';
         $head .= '<th>delete</th>';
@@ -1089,7 +1095,7 @@ function db_admin_sql()
             if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
                 $table_escaped = '`' . $table . '`';
             } else {
-                $table_escaped = '"' . $table . '"';
+                $table_escaped = '&quot;' . $table . '&quot;';
             }
 
             if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
@@ -1128,7 +1134,11 @@ function db_admin_sql()
             }
 
             $body .= '<tr>';
-            $body .= '<td><input type="checkbox" name="table" value="' . $table . '" class="table" onchange="javascript:check(this.checked);"></td>';
+
+            if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
+                $body .= '<td><input type="checkbox" name="table" value="' . $table . '" class="table" onchange="javascript:check(this.checked);"></td>';
+            }
+
             $body .= '<td><span style="font-family:monospace;">' . $table . '</span></td>';
 
             if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
@@ -1144,8 +1154,10 @@ function db_admin_sql()
             if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
                 $body .= '<td><a href="javascript:insertSQL(\'ALTER TABLE ' . $table_escaped . ' COMMENT \\\'\\\';\');">ALTER TABLE</a></td>';
             }
+            if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql' || DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
+                $body .= '<td><a href="javascript:insertSQL(\'TRUNCATE TABLE ' . $table_escaped . ';\');">TRUNCATE TABLE</a></td>';
+            }
 
-            $body .= '<td><a href="javascript:insertSQL(\'TRUNCATE TABLE ' . $table_escaped . ';\');">TRUNCATE TABLE</a></td>';
             $body .= '<td><a href="javascript:insertSQL(\'DROP TABLE ' . $table_escaped . ';\');">DROP TABLE</a></td>';
             $body .= '<td><a href="javascript:insertSQL(\'INSERT INTO ' . $table_escaped . '(' . implode(',', $insert_keys) . ') VALUES(' . implode(',', $insert_values) . ');\');">INSERT</a></td>';
             $body .= '<td><a href="javascript:insertSQL(\'DELETE FROM ' . $table_escaped . ';\');">DELETE</a></td>';
@@ -1153,18 +1165,20 @@ function db_admin_sql()
             $body .= '</tr>';
         }
 
-        $bulk .= '<form action="" method="get">';
-        $bulk .= '<fieldset style="padding: 0; border: 0;">';
-        $bulk .= '<legend style="display: none;">bulk</legend>';
-        $bulk .= '<p>';
-        $bulk .= '<select name="" class="bulk" onchange="javascript:bulk(this.value);">';
-        $bulk .= '<option value="">With selected:</option>';
-        $bulk .= '<option value="truncate">TRUNCATE TABLE</option>';
-        $bulk .= '<option value="drop">DROP TABLE</option>';
-        $bulk .= '</select>';
-        $bulk .= '</p>';
-        $bulk .= '</fieldset>';
-        $bulk .= '</form>';
+        if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
+            $bulk .= '<form action="" method="get">';
+            $bulk .= '<fieldset style="padding: 0; border: 0;">';
+            $bulk .= '<legend style="display: none;">bulk</legend>';
+            $bulk .= '<p>';
+            $bulk .= '<select name="" class="bulk" onchange="javascript:bulk(this.value);">';
+            $bulk .= '<option value="">With selected:</option>';
+            $bulk .= '<option value="truncate">TRUNCATE TABLE</option>';
+            $bulk .= '<option value="drop">DROP TABLE</option>';
+            $bulk .= '</select>';
+            $bulk .= '</p>';
+            $bulk .= '</fieldset>';
+            $bulk .= '</form>';
+        }
 
         $_view['result'] = '<table summary="result">' . $head . $body . '</table>' . $bulk;
         $_view['count']  = db_count($resource);
@@ -1187,7 +1201,7 @@ function db_admin_sql()
         if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
             $table_escaped = '`' . $table . '`';
         } else {
-            $table_escaped = '"' . $table . '"';
+            $table_escaped = '&quot;' . $table . '&quot;';
         }
 
         $results = db_result($resource);
@@ -1282,60 +1296,64 @@ function db_admin_sql()
     echo "{\n";
     echo "    document.getElementById('exec_form').sql.value = sql;\n";
     echo "}\n";
-    echo "function checkAll(checked)\n";
-    echo "{\n";
-    echo "    var tables = document.getElementsByClassName('table');\n";
-    echo "    var bulks  = document.getElementsByClassName('bulks');\n";
-    echo "    var i;\n";
-    echo "    for (i = 0; i < tables.length; i++) {\n";
-    echo "        tables[i].checked = checked;\n";
-    echo "    }\n";
-    echo "    for (i = 0; i < bulks.length; i++) {\n";
-    echo "        bulks[i].checked = checked;\n";
-    echo "    }\n";
-    echo "}\n";
-    echo "function check(checked)\n";
-    echo "{\n";
-    echo "    var tables = document.getElementsByClassName('table');\n";
-    echo "    var bulks  = document.getElementsByClassName('bulks');\n";
-    echo "    var status = checked;\n";
-    echo "    var all    = true;\n";
-    echo "    var i;\n";
-    echo "    for (i = 0; i < tables.length; i++) {\n";
-    echo "        if (tables[i].checked == false) {\n";
-    echo "            all = false;\n";
-    echo "        }\n";
-    echo "    }\n";
-    echo "    for (i = 0; i < bulks.length; i++) {\n";
-    echo "        if (all == true) {\n";
-    echo "            bulks[i].checked = true;\n";
-    echo "        } else {\n";
-    echo "            bulks[i].checked = false;\n";
-    echo "        }\n";
-    echo "    }\n";
-    echo "}\n";
-    echo "function bulk(selected)\n";
-    echo "{\n";
-    echo "    var tables = document.getElementsByClassName('table');\n";
-    echo "    var bulk   = document.getElementsByClassName('bulk');\n";
-    echo "    var sql    = '';\n";
-    echo "    var exec   = '';\n";
-    echo "    if (selected == 'truncate') {\n";
-    echo "        exec = 'TRUNCATE TABLE';\n";
-    echo "    } else if (selected == 'drop') {\n";
-    echo "        exec = 'DROP TABLE';\n";
-    echo "    }\n";
-    echo "    var i;\n";
-    echo "    for (i = 0; i < tables.length; i++) {\n";
-    echo "        if (tables[i].checked == true) {\n";
-    echo "            sql += exec + ' ' + tables[i].value + ';\\n';\n";
-    echo "        }\n";
-    echo "    }\n";
-    echo "    for (i = 0; i < bulk.length; i++) {\n";
-    echo "        bulk[i].selectedIndex = 0;\n";
-    echo "    }\n";
-    echo "    insertSQL(sql);\n";
-    echo "}\n";
+
+    if (DATABASE_TYPE === 'pdo_mysql' || DATABASE_TYPE === 'mysql') {
+        echo "function checkAll(checked)\n";
+        echo "{\n";
+        echo "    var tables = document.getElementsByClassName('table');\n";
+        echo "    var bulks  = document.getElementsByClassName('bulks');\n";
+        echo "    var i;\n";
+        echo "    for (i = 0; i < tables.length; i++) {\n";
+        echo "        tables[i].checked = checked;\n";
+        echo "    }\n";
+        echo "    for (i = 0; i < bulks.length; i++) {\n";
+        echo "        bulks[i].checked = checked;\n";
+        echo "    }\n";
+        echo "}\n";
+        echo "function check(checked)\n";
+        echo "{\n";
+        echo "    var tables = document.getElementsByClassName('table');\n";
+        echo "    var bulks  = document.getElementsByClassName('bulks');\n";
+        echo "    var status = checked;\n";
+        echo "    var all    = true;\n";
+        echo "    var i;\n";
+        echo "    for (i = 0; i < tables.length; i++) {\n";
+        echo "        if (tables[i].checked == false) {\n";
+        echo "            all = false;\n";
+        echo "        }\n";
+        echo "    }\n";
+        echo "    for (i = 0; i < bulks.length; i++) {\n";
+        echo "        if (all == true) {\n";
+        echo "            bulks[i].checked = true;\n";
+        echo "        } else {\n";
+        echo "            bulks[i].checked = false;\n";
+        echo "        }\n";
+        echo "    }\n";
+        echo "}\n";
+        echo "function bulk(selected)\n";
+        echo "{\n";
+        echo "    var tables = document.getElementsByClassName('table');\n";
+        echo "    var bulk   = document.getElementsByClassName('bulk');\n";
+        echo "    var sql    = '';\n";
+        echo "    var exec   = '';\n";
+        echo "    if (selected == 'truncate') {\n";
+        echo "        exec = 'TRUNCATE TABLE';\n";
+        echo "    } else if (selected == 'drop') {\n";
+        echo "        exec = 'DROP TABLE';\n";
+        echo "    }\n";
+        echo "    var i;\n";
+        echo "    for (i = 0; i < tables.length; i++) {\n";
+        echo "        if (tables[i].checked == true) {\n";
+        echo "            sql += exec + ' ' + tables[i].value + ';\\n';\n";
+        echo "        }\n";
+        echo "    }\n";
+        echo "    for (i = 0; i < bulk.length; i++) {\n";
+        echo "        bulk[i].selectedIndex = 0;\n";
+        echo "    }\n";
+        echo "    insertSQL(sql);\n";
+        echo "}\n";
+    }
+
     echo "</script>\n";
     echo "</head>\n";
     echo "<body>\n";
