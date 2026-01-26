@@ -958,6 +958,10 @@ function forward($target = null)
             view($_REQUEST['_mode'] . '/' . $_REQUEST['_work'] . '.php');
 
             exit;
+        } elseif ($regexp = regexp_match('^[^\/].+\.php$', $target)) {
+            import($target);
+
+            exit;
         } else {
             error('​Forward error' . (DEBUG_LEVEL ? ': ' . $target: ''));
         }
