@@ -911,16 +911,21 @@ function token($type, $name = 'default')
  * Redirect to the url.
  *
  * @param string $url
+ * @param int    $response_code
  *
  * @return void
  */
-function redirect($url)
+function redirect($url, $response_code = 0)
 {
     if (!regexp_match('^https?\:\/\/', $url)) {
         $url = MAIN_FILE . $url;
     }
 
-    header('Location: ' . $url);
+    if ($response_code) {
+        header('Location: ' . $url, true, $response_code);
+    } else {
+        header('Location: ' . $url);
+    }
 
     exit;
 }
