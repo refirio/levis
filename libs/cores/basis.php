@@ -1120,7 +1120,7 @@ function logging($type = 'message', $message = null)
  */
 function auth()
 {
-    if (DEBUG_LEVEL === 0) {
+    if (DEBUG_LEVEL === 0 && php_sapi_name() !== 'cli') {
         if (DEBUG_PASSWORD && empty($_SESSION['_auth'])) {
             password();
         } elseif (DEBUG_ADDR && !in_array(clientip(), explode(',', DEBUG_ADDR))) {
