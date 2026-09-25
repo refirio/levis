@@ -79,6 +79,8 @@ function test_index()
             );
         }
         closedir($dh);
+
+        sort($_view['targets']);
     } else {
         if (LOGGING_MESSAGE) {
             logging('message', 'test: Opendir error: ' . MAIN_PATH . TEST_PATH);
