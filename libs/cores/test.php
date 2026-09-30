@@ -41,6 +41,7 @@ function test_index()
 
     $_view['ok'] = 0;
     $_view['ng'] = 0;
+    $_view['skip'] = 0;
     $_view['targets'] = array();
 
     $i = 0;
@@ -61,7 +62,12 @@ function test_index()
             $result = null;
             if (isset($results[$i])) {
                 $result = $results[$i];
-                if ($result) {
+                if ($result == 2) {
+                    $result = 'OK/SKIP';
+
+                    $_view['ok']++;
+                    $_view['skip']++;
+                } elseif ($result) {
                     $result = 'OK';
 
                     $_view['ok']++;
@@ -128,6 +134,10 @@ function test_index()
             echo "<p>" . $_view['ng'] . " Test is NG!</p>\n";
         } else {
             echo "<p>All Test is OK!</p>\n";
+        }
+
+        if ($_view['skip']) {
+            echo "<p>" . $_view['skip'] . " Test has skipped tests.</p>\n";
         }
     }
 
@@ -216,6 +226,8 @@ function test_exec()
 
     $_view['ok'] = 0;
     $_view['ng'] = 0;
+    $_view['skip'] = 0;
+    $_view['skips'] = array();
 
     if (php_sapi_name() === 'cli') {
         echo "levis: PHP Framework\n";
@@ -249,6 +261,7 @@ function test_exec()
     echo "\n";
     echo "OK: " . $_view['ok'] . "\n";
     echo "NG: " . $_view['ng'] . "\n";
+    echo "SKIP: " . $_view['skip'] . (!empty($_view['skips']) ? ' (' . implode(', ', array_unique($_view['skips'])) . ')' : '') . "\n";
     echo "Time: " . $_view['time'] . " sec.\n";
 
     if (php_sapi_name() !== 'cli') {
@@ -256,7 +269,7 @@ function test_exec()
         echo "<p><a href=\"" . t(MAIN_FILE, true) . "/?_mode=test_index\">Back to Index</a></p>\n";
 
         if (isset($_GET['_test'])) {
-            $_view['url'] = MAIN_FILE . "/?_mode=test_exec&_test=" . $_GET['_test'] . ';' . $index . ":" . ($_view['ng'] ? 0 : 1);
+            $_view['url'] = MAIN_FILE . "/?_mode=test_exec&_test=" . $_GET['_test'] . ';' . $index . ":" . ($_view['ng'] ? 0 : ($_view['skip'] ? 2 : 1));
 
             echo "<script>\n";
             echo "setTimeout('window.location.href = \'" . $_view['url'] . "\'', 1000);\n";
@@ -291,6 +304,31 @@ function test_result($title, $result)
         $_view['ng']++;
 
         echo 'NG: ' . $title . "\n";
+    }
+
+    return;
+}
+
+/**
+ * Skip the test.
+ *
+ * @param string      $title
+ * @param string|null $reason
+ *
+ * @return void
+ */
+function test_skip($title, $reason = null)
+{
+    global $_view;
+
+    $_view['skip']++;
+
+    if ($reason !== null && $reason !== '') {
+        $_view['skips'][] = $reason;
+
+        echo 'SKIP: ' . $title . ' (' . $reason . ')' . "\n";
+    } else {
+        echo 'SKIP: ' . $title . "\n";
     }
 
     return;
