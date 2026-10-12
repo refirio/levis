@@ -724,6 +724,8 @@ function file_resize($original, $output, $output_width, $output_height, $quality
         $width  = ($output_height / $height) * $width;
         $height = $output_height;
     }
+    $width  = max(1, (int) round($width));
+    $height = max(1, (int) round($height));
 
     if ($original_width === $width && $original_height === $height && $output === null) {
         header('Content-type: ' . file_mimetype($original));

@@ -101,7 +101,7 @@ function session()
         $path = SESSION_PATH . '/';
     }
 
-    session_set_cookie_params(SESSION_LIFETIME, $path);
+    session_set_cookie_params(SESSION_LIFETIME, $path, '', ssl(), true);
     session_cache_limiter(SESSION_CACHE);
     session_start();
 
@@ -185,6 +185,16 @@ function routing()
         }
     }
     $_params = array_values(array_map('urldecode', $request_uri));
+
+    foreach ($_params as $index => $param) {
+        $param = str_replace("\0", '', $param);
+
+        if (strpos($param, '..') !== false || strpos($param, '/') !== false || strpos($param, '\\') !== false) {
+            $param = '';
+        }
+
+        $_params[$index] = $param;
+    }
 
     if (count($_params)) {
         if ($regexp = regexp_match('(.+)\.([_a-zA-Z0-9\-]*)$', $_params[count($_params) - 1])) {
@@ -820,19 +830,22 @@ function localdate($format = null, $timestamp = null)
 /**
  * Get a client ip.
  *
- * @param bool $proxy
+ * @param int $proxy
  *
  * @return string|null
  */
-function clientip($proxy = false)
+function clientip($proxy = 0)
 {
-    if ($proxy) {
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            return $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $addresses = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+    if ($proxy > 0 && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $addresses = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $index     = count($addresses) - $proxy;
 
-            return $addresses[0];
+        if ($index >= 0) {
+            $address = trim($addresses[$index]);
+
+            if (regexp_match('^[0-9a-fA-F:.]+$', $address)) {
+                return $address;
+            }
         }
     }
 

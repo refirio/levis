@@ -15,10 +15,11 @@
  * @param string|null $path
  * @param string|null $domain
  * @param bool        $secure
+ * @param bool        $httponly
  *
  * @return bool
  */
-function cookie_set($name, $value, $expire = 0, $path = null, $domain = null, $secure = false)
+function cookie_set($name, $value, $expire = 0, $path = null, $domain = null, $secure = false, $httponly = true)
 {
     if ($path === null) {
         $path = dirname($_SERVER['SCRIPT_NAME']);
@@ -31,5 +32,5 @@ function cookie_set($name, $value, $expire = 0, $path = null, $domain = null, $s
         }
     }
 
-    return setcookie($name, $value, $expire, $path, $domain, $secure);
+    return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
 }

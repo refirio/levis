@@ -66,12 +66,12 @@ function ui_pager($option = array())
     }
 
     $option = array(
-        'key'       => $option['key'],
+        'key'       => t($option['key'], true),
         'now'       => intval($option['now']),
         'count'     => intval($option['count']),
         'size'      => intval($option['size']),
         'width'     => intval($option['width']),
-        'query'     => $option['query'],
+        'query'     => t($option['query'], true),
         'delimiter' => $option['delimiter'],
         'label'     => $option['label'],
         'attribute' => $option['attribute'],

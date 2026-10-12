@@ -291,10 +291,18 @@ function db_placeholder($data)
             $query = str_replace(':', $holder, $query);
 
             if (isset($holders[0])) {
-                foreach ($holders as $key => $value) {
-                    if (regexp_match($holder . '\?', $query)) {
-                        $query = regexp_replace($holder . '\?', $value, $query, 1);
+                $token = $holder . '?';
+
+                foreach ($holders as $value) {
+                    $position = strpos($query, $token);
+
+                    if ($position === false) {
+                        break;
                     }
+
+                    $value = db_escape(is_array($value) ? '' : $value);
+
+                    $query = substr($query, 0, $position) . $value . substr($query, $position + strlen($token));
                 }
             } else {
                 array_multisort(array_map('strlen', array_keys($holders)), SORT_DESC, $holders);
@@ -306,22 +314,23 @@ function db_placeholder($data)
                         $option = null;
                     }
 
-                    if (regexp_match($holder . $key, $query)) {
-                        if ($option == 'bool') {
-                            if ((DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql')) {
-                                $value = $value ? 'TRUE' : 'FALSE';
-                            } else {
-                                $value = $value ? 1 : 0;
-                            }
-                        } elseif ($option == 'number') {
-                            $value = intval($value);
-                        } elseif ($option == 'string') {
-                            $value = '\'' . $value . '\'';
+                    if ($option === 'bool') {
+                        if (DATABASE_TYPE === 'pdo_pgsql' || DATABASE_TYPE === 'pgsql') {
+                            $value = $value ? 'TRUE' : 'FALSE';
                         } else {
-                            $value = is_array($value) ? $value[0] : db_escape($value);
+                            $value = $value ? 1 : 0;
                         }
-                        $query = regexp_replace($holder . $key, $value, $query);
+                    } elseif ($option === 'number') {
+                        $value = intval($value);
+                    } elseif ($option === 'string') {
+                        $value = db_driver_escape(is_array($value) ? '' : (string)$value);
+                    } elseif ($option === 'raw') {
+                        $value = is_array($value) ? $value[0] : $value;
+                    } else {
+                        $value = db_escape(is_array($value) ? '' : $value);
                     }
+
+                    $query = str_replace($holder . $key, (string)$value, $query);
                 }
             }
 
