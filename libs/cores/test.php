@@ -45,54 +45,33 @@ function test_index()
     $_view['targets'] = array();
 
     $i = 0;
-    if ($dh = opendir(MAIN_PATH . TEST_PATH)) {
-        while (($entry = readdir($dh)) !== false) {
-            if (!is_file(MAIN_PATH . TEST_PATH . $entry)) {
-                continue;
-            }
+    foreach (test_targets() as $name) {
+        $i++;
 
-            if ($regexp = regexp_match('^([_a-zA-Z0-9\-]+)\.php$', $entry)) {
-                $name = $regexp[1];
+        $result = null;
+        if (isset($results[$i])) {
+            $result = $results[$i];
+            if ($result == 2) {
+                $result = 'OK/SKIP';
+
+                $_view['ok']++;
+                $_view['skip']++;
+            } elseif ($result) {
+                $result = 'OK';
+
+                $_view['ok']++;
             } else {
-                continue;
+                $result = 'NG';
+
+                $_view['ng']++;
             }
-
-            $i++;
-
-            $result = null;
-            if (isset($results[$i])) {
-                $result = $results[$i];
-                if ($result == 2) {
-                    $result = 'OK/SKIP';
-
-                    $_view['ok']++;
-                    $_view['skip']++;
-                } elseif ($result) {
-                    $result = 'OK';
-
-                    $_view['ok']++;
-                } else {
-                    $result = 'NG';
-
-                    $_view['ng']++;
-                }
-            }
-
-            $_view['targets'][] = array(
-                'name'   => $name,
-                'file'   => $entry,
-                'result' => $result,
-            );
-        }
-        closedir($dh);
-
-        sort($_view['targets']);
-    } else {
-        if (LOGGING_MESSAGE) {
-            logging('message', 'test: Opendir error: ' . MAIN_PATH . TEST_PATH);
         }
 
-        error('test: Opendir error' . (DEBUG_LEVEL ? ': ' . MAIN_PATH . TEST_PATH : ''));
+        $_view['targets'][] = array(
+            'name'   => $name,
+            'file'   => $name . '.php',
+            'result' => $result,
+        );
     }
 
     if (php_sapi_name() === 'cli') {
@@ -183,34 +162,14 @@ function test_exec()
             list($index, $result) = explode(':', $test);
         }
 
-        $i    = 0;
+        $targets = test_targets();
+
         $flag = false;
-        if ($dh = opendir(MAIN_PATH . TEST_PATH)) {
-            while (($entry = readdir($dh)) !== false) {
-                if (!is_file(MAIN_PATH . TEST_PATH . $entry)) {
-                    continue;
-                }
+        if (isset($targets[$index])) {
+            $_GET['target'] = $targets[$index];
 
-                if ($regexp = regexp_match('^([_a-zA-Z0-9\-]+)\.php$', $entry)) {
-                    $_GET['target'] = $regexp[1];
-                } else {
-                    continue;
-                }
-
-                if ($index == $i++) {
-                    $index = $i;
-                    $flag  = true;
-
-                    break;
-                }
-            }
-            closedir($dh);
-        } else {
-            if (LOGGING_MESSAGE) {
-                logging('message', 'test: Opendir error: ' . MAIN_PATH . TEST_PATH);
-            }
-
-            error('test: Opendir error' . (DEBUG_LEVEL ? ': ' . MAIN_PATH . TEST_PATH: ''));
+            $index++;
+            $flag = true;
         }
 
         if ($flag === false) {
@@ -332,6 +291,39 @@ function test_skip($title, $reason = null)
     }
 
     return;
+}
+
+/**
+ * Get the test targets sorted by name.
+ *
+ * @return array
+ */
+function test_targets()
+{
+    $targets = array();
+
+    if ($dh = opendir(MAIN_PATH . TEST_PATH)) {
+        while (($entry = readdir($dh)) !== false) {
+            if (!is_file(MAIN_PATH . TEST_PATH . $entry)) {
+                continue;
+            }
+
+            if ($regexp = regexp_match('^([_a-zA-Z0-9\-]+)\.php$', $entry)) {
+                $targets[] = $regexp[1];
+            }
+        }
+        closedir($dh);
+    } else {
+        if (LOGGING_MESSAGE) {
+            logging('message', 'test: Opendir error: ' . MAIN_PATH . TEST_PATH);
+        }
+
+        error('test: Opendir error' . (DEBUG_LEVEL ? ': ' . MAIN_PATH . TEST_PATH : ''));
+    }
+
+    sort($targets);
+
+    return $targets;
 }
 
 /**
