@@ -735,6 +735,19 @@ function file_resize($original, $output, $output_width, $output_height, $quality
     }
 
     if (regexp_match('\.gif$', $original)) {
+        $functions = array('imagecreatefromgif', 'imagegif');
+    } elseif (regexp_match('\.(jpeg|jpg|jpe)$', $original)) {
+        $functions = array('imagecreatefromjpeg', 'imagejpeg');
+    } else {
+        $functions = array('imagecreatefrompng', 'imagepng');
+    }
+    foreach (array_merge(array('imagecreatetruecolor', 'imagecopyresampled'), $functions) as $function) {
+        if (!function_exists($function)) {
+            return false;
+        }
+    }
+
+    if (regexp_match('\.gif$', $original)) {
         $file    = imagecreatefromgif($original);
         $bgcolor = imagecolorallocatealpha($file, 0, 0, 0, 127);
     } elseif (regexp_match('\.(jpeg|jpg|jpe)$', $original)) {
