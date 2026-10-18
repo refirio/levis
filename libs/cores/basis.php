@@ -101,7 +101,18 @@ function session()
         $path = SESSION_PATH . '/';
     }
 
-    session_set_cookie_params(SESSION_LIFETIME, $path, '', ssl(), true);
+    if (version_compare(PHP_VERSION, '7.3.0', '>=')) {
+        session_set_cookie_params(array(
+            'lifetime' => SESSION_LIFETIME,
+            'path'     => $path,
+            'domain'   => '',
+            'secure'   => ssl(true),
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ));
+    } else {
+        session_set_cookie_params(SESSION_LIFETIME, $path, '', ssl(true), true);
+    }
     session_cache_limiter(SESSION_CACHE);
     session_start();
 
@@ -865,10 +876,10 @@ function clientip($proxy = 0)
  */
 function ssl($proxy = false)
 {
-    if (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || $_SERVER['HTTPS'] === 1)) {
+    if (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || (string)$_SERVER['HTTPS'] === '1')) {
         return true;
     } elseif ($proxy) {
-        if (!empty($_SERVER['HTTP_X_FORWARDED_PORT']) && $_SERVER['HTTP_X_FORWARDED_PORT'] === 443) {
+        if (!empty($_SERVER['HTTP_X_FORWARDED_PORT']) && (string)$_SERVER['HTTP_X_FORWARDED_PORT'] === '443') {
             return true;
         } elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
             return true;

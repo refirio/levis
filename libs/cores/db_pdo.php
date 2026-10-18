@@ -17,7 +17,7 @@ function db_driver_connect()
 
     $dsn = null;
     if ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_mysql') {
-        $dsn = 'mysql:dbname=' . $_db['resource'][$_db['target']]['config']['name'] . ';host=' . $_db['resource'][$_db['target']]['config']['host'] . ($_db['resource'][$_db['target']]['config']['port'] ? ';port=' . $_db['resource'][$_db['target']]['config']['port'] : '');
+        $dsn = 'mysql:dbname=' . $_db['resource'][$_db['target']]['config']['name'] . ';host=' . $_db['resource'][$_db['target']]['config']['host'] . ($_db['resource'][$_db['target']]['config']['port'] ? ';port=' . $_db['resource'][$_db['target']]['config']['port'] : '') . ($_db['resource'][$_db['target']]['config']['charset'] ? ';charset=' . $_db['resource'][$_db['target']]['config']['charset'] : '');
     } elseif ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_pgsql') {
         $dsn = 'pgsql:dbname=' . $_db['resource'][$_db['target']]['config']['name'] . ';host=' . $_db['resource'][$_db['target']]['config']['host'] . ($_db['resource'][$_db['target']]['config']['port'] ? ';port=' . $_db['resource'][$_db['target']]['config']['port'] : '');
     } elseif ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_sqlite') {
@@ -123,6 +123,10 @@ function db_driver_escape($data)
     global $_db;
 
     if ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_mysql') {
+        if (!empty($_db['resource'][$_db['target']]['dbh'])) {
+            return $_db['resource'][$_db['target']]['dbh']->quote((string)$data);
+        }
+
         return '\'' . addslashes($data) . '\'';
     } elseif ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_pgsql' or $_db['resource'][$_db['target']]['config']['type'] === 'pdo_sqlite' or $_db['resource'][$_db['target']]['config']['type'] === 'pdo_sqlite2') {
         return '\'' . str_replace('\'', '\'\'', $data) . '\'';
@@ -142,7 +146,16 @@ function db_driver_unescape($data)
 
     if ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_mysql') {
         $data = regexp_replace('(^\'|\'$)', '', $data);
-        $data = stripslashes($data);
+        $data = strtr($data, array(
+            '\\\\' => '\\',
+            '\\\'' => '\'',
+            '\\"'  => '"',
+            '\\0'  => "\0",
+            '\\n'  => "\n",
+            '\\r'  => "\r",
+            '\\Z'  => "\x1a",
+            '\'\'' => '\'',
+        ));
 
         return $data;
     } elseif ($_db['resource'][$_db['target']]['config']['type'] === 'pdo_pgsql' or $_db['resource'][$_db['target']]['config']['type'] === 'pdo_sqlite' or $_db['resource'][$_db['target']]['config']['type'] === 'pdo_sqlite2') {

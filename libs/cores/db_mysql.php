@@ -33,6 +33,10 @@ function db_driver_connect()
         error('db: Select DB error');
     }
 
+    if ($_db['resource'][$_db['target']]['config']['charset'] && function_exists('mysql_set_charset')) {
+        mysql_set_charset($_db['resource'][$_db['target']]['config']['charset'], $_db['resource'][$_db['target']]['dbh']);
+    }
+
     return;
 }
 
@@ -108,6 +112,10 @@ function db_driver_escape($data)
 {
     global $_db;
 
+    if (!empty($_db['resource'][$_db['target']]['dbh'])) {
+        return '\'' . mysql_real_escape_string((string)$data, $_db['resource'][$_db['target']]['dbh']) . '\'';
+    }
+
     return '\'' . addslashes($data) . '\'';
 }
 
@@ -123,7 +131,16 @@ function db_driver_unescape($data)
     global $_db;
 
     $data = regexp_replace('(^\'|\'$)', '', $data);
-    $data = stripslashes($data);
+    $data = strtr($data, array(
+        '\\\\' => '\\',
+        '\\\'' => '\'',
+        '\\"'  => '"',
+        '\\0'  => "\0",
+        '\\n'  => "\n",
+        '\\r'  => "\r",
+        '\\Z'  => "\x1a",
+        '\'\'' => '\'',
+    ));
 
     return $data;
 }
