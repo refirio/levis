@@ -22,6 +22,33 @@ import('libs/modules/file.php');
  */
 function mail_send($to, $subject, $message, $headers = array(), $parameters = '', $files = array())
 {
+    $mail = mail_build($to, $subject, $message, $headers, $files);
+
+    $header = null;
+    foreach ($mail['headers'] as $key => $value) {
+        if ($header) {
+            $header .= "\n";
+        }
+
+        $header .= $key . ': ' . $value;
+    }
+
+    return mail($mail['to'], $mail['subject'], $mail['body'], $header, $parameters);
+}
+
+/**
+ * Build encoded mail.
+ *
+ * @param string $to
+ * @param string $subject
+ * @param string $message
+ * @param array  $headers
+ * @param array  $files
+ *
+ * @return array
+ */
+function mail_build($to, $subject, $message, $headers = array(), $files = array())
+{
     $subject = mb_convert_kana(unify($subject), 'KV', MAIN_INTERNAL_ENCODING);
     $message = mb_convert_kana(unify($message), 'KV', MAIN_INTERNAL_ENCODING);
 
@@ -84,17 +111,18 @@ function mail_send($to, $subject, $message, $headers = array(), $parameters = ''
         $headers['Content-Transfer-Encoding'] = '7bit';
     }
 
-    $header = null;
+    $results = array();
     foreach ($headers as $key => $value) {
-        if ($header) {
-            $header .= "\n";
-        }
-
         $key   = regexp_replace('(\r|\n)', '', $key);
         $value = regexp_replace('(\r|\n)', '', $value);
 
-        $header .= $key . ': ' . $value;
+        $results[$key] = $value;
     }
 
-    return mail($to, $subject, $body, $header, $parameters);
+    return array(
+        'to'      => $to,
+        'subject' => $subject,
+        'body'    => $body,
+        'headers' => $results,
+    );
 }
